@@ -95,6 +95,8 @@ function launchStation(idx){
     });
   }else if(s.t==='write'){
     wSet = s.set||'low';
+    wMode = 'guide'; // trạm viết dạy đúng thứ tự nét
+    $$('#write-modes [data-wmode]').forEach(x=>x.classList.toggle('on', x.dataset.wmode==='guide'));
     $$('#scr-write .tab').forEach(x=>x.classList.toggle('on', x.dataset.set===wSet));
     wIdx = Math.max(0, WRITE_SETS[wSet].indexOf(s.ch));
     showScreen('scr-write');

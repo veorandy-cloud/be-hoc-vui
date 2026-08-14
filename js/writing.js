@@ -1,6 +1,9 @@
 "use strict";
 /* ============ WRITING ============ */
 let wCanvas, wCtx, wStrokes=[], wSet='low', wIdx=0, wReady=false, wPen='#FF5C5C', wNib='pen';
+/* Phase 3 — 3 mức như LetterSchool: 👀 demo nét chạy · 🔢 đồ từng nét có chấm · ✍️ tự viết (chấm coverage) */
+let wMode='guide', gStroke=0, strokeFails=0, gFailsTotal=0, wAnim=0;
+const NUMVI=['một','hai','ba','bốn','năm'];
 const wHist = makeHistory(()=>wCanvas, ()=>wCtx, ()=>drawTemplate());
 let writeBest = safeParse('bhv_write', {}, isObj);
 function curChar(){ return WRITE_SETS[wSet][wIdx]; }
@@ -14,7 +17,13 @@ function initWrite(){
     wCanvas = $('#write-canvas'); wCtx = wCanvas.getContext('2d');
     bindDraw(wCanvas, wCtx,
       ()=>({mode:'pen', brush:wNib, color:wPen, size:wNib==='marker'?11:14}),
-      pts=>wStrokes.push(pts), undefined, wHist);
+      pts=>{ wStrokes.push(pts); if(wMode==='guide') guideCheck(pts); }, undefined, wHist);
+    $$('#write-modes [data-wmode]').forEach(b=>b.onclick=()=>{
+      wMode=b.dataset.wmode;
+      $$('#write-modes [data-wmode]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      $('#w-grade').style.display = wMode==='free' ? '' : 'none';
+      resetWrite();
+    });
     $('#w-undo').onclick = ()=>{ if(wHist.undo()){ wStrokes.pop(); sndPop(); } };
     $$('#scr-write [data-nib]').forEach(b=>b.onclick=()=>{
       wNib=b.dataset.nib;
@@ -25,10 +34,12 @@ function initWrite(){
     $('#w-speak').onclick = speakChar;
     $('#w-clear').onclick = function(){ confirmTap(this, 'Bấm lần nữa để xoá nhé!', resetWrite); };
     $('#w-grade').onclick = gradeWrite;
+    $('#w-grade').style.display = wMode==='free' ? '' : 'none'; // chấm coverage chỉ có nghĩa ở chế độ Tự viết
     $('#write-word').onclick = ()=>{ const {ex}=charInfo(); speak(ex.w); };
-    $$('#scr-write .tab').forEach(b=>b.onclick=()=>{
+    // CHỈ nút có data-set — nút chế độ (#write-modes) cũng mang class .tab, không được bắt nhầm
+    $$('#scr-write [data-set]').forEach(b=>b.onclick=()=>{
       wSet=b.dataset.set; wIdx=0;
-      $$('#scr-write .tab').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      $$('#scr-write [data-set]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
       resetWrite();
     });
     $$('#scr-write .swatch').forEach(s=>s.onclick=()=>{
@@ -58,14 +69,7 @@ function templateFont(cv){
   const h = cv.parentElement.getBoundingClientRect().height;
   return `800 ${Math.floor(h*0.62)}px "Baloo 2", sans-serif`;
 }
-function drawTemplate(){
-  const {ex}=charInfo();
-  $('#write-letter').textContent = curChar();
-  $('#write-word').innerHTML = `<div class="em">${ex.em}</div><div class="wd">${ex.w}</div>`;
-  const best = writeBest[charKey()]||0;
-  $('#write-best').textContent = best?`Tốt nhất: ${'⭐'.repeat(best)}`:'Tốt nhất: —';
-  const r = wCanvas.parentElement.getBoundingClientRect();
-  wCtx.clearRect(0,0,r.width,r.height);
+function drawGrid(r){
   // ô ly như vở tập viết lớp 1
   const cell = r.height/10;
   wCtx.strokeStyle='#DDEBFA'; wCtx.lineWidth=1;
@@ -76,6 +80,59 @@ function drawTemplate(){
   wCtx.strokeStyle='#F5B8C4'; wCtx.beginPath();
   wCtx.moveTo(0, r.height/2 + cell*2); wCtx.lineTo(r.width, r.height/2 + cell*2);
   wCtx.stroke();
+}
+/* nét chữ (STROKES khung cao 100, x giữa 0) → toạ độ canvas, cùng cỡ với template font */
+function glyphStrokes(){
+  const g = typeof STROKES!=='undefined' && STROKES[curChar()];
+  if(!g) return null;
+  const r = wCanvas.parentElement.getBoundingClientRect();
+  const k = (r.height*0.62)/100;
+  const yTop = (r.height - 100*k)/2;
+  return { k, strokes: g.map(s=>s.map(([x,y])=>[r.width/2 + x*k, yTop + y*k])) };
+}
+function drawPoly(pts, color, width, dash){
+  wCtx.save();
+  wCtx.strokeStyle=color; wCtx.lineWidth=width;
+  wCtx.lineCap='round'; wCtx.lineJoin='round';
+  wCtx.setLineDash(dash||[]);
+  wCtx.beginPath();
+  pts.forEach((p,i)=> i? wCtx.lineTo(p[0],p[1]) : wCtx.moveTo(p[0],p[1]));
+  wCtx.stroke(); wCtx.restore();
+}
+function drawSkeleton(done, cur){
+  // done: số nét đã hoàn thành (vẽ xanh); cur: nét đang tập (vẽ đậm + chấm số)
+  const g = glyphStrokes(); if(!g) return;
+  g.strokes.forEach((s,i)=>{
+    if(i<done) drawPoly(s, '#22C55E', Math.max(6,g.k*5));
+    else if(i===cur) drawPoly(s, '#93C5FD', Math.max(6,g.k*5), [10,8]);
+    else drawPoly(s, '#E3E3EE', Math.max(5,g.k*4), [8,8]);
+  });
+  // chỉ đánh số nét ĐANG tập — hiện hết thì các badge chồng nhau (nét sau hay bắt đầu nơi nét trước kết thúc)
+  if(cur>=0 && g.strokes[cur]){
+    const [x,y]=g.strokes[cur][0];
+    wCtx.save();
+    wCtx.fillStyle='#FACC15';
+    wCtx.strokeStyle='#27272A'; wCtx.lineWidth=2.5;
+    wCtx.beginPath(); wCtx.arc(x,y,14,0,7); wCtx.fill(); wCtx.stroke();
+    wCtx.fillStyle='#27272A'; wCtx.font='800 16px "Baloo 2", sans-serif';
+    wCtx.textAlign='center'; wCtx.textBaseline='middle';
+    wCtx.fillText(cur+1, x, y+1);
+    wCtx.restore();
+  }
+}
+function drawTemplate(){
+  const {ex}=charInfo();
+  $('#write-letter').textContent = curChar();
+  $('#write-word').innerHTML = `<div class="em">${ex.em}</div><div class="wd">${ex.w}</div>`;
+  const best = writeBest[charKey()]||0;
+  $('#write-best').textContent = best?`Tốt nhất: ${'⭐'.repeat(best)}`:'Tốt nhất: —';
+  const r = wCanvas.parentElement.getBoundingClientRect();
+  wCtx.clearRect(0,0,r.width,r.height);
+  drawGrid(r);
+  if(wMode!=='free' && glyphStrokes()){
+    drawSkeleton(wMode==='guide'?gStroke:0, wMode==='guide'?gStroke:-1);
+    return;
+  }
   wCtx.font = templateFont(wCanvas);
   wCtx.textAlign='center'; wCtx.textBaseline='middle';
   wCtx.fillStyle='#E8E8EF';
@@ -86,9 +143,98 @@ function drawTemplate(){
 }
 function redrawWrite(){ wStrokes=[]; wHist.reset(); drawTemplate(); }
 function resetWrite(){
+  wAnim++; gStroke=0; strokeFails=0; gFailsTotal=0;
   redrawWrite();
   const {name}=charInfo();
-  speak(`Bé hãy viết ${wSet==='num'?'số':'chữ'} ${name}${wSet==='up'?' hoa':''} nhé!`);
+  const full = `${wSet==='num'?'số':'chữ'} ${name}${wSet==='up'?' hoa':''}`;
+  if(wMode==='demo' && glyphStrokes()){ speak('Bé xem cô viết mẫu nhé!'); playDemo(); }
+  else if(wMode==='guide' && glyphStrokes()) speak('Bé vẽ nét số một nhé!');
+  else speak(`Bé hãy viết ${full} nhé!`);
+}
+/* 👀 demo: nét chạy tuần tự như cô viết mẫu */
+function playDemo(strokeOnly){
+  const g = glyphStrokes(); if(!g) return;
+  const token = ++wAnim, gen = uiGen;
+  const list = strokeOnly!=null ? [strokeOnly] : g.strokes.map((_,i)=>i);
+  const speed = Math.max(3, g.k*2.2); // px mỗi frame
+  let li=0;
+  function runStroke(){
+    if(token!==wAnim || gen!==uiGen) return;
+    if(li>=list.length) return;
+    const s = g.strokes[list[li]];
+    let seg=0, t=0;
+    function frame(){
+      if(token!==wAnim || gen!==uiGen) return;
+      let step=speed;
+      while(step>0 && seg<s.length-1){
+        const [x1,y1]=s[seg], [x2,y2]=s[seg+1];
+        const len=Math.hypot(x2-x1,y2-y1)||1;
+        const remain=(1-t)*len;
+        const adv=Math.min(step, remain);
+        const t2=t+adv/len;
+        drawPoly([[x1+(x2-x1)*t,y1+(y2-y1)*t],[x1+(x2-x1)*t2,y1+(y2-y1)*t2]], '#FF5C5C', Math.max(7,g.k*6));
+        t=t2; step-=adv;
+        if(t>=0.999){ seg++; t=0; }
+      }
+      if(seg<s.length-1) requestAnimationFrame(frame);
+      else{ sndPop(); li++; setTimeout(runStroke, 350); }
+    }
+    frame();
+  }
+  runStroke();
+}
+/* 🔢 chấm từng nét: resample theo chiều dài cung rồi so khoảng cách trung bình */
+function resample(pts, n){
+  if(!pts || !pts.length) return Array.from({length:n}, ()=>[0,0]);
+  if(pts.length===1) return Array(n).fill(pts[0]);
+  const d=[0]; let total=0;
+  for(let i=1;i<pts.length;i++){ total+=Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]); d.push(total); }
+  if(total===0) return Array(n).fill(pts[0]);
+  const out=[]; let j=0;
+  for(let i=0;i<n;i++){
+    const target=total*i/(n-1);
+    while(j<d.length-2 && d[j+1]<target) j++;
+    const span=d[j+1]-d[j]||1;
+    const t=(target-d[j])/span;
+    out.push([pts[j][0]+(pts[j+1][0]-pts[j][0])*t, pts[j][1]+(pts[j+1][1]-pts[j][1])*t]);
+  }
+  return out;
+}
+function strokeDist(a, b){
+  const n=24, ra=resample(a,n), rb=resample(b,n);
+  let sum=0;
+  for(let i=0;i<n;i++) sum+=Math.hypot(ra[i][0]-rb[i][0], ra[i][1]-rb[i][1]);
+  return sum/n;
+}
+function guideCheck(pts){
+  const g = glyphStrokes(); if(!g || gStroke>=g.strokes.length) return;
+  if(!pts || pts.length<2){ if(wHist.undo()) wStrokes.pop(); return; } // chạm 1 điểm: bỏ qua, không tính sai
+  const target = g.strokes[gStroke];
+  const thr = Math.max(18, g.k*11);
+  const dist = Math.min(strokeDist(pts, target), strokeDist(pts, [...target].reverse()));
+  if(dist < thr){
+    gStroke++;
+    wStrokes=[]; wHist.reset(); drawTemplate(); // "snap": thay nét run tay bằng nét chuẩn màu xanh
+    if(gStroke >= g.strokes.length){
+      const earned = gFailsTotal<=1?3 : gFailsTotal<=3?2 : 1;
+      if(earned > (writeBest[charKey()]||0)){
+        writeBest[charKey()]=earned;
+        localStorage.setItem('bhv_write', JSON.stringify(writeBest));
+      }
+      ovCallback = ()=>{ wIdx=(wIdx+1)%WRITE_SETS[wSet].length; resetWrite(); };
+      if(questActive!==null) ovCallback = (curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;
+      showResult(earned, 'Bé viết đúng thứ tự nét!');
+    }else{
+      sndGood(); strokeFails=0;
+      speak(`Bé vẽ nét số ${NUMVI[gStroke]||gStroke+1} nhé!`);
+    }
+  }else{
+    gFailsTotal++; strokeFails++;
+    if(wHist.undo()) wStrokes.pop(); // xoá nét sai của bé
+    sndBad();
+    speak('Chưa đúng nét, bé thử lại nhé!');
+    if(strokeFails>=2){ playDemo(gStroke); strokeFails=0; } // sai 2 lần → cô vẽ mẫu đúng nét đó
+  }
 }
 function gradeWrite(){
   // ponytail: coverage x precision, chưa xét thứ tự nét — nâng cấp bằng stroke-path data nếu cần chặt hơn

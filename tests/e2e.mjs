@@ -13,7 +13,7 @@ const ok = (cond, name) => {
 const browser = await chromium.launch({ channel: 'msedge', headless: true, args: ['--mute-audio'] });
 const page = await browser.newPage();
 const errors = [];
-page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+page.on('pageerror', e => errors.push('pageerror: ' + (e.stack || e.message).split('\n').slice(0,3).join(' | ')));
 page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 page.on('response', r => { if (r.status() >= 400) errors.push(`HTTP ${r.status()}: ${r.url()}`); });
 
@@ -55,19 +55,39 @@ const cls = await page.$$eval('#read-choices .choice', els => els.map(e => e.cla
 ok(/good/.test(cls), 'quiz: chọn đáp án có phản hồi .good');
 await goHome();
 
-// 4. canvas tập viết nhận nét vẽ
+// 4. tập viết: stroke data + chế độ Từng nét từ chối nét sai + Tự viết nhận nét
 await page.click('[data-go="scr-write"]');
 await page.waitForTimeout(700);
+const strokesN = await page.evaluate(() => typeof STROKES !== 'undefined' ? Object.keys(STROKES).length : 0);
+ok(strokesN >= 76, `stroke data: ${strokesN} glyph có thứ tự nét`);
 const box = await (await page.$('#write-canvas')).boundingBox();
+const drawLine = async () => {
+  await page.mouse.move(box.x + box.width * 0.35, box.y + box.height * 0.4);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++)
+    await page.mouse.move(box.x + box.width * (0.35 + i * 0.025), box.y + box.height * (0.4 + i * 0.02));
+  await page.mouse.up();
+};
+// mặc định = Từng nét: vẽ chéo bậy → bị từ chối, mực coral của bé phải bị xoá sạch
+const inkPixels = () => page.$eval('#write-canvas', c => {
+  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  let n = 0;
+  for (let i = 0; i < d.length; i += 4)
+    if (d[i] > 240 && d[i + 1] < 130 && d[i + 2] < 130 && d[i + 3] > 100) n++; // #FF5C5C
+  return n;
+});
+await drawLine();
+await page.waitForTimeout(500);
+const inkAfterReject = await inkPixels();
+ok(inkAfterReject < 50, `từng nét: nét sai bị từ chối và xoá (còn ${inkAfterReject}px mực)`);
+// chuyển Tự viết: vẽ phải có nét
+await page.click('[data-wmode="free"]', { force: true });
+await page.waitForTimeout(500);
 const before = await page.$eval('#write-canvas', c => c.toDataURL());
-await page.mouse.move(box.x + box.width * 0.35, box.y + box.height * 0.4);
-await page.mouse.down();
-for (let i = 1; i <= 10; i++)
-  await page.mouse.move(box.x + box.width * (0.35 + i * 0.025), box.y + box.height * (0.4 + i * 0.02));
-await page.mouse.up();
+await drawLine();
 await page.waitForTimeout(200);
 const after = await page.$eval('#write-canvas', c => c.toDataURL());
-ok(before !== after, 'tập viết: canvas có nét sau khi vẽ');
+ok(before !== after, 'tự viết: canvas có nét sau khi vẽ');
 await goHome();
 
 // 5. tô màu: tranh line-art render (lineMask sẵn sàng → canvas line có pixel)

@@ -152,8 +152,9 @@ function bindDraw(cv, ctx, getTool, onStroke, getScale, hist){
     if(!drawing || e.pointerId!==activeId) return;
     drawing=false; activeId=null;
     resetCtx();
-    if(pts.length) onStroke(pts);
+    // push history TRƯỚC onStroke — guideCheck (tập viết từng nét) cần undo được chính nét vừa vẽ
     if(rec && hist) hist.push(rec);
+    if(pts.length) onStroke(pts);
     rec=null;
   };
   cv.addEventListener('pointerup', end);

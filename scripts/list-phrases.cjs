@@ -32,8 +32,12 @@ const en = t => add(t, 'en');
   'Cần có mạng để cô nghe bé đọc nhé!',
   'Bấm lần nữa để xoá nhé!',
   'Bấm lần nữa để về nhà, lượt chơi này sẽ mất nhé!',
-  'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!'
+  'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!',
+  'Bé xem cô viết mẫu nhé!',
+  'Chưa đúng nét, bé thử lại nhé!'
 ].forEach(vi);
+// tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
+['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));
 
 // tập đọc — Đọc theo: đọc cả câu hoàn chỉnh (stripDeco PHẢI khớp 100% với app.js)
 const stripDeco = s => s.replace(/[^\p{L}\p{N}\s,!?.]/gu, '').replace(/\s+/g, ' ').trim();
