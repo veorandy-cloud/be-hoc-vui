@@ -60,7 +60,7 @@ Plan cải tiến 4 đợt:
 
 | Phase | Nội dung | Trạng thái |
 |---|---|---|
-| **2 — Tiếng Anh sâu** | ~150 từ theo wordlist Cambridge Pre-A1 Starters, **ảnh thật CC0** (Pixabay/Openverse) cho từng từ, audio tự sinh từ pipeline | Kế tiếp |
+| **2 — Tiếng Anh sâu** | ✅ XONG 2026-08-13: **133 từ / 14 chủ đề** (Animals 10→20, Food 8→16, +Transport/House; VN words 20→30) · **86 ảnh THẬT** từ Wikipedia (pipeline `scripts/gen_images.cjs`, retry/backoff, override title cho từ nhập nhằng — water/key/lamp đã sửa tay sau khi soi mắt) · flashcard + quiz nghe-chọn + quiz đọc dùng ảnh, emoji fallback khi thiếu/lỗi · sw `warm-images` precache offline · credit ảnh ở trang phụ huynh · audio **826/826 mp3** · e2e 17 assertion ALL PASS. Deploy GitHub Pages: https://veorandy-cloud.github.io/be-hoc-vui/ | ✅ |
 | **3 — Tập viết sâu** | Data đường nét từng chữ, dạy thứ tự nét + animation, 3 mức như LetterSchool | Chờ |
 | **4 — Tô màu + Nhạc** | 30+ tranh line-art CC0 nhiều chi tiết; backing track thật cho bài hát | Chờ |
 | **Đảo Sticker 3D** | Three.js — khu thưởng 3D xoay bằng tay, sticker mọc lên đảo | Chờ (đã thống nhất chỉ 3D phần thưởng, học vẫn 2D) |

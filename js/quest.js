@@ -179,7 +179,8 @@ function showParentStats(){
     ['🎁 Sticker', `${unlockedCount()+goldCount()}/${STICKERS.length*2}`],
     ['🖼️ Tranh đã lưu', gal.length]
   ];
-  $('#ps-grid').innerHTML = rows.map(([k,v])=>`<div class="ps-row"><span>${k}</span><b>${v}</b></div>`).join('');
+  $('#ps-grid').innerHTML = rows.map(([k,v])=>`<div class="ps-row"><span>${k}</span><b>${v}</b></div>`).join('')
+    + '<div style="text-align:center;font-size:13px;color:#71717A;padding:6px">Ảnh minh hoạ từ vựng: Wikipedia / Wikimedia Commons (giấy phép CC) · Giọng đọc: Microsoft Edge TTS</div>';
 }
 $('#btn-parent').addEventListener('click', ()=>showScreen('scr-parent'));
 $('#ps-reset').addEventListener('click', function(){

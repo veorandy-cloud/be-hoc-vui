@@ -96,6 +96,20 @@ const audio = await page.evaluate(async () => {
 ok(audio.count === audio.expect, `audio manifest đủ ${audio.expect} câu (thấy ${audio.count})`);
 ok(audio.ok && audio.size > 500, `mp3 mẫu tải được (${audio.size} bytes)`);
 
+// 6b. ảnh thật: manifest + ảnh mẫu tải được + flashcard render <img>
+const img = await page.evaluate(async () => {
+  const man = await (await fetch('assets/images/manifest.json')).json();
+  const files = Object.values(man);
+  const r = await fetch('assets/images/en/' + files[0]);
+  return { count: files.length, ok: r.ok };
+});
+ok(img.count >= 80 && img.ok, `ảnh từ vựng: ${img.count} photo, tải được`);
+await page.click('[data-go="scr-en"]');
+await page.waitForTimeout(600);
+const flashImgs = await page.$$eval('#en-cards img.ph', els => els.length);
+ok(flashImgs > 0, `flashcard hiện ảnh thật (${flashImgs} ảnh)`);
+await goHome();
+
 // 7. service worker đăng ký được (localhost = secure context)
 const swReg = await page.evaluate(() =>
   Promise.race([

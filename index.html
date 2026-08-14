@@ -247,7 +247,7 @@
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   navigator.serviceWorker.register('sw.js')
     .then(()=>navigator.serviceWorker.ready)
-    .then(reg=>{ if(reg.active) reg.active.postMessage('warm-audio'); }) // tải trước toàn bộ mp3 để offline có tiếng
+    .then(reg=>{ if(reg.active){ reg.active.postMessage('warm-audio'); reg.active.postMessage('warm-images'); } }) // tải trước mp3 + ảnh để offline đủ tiếng đủ hình
     .catch(()=>{});
 }
 </script>

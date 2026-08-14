@@ -1,6 +1,15 @@
 "use strict";
 /* ============ ENGLISH ============ */
 let enReady=false, enTheme=Object.keys(EN_THEMES)[0];
+/* ảnh THẬT cho từ vựng (Wikipedia, tải sẵn bằng scripts/gen_images.cjs) — không có ảnh thì fallback emoji */
+let IMG_MAN=null;
+fetch('assets/images/manifest.json').then(r=>r.json()).then(j=>{ IMG_MAN=j; }).catch(()=>{});
+function phFor(it, cls){
+  const f = IMG_MAN && IMG_MAN[it.w];
+  return f ? `<img class="${cls}" src="assets/images/en/${f}" loading="lazy" alt="${it.w}"
+                   onerror="this.outerHTML='<div class=&quot;em&quot;>${it.em}</div>'">`
+           : `<div class="em">${it.em}</div>`;
+}
 function initEnglish(){
   if(!enReady){
     const chips=$('#en-chips');
@@ -39,7 +48,7 @@ function renderFlash(){
   EN_THEMES[enTheme].forEach(it=>{
     const c=document.createElement('div');
     c.className='flash';
-    c.innerHTML=`<div class="em">${it.em}</div><div class="wd">${it.w}</div><div class="vi">${it.vi}</div>`;
+    c.innerHTML=`${phFor(it,'ph')}<div class="wd">${it.w}</div><div class="vi">${it.vi}</div>`;
     c.onclick=()=>{
       speak(it.w,'en-US');
       c.classList.remove('wiggle'); void c.offsetWidth; c.classList.add('wiggle');
@@ -86,10 +95,10 @@ function startEnQuiz(kind){
     const others = pick(pool.filter(x=>x!==t), 2);
     if(kind==='listen') return {
       say:t.w, lang:'en-US', html:'👂',
-      choices:[{html:t.em,correct:true},{html:others[0].em},{html:others[1].em}]
+      choices:[{html:phFor(t,'chp'),correct:true},{html:phFor(others[0],'chp')},{html:phFor(others[1],'chp')}]
     };
     return {
-      say:`Từ nào là ${t.vi}?`, html:t.em,
+      say:`Từ nào là ${t.vi}?`, html:phFor(t,'php'),
       choices:[{html:t.w,correct:true,cls:'word'},{html:others[0].w,cls:'word'},{html:others[1].w,cls:'word'}]
     };
   });

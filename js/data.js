@@ -70,7 +70,10 @@ const WORD_ITEMS = [
   {em:'🍌', w:'quả chuối'},{em:'🏠', w:'cái nhà'},{em:'🚗', w:'ô tô'},{em:'🌸', w:'bông hoa'},
   {em:'🦆', w:'con vịt'},{em:'🐰', w:'con thỏ'},{em:'🐵', w:'con khỉ'},{em:'🍊', w:'quả cam'},
   {em:'🚌', w:'xe buýt'},{em:'✈️', w:'máy bay'},{em:'🦋', w:'con bướm'},{em:'⭐', w:'ngôi sao'},
-  {em:'☀️', w:'mặt trời'},{em:'🌙', w:'mặt trăng'}
+  {em:'☀️', w:'mặt trời'},{em:'🌙', w:'mặt trăng'},
+  {em:'🐄', w:'con bò'},{em:'🐷', w:'con heo'},{em:'🐴', w:'con ngựa'},{em:'🐑', w:'con cừu'},
+  {em:'🐐', w:'con dê'},{em:'🐸', w:'con ếch'},{em:'🐯', w:'con hổ'},{em:'🐭', w:'con chuột'},
+  {em:'🐝', w:'con ong'},{em:'🐢', w:'con rùa'}
 ];
 const SENTENCES = [
   {say:'Con gì kêu meo meo?', html:'Con ___ kêu meo meo 🐱', a:'mèo', d:['chó','gà']},
@@ -89,7 +92,11 @@ const EN_THEMES = {
     {em:'🐶',w:'dog',vi:'con chó'},{em:'🐱',w:'cat',vi:'con mèo'},{em:'🐟',w:'fish',vi:'con cá'},
     {em:'🐦',w:'bird',vi:'con chim'},{em:'🐰',w:'rabbit',vi:'con thỏ'},{em:'🦁',w:'lion',vi:'sư tử'},
     {em:'🐘',w:'elephant',vi:'con voi'},{em:'🐵',w:'monkey',vi:'con khỉ'},
-    {em:'🐻',w:'bear',vi:'con gấu'},{em:'🦆',w:'duck',vi:'con vịt'}
+    {em:'🐻',w:'bear',vi:'con gấu'},{em:'🦆',w:'duck',vi:'con vịt'},
+    {em:'🐄',w:'cow',vi:'con bò'},{em:'🐷',w:'pig',vi:'con heo'},{em:'🐴',w:'horse',vi:'con ngựa'},
+    {em:'🐑',w:'sheep',vi:'con cừu'},{em:'🐐',w:'goat',vi:'con dê'},{em:'🐔',w:'chicken',vi:'con gà'},
+    {em:'🐸',w:'frog',vi:'con ếch'},{em:'🐯',w:'tiger',vi:'con hổ'},
+    {em:'🦒',w:'giraffe',vi:'hươu cao cổ'},{em:'🦓',w:'zebra',vi:'ngựa vằn'}
   ],
   '🌈 Colors':[
     {em:'🔴',w:'red',vi:'màu đỏ'},{em:'🔵',w:'blue',vi:'màu xanh dương'},{em:'🟢',w:'green',vi:'màu xanh lá'},
@@ -105,7 +112,11 @@ const EN_THEMES = {
   '🍔 Food':[
     {em:'🍎',w:'apple',vi:'quả táo'},{em:'🍌',w:'banana',vi:'quả chuối'},{em:'🥛',w:'milk',vi:'sữa'},
     {em:'🥚',w:'egg',vi:'quả trứng'},{em:'🍰',w:'cake',vi:'bánh kem'},{em:'🍞',w:'bread',vi:'bánh mì'},
-    {em:'🍚',w:'rice',vi:'cơm'},{em:'🍬',w:'candy',vi:'kẹo'}
+    {em:'🍚',w:'rice',vi:'cơm'},{em:'🍬',w:'candy',vi:'kẹo'},
+    {em:'🍊',w:'orange',vi:'quả cam'},{em:'🥭',w:'mango',vi:'quả xoài'},
+    {em:'🍉',w:'watermelon',vi:'dưa hấu'},{em:'🍍',w:'pineapple',vi:'quả dứa'},
+    {em:'🍅',w:'tomato',vi:'cà chua'},{em:'🍦',w:'ice cream',vi:'kem'},
+    {em:'🧃',w:'juice',vi:'nước ép'},{em:'💧',w:'water',vi:'nước'}
   ],
   '👃 Body':[
     {em:'👁️',w:'eye',vi:'mắt'},{em:'👃',w:'nose',vi:'mũi'},{em:'👄',w:'mouth',vi:'miệng'},
@@ -140,7 +151,8 @@ const EN_THEMES = {
   '🚌 Transport':[
     {em:'🚌',w:'bus',vi:'xe buýt'},{em:'🚗',w:'car',vi:'ô tô con'},{em:'🚲',w:'bike',vi:'xe đạp'},
     {em:'✈️',w:'plane',vi:'máy bay'},{em:'⛵',w:'boat',vi:'thuyền buồm'},{em:'🚂',w:'train',vi:'tàu hoả'},
-    {em:'🚁',w:'helicopter',vi:'trực thăng'},{em:'🚚',w:'truck',vi:'xe tải'}
+    {em:'🚁',w:'helicopter',vi:'trực thăng'},{em:'🚚',w:'truck',vi:'xe tải'},
+    {em:'🛵',w:'motorbike',vi:'xe máy'},{em:'🚢',w:'ship',vi:'tàu thuỷ'}
   ],
   '🏃 Actions':[
     {em:'🏃',w:'run',vi:'chạy'},{em:'🤸',w:'jump',vi:'nhảy'},{em:'🏊',w:'swim',vi:'bơi'},
@@ -150,7 +162,8 @@ const EN_THEMES = {
   '🏠 House':[
     {em:'🛏️',w:'bed',vi:'cái giường'},{em:'🚪',w:'door',vi:'cái cửa'},{em:'🪟',w:'window',vi:'cửa sổ'},
     {em:'📺',w:'TV',vi:'ti vi'},{em:'🛋️',w:'sofa',vi:'ghế sô pha'},{em:'💡',w:'lamp',vi:'cái đèn'},
-    {em:'🛁',w:'bath',vi:'bồn tắm'},{em:'☎️',w:'phone',vi:'điện thoại'}
+    {em:'🛁',w:'bath',vi:'bồn tắm'},{em:'☎️',w:'phone',vi:'điện thoại'},
+    {em:'☕',w:'cup',vi:'cái cốc'},{em:'🔑',w:'key',vi:'chìa khoá'}
   ],
   '😊 Feelings':[
     {em:'😊',w:'happy',vi:'vui'},{em:'😢',w:'sad',vi:'buồn'},{em:'😠',w:'angry',vi:'tức giận'},

@@ -47,8 +47,22 @@ async function warmAudio() {
     }
   } catch (e) {}
 }
+async function warmImages() {
+  try {
+    const man = await (await fetch('assets/images/manifest.json')).json();
+    const cache = await caches.open(IMG_CACHE);
+    const urls = Object.values(man).map(f => new URL('assets/images/en/' + f, self.registration.scope).href);
+    for (let i = 0; i < urls.length; i += 8) {
+      await Promise.all(urls.slice(i, i + 8).map(async u => {
+        if (await cache.match(u)) return;
+        return fetch(u).then(r => { if (r.status === 200) return cache.put(u, r); }).catch(() => {});
+      }));
+    }
+  } catch (e) {}
+}
 self.addEventListener('message', e => {
   if (e.data === 'warm-audio') e.waitUntil(warmAudio());
+  if (e.data === 'warm-images') e.waitUntil(warmImages());
 });
 
 /* mp3: cache-first + tự dựng 206 cho Range request của Safari */
