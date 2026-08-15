@@ -35,6 +35,11 @@ async function goHome() {
 // 1. app load sạch
 ok(await page.title() === 'Bé Học Vui', 'title đúng');
 
+// 1b. CSS variables sống (BOM lạc giữa file từng giết :root → thẻ var(--) trắng tiệp chữ trắng)
+const cardBg = await page.$eval('#card-write', el => getComputedStyle(el).backgroundColor);
+ok(cardBg && cardBg !== 'rgba(0, 0, 0, 0)' && !/255,\s*255,\s*255/.test(cardBg),
+   `thẻ home có màu thật (--coral áp dụng: ${cardBg})`);
+
 // 2. vào được cả 6 màn từ home + quay về
 for (const id of ['scr-write', 'scr-read', 'scr-draw', 'scr-en', 'scr-quest', 'scr-music', 'scr-math']) {
   await page.click(`[data-go="${id}"]`);
