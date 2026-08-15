@@ -102,6 +102,20 @@ const linePixels = await page.$eval('#color-line', c => {
   return n;
 });
 ok(linePixels > 5000, `tô màu: nét tranh đã render (${linePixels} px)`);
+const picsN = await page.evaluate(() => PICS.length);
+ok(picsN >= 32, `kho tranh tô: ${picsN} tranh`);
+await goHome();
+
+// 5b. bài hát có nhạc đệm: bấm Hát → melody + bass/hat/kick được lên lịch
+await page.click('[data-go="scr-music"]');
+await page.waitForTimeout(400);
+await page.click('#song-list .menu-card');
+await page.waitForTimeout(400);
+await page.click('#song-sing');
+await page.waitForTimeout(700);
+const oscN = await page.evaluate(() => songOscs.length);
+ok(oscN > 30, `bài hát lên lịch ${oscN} nguồn âm (melody + nhạc đệm)`);
+await page.evaluate(() => stopSong());
 await goHome();
 
 // 6. audio manifest khớp số câu trong phrases.json và mp3 tải được

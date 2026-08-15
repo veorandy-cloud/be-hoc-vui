@@ -25,6 +25,48 @@ function playNote(midi, t, dur){
   o.start(st); o.stop(st+dur);
   songOscs.push(o);
 }
+/* ==== ban nhạc đệm (Web Audio, không cần file mp3) ==== */
+/* bass gảy từng phách — sine trầm, tắt nhanh như tiếng ukulele bass */
+function playBass(midi, t, dur){
+  const f = 440*Math.pow(2,(midi-69)/12);
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(songGain||AC.destination);
+  const st=AC.currentTime+t;
+  g.gain.setValueAtTime(0,st);
+  g.gain.linearRampToValueAtTime(.2,st+.015);
+  g.gain.exponentialRampToValueAtTime(.001,st+Math.max(.1,dur*.9));
+  o.start(st); o.stop(st+dur);
+  songOscs.push(o);
+}
+/* hi-hat: nhiễu trắng qua highpass, rất nhỏ để không át giọng melody */
+let noiseBuf=null;
+function playHat(t){
+  if(!noiseBuf){
+    noiseBuf=AC.createBuffer(1, Math.floor(AC.sampleRate*0.05), AC.sampleRate);
+    const d=noiseBuf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  }
+  const s=AC.createBufferSource(), g=AC.createGain(), hp=AC.createBiquadFilter();
+  s.buffer=noiseBuf; hp.type='highpass'; hp.frequency.value=6000;
+  s.connect(hp); hp.connect(g); g.connect(songGain||AC.destination);
+  const st=AC.currentTime+t;
+  g.gain.setValueAtTime(.06,st);
+  g.gain.exponentialRampToValueAtTime(.001,st+.05);
+  s.start(st); s.stop(st+.06);
+  songOscs.push(s);
+}
+/* kick: sine quét tần số 140→45Hz */
+function playKick(t){
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='sine'; o.connect(g); g.connect(songGain||AC.destination);
+  const st=AC.currentTime+t;
+  o.frequency.setValueAtTime(140,st);
+  o.frequency.exponentialRampToValueAtTime(45,st+.12);
+  g.gain.setValueAtTime(.3,st);
+  g.gain.exponentialRampToValueAtTime(.001,st+.15);
+  o.start(st); o.stop(st+.16);
+  songOscs.push(o);
+}
 /* bè đệm cho dày tiếng: sine trầm giữ suốt câu hát */
 function playPad(midi, t, dur){
   const f = 440*Math.pow(2,(midi-69)/12);
@@ -87,7 +129,14 @@ function singSong(){
     songTimers.push(setTimeout(()=>highlightLine(li), t*1000));
     const lineDur = ln.n.reduce((s,[,b])=>s+b,0)*beat;
     const root = ln.n[0][0]-12;
-    playPad(root, t, lineDur); playPad(root+7, t, lineDur); // bass + quãng 5
+    playPad(root, t, lineDur); playPad(root+7, t, lineDur); // nền hoà âm: gốc + quãng 5
+    // nhịp đệm: kick + bass gảy (gốc/quãng 5 luân phiên) mỗi phách, hi-hat ở phách lệch
+    let bi=0;
+    for(let bt=0; bt<lineDur-.01; bt+=beat, bi++){
+      if(bi%2===0) playKick(t+bt);
+      playBass(bi%2 ? root+7 : root, t+bt, beat*.9);
+      playHat(t+bt+beat/2);
+    }
     ln.n.forEach(([m,b])=>{ playNote(m,t,b*beat); t+=b*beat; });
     t+=beat*0.5; // nghỉ giữa các câu
   });

@@ -1,7 +1,7 @@
 # Bé Học Vui — Tiến trình dự án
 
 > App học lớp 1 cho iPad (PWA): tập viết, tập đọc, vẽ/tô màu, tiếng Anh, ca hát, thám hiểm.
-> Cập nhật: 2026-08-13
+> Cập nhật: 2026-08-15
 
 ## Tóm tắt hiện trạng
 
@@ -62,7 +62,7 @@ Plan cải tiến 4 đợt:
 |---|---|---|
 | **2 — Tiếng Anh sâu** | ✅ XONG 2026-08-13: **133 từ / 14 chủ đề** (Animals 10→20, Food 8→16, +Transport/House; VN words 20→30) · **86 ảnh THẬT** từ Wikipedia (pipeline `scripts/gen_images.cjs`, retry/backoff, override title cho từ nhập nhằng — water/key/lamp đã sửa tay sau khi soi mắt) · flashcard + quiz nghe-chọn + quiz đọc dùng ảnh, emoji fallback khi thiếu/lỗi · sw `warm-images` precache offline · credit ảnh ở trang phụ huynh · audio **826/826 mp3** · e2e 17 assertion ALL PASS. Deploy GitHub Pages: https://veorandy-cloud.github.io/be-hoc-vui/ | ✅ |
 | **3 — Tập viết sâu** | ✅ XONG 2026-08-13: **76 glyph có thứ tự nét** (`js/strokes.js` sinh từ font 1-nét Hershey futural public-domain qua `scripts/gen_strokes.cjs` + 4 dấu Việt tự định nghĩa: breve/mũ/móc/gạch-đ) · 3 mức như LetterSchool: 👀 **Xem mẫu** (nét chạy animation như cô viết), 🔢 **Từng nét** (mặc định — đồ theo nét đánh số, chấm từng nét bằng resample+khoảng cách, sai 2 lần cô vẽ mẫu lại nét đó, nét run tay "snap" thành nét chuẩn xanh), ✍️ **Tự viết** (chấm coverage như cũ) · trạm quest viết dùng chế độ Từng nét · audio 833/833 · e2e 19 assertion ALL PASS (2 assertion mới: stroke data + nét sai bị từ chối) | ✅ |
-| **4 — Tô màu + Nhạc** | 30+ tranh line-art CC0 nhiều chi tiết; backing track thật cho bài hát | Chờ |
+| **4 — Tô màu + Nhạc** | ✅ XONG 2026-08-15: tô màu **20→32 tranh** (12 tranh mới 12-27 vùng tô: voi, hươu cao cổ, rùa, cua, trực thăng, thuyền buồm, ong, nhà nấm, bánh kem, cánh cụt, đêm trăng, kỳ lân — vẽ tay SVG, verify bằng screenshot Edge headless, sửa 3 tranh sau khi soi mắt) · bài hát có **ban nhạc đệm WebAudio**: kick (sine quét 140→45Hz) mỗi 2 phách + bass gảy gốc/quãng-5 luân phiên mỗi phách + hi-hat (noise + highpass 6kHz) phách lệch, đè lên nền pad cũ — không cần file mp3, offline được, mọi nguồn âm vào `songOscs` nên nút Dừng vẫn dừng thật · KHÔNG có câu nói mới → không regen audio · sw bump `bhv-v5` · e2e **22 assertion ALL PASS** (3 mới: ≥32 tranh, ≥30 nguồn âm khi Hát, giữ sạch console) | ✅ |
 | **Đảo Sticker 3D** | Three.js — khu thưởng 3D xoay bằng tay, sticker mọc lên đảo | Chờ (đã thống nhất chỉ 3D phần thưởng, học vẫn 2D) |
 | **Deploy** | GitHub Pages/Netlify để dùng trên iPad + hướng dẫn Add to Home Screen | Khi cần lên iPad |
 

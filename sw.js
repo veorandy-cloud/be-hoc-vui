@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v4'; // v4: thêm js/strokes.js (Phase 3 thứ tự nét)
+const VERSION = 'bhv-v5'; // v4: thêm js/strokes.js (Phase 3 thứ tự nét)
 const AUDIO_CACHE = 'bhv-audio-v1';   // giữ ổn định giữa các version app để không tải lại 8MB audio
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
