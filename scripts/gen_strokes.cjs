@@ -48,6 +48,10 @@ function dBar(base, upper) { // gạch ngang chữ đ/Đ
 
 const out = {};
 for (const ch of 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') out[ch] = glyph(ch);
+// chữ THƯỜNG thay bằng mẫu tập viết tiếng Việt (nét cong kín + móc, khuyết, thắt — đúng thứ tự nét
+// Bộ GD-ĐT); HOA in + số giữ Hershey (chữ in hoa & chữ số viết giống quốc tế)
+const { VN_LOW } = require('./vn_lowercase.cjs');
+for (const ch in VN_LOW) out[ch] = VN_LOW[ch];
 for (const [vn, base, mark] of [
   ['ă','a','breve'],['â','a','hat'],['ê','e','hat'],['ô','o','hat'],
   ['Ă','A','breve'],['Â','A','hat'],['Ê','E','hat'],['Ô','O','hat']

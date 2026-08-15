@@ -73,7 +73,10 @@ const WORD_ITEMS = [
   {em:'☀️', w:'mặt trời'},{em:'🌙', w:'mặt trăng'},
   {em:'🐄', w:'con bò'},{em:'🐷', w:'con heo'},{em:'🐴', w:'con ngựa'},{em:'🐑', w:'con cừu'},
   {em:'🐐', w:'con dê'},{em:'🐸', w:'con ếch'},{em:'🐯', w:'con hổ'},{em:'🐭', w:'con chuột'},
-  {em:'🐝', w:'con ong'},{em:'🐢', w:'con rùa'}
+  {em:'🐝', w:'con ong'},{em:'🐢', w:'con rùa'},
+  {em:'🦀', w:'con cua'},{em:'🐌', w:'con ốc'},{em:'🐦', w:'con chim'},{em:'🐻', w:'con gấu'},
+  {em:'🍍', w:'quả dứa'},{em:'🥭', w:'quả xoài'},{em:'🍉', w:'quả dưa hấu'},{em:'🚲', w:'xe đạp'},
+  {em:'🪑', w:'cái ghế'},{em:'👒', w:'cái mũ'},{em:'👟', w:'đôi giày'},{em:'🌈', w:'cầu vồng'}
 ];
 const SENTENCES = [
   {say:'Con gì kêu meo meo?', html:'Con ___ kêu meo meo 🐱', a:'mèo', d:['chó','gà']},
@@ -85,7 +88,13 @@ const SENTENCES = [
   {say:'Con gì hay leo trèo?', html:'Con ___ hay leo trèo 🐵', a:'khỉ', d:['gà','cá']},
   {say:'Quả gì màu vàng, cong cong?', html:'Quả ___ màu vàng 🍌', a:'chuối', d:['táo','cam']},
   {say:'Quả gì màu đỏ, tròn tròn?', html:'Quả ___ màu đỏ 🍎', a:'táo', d:['chuối','na']},
-  {say:'Ban đêm, cái gì sáng trên trời cùng ông trăng?', html:'Ngôi ___ sáng lấp lánh ⭐', a:'sao', d:['cá','hoa']}
+  {say:'Ban đêm, cái gì sáng trên trời cùng ông trăng?', html:'Ngôi ___ sáng lấp lánh ⭐', a:'sao', d:['cá','hoa']},
+  {say:'Con gì bay lượn trên trời?', html:'Con ___ bay trên trời 🐦', a:'chim', d:['cá','bò']},
+  {say:'Con gì chậm chạp, mang mai trên lưng?', html:'Con ___ mang mai trên lưng 🐢', a:'rùa', d:['ong','chim']},
+  {say:'Con gì cho bé sữa uống?', html:'Con ___ cho sữa 🐄', a:'bò', d:['gà','mèo']},
+  {say:'Con gì nhỏ xíu, làm ra mật ngọt?', html:'Con ___ làm mật ngọt 🐝', a:'ong', d:['bướm','cá']},
+  {say:'Ban đêm, cái gì tròn tròn sáng trên trời?', html:'Mặt ___ sáng ban đêm 🌙', a:'trăng', d:['trời','sao']},
+  {say:'Quả gì màu cam, cùng tên với màu cam?', html:'Quả ___ màu cam 🍊', a:'cam', d:['táo','chuối']}
 ];
 const EN_THEMES = {
   '🐾 Animals':[
@@ -168,6 +177,16 @@ const EN_THEMES = {
   '😊 Feelings':[
     {em:'😊',w:'happy',vi:'vui'},{em:'😢',w:'sad',vi:'buồn'},{em:'😠',w:'angry',vi:'tức giận'},
     {em:'🥵',w:'hot',vi:'nóng'},{em:'🥶',w:'cold',vi:'lạnh'},{em:'😋',w:'hungry',vi:'đói bụng'}
+  ],
+  '⚽ Sports':[
+    {em:'⚽',w:'football',vi:'bóng đá'},{em:'🏀',w:'basketball',vi:'bóng rổ'},{em:'🎾',w:'tennis',vi:'quần vợt'},
+    {em:'🏸',w:'badminton',vi:'cầu lông'},{em:'⚾',w:'baseball',vi:'bóng chày'},{em:'🏑',w:'hockey',vi:'khúc côn cầu'},
+    {em:'🛹',w:'skateboard',vi:'ván trượt'},{em:'🏓',w:'table tennis',vi:'bóng bàn'}
+  ],
+  '🌿 Nature':[
+    {em:'🌳',w:'tree',vi:'cái cây'},{em:'🌼',w:'flower',vi:'bông hoa'},{em:'🌊',w:'sea',vi:'biển'},
+    {em:'🏖️',w:'beach',vi:'bãi biển'},{em:'🐚',w:'shell',vi:'vỏ sò'},{em:'⛰️',w:'mountain',vi:'ngọn núi'},
+    {em:'🍃',w:'leaf',vi:'chiếc lá'},{em:'🌷',w:'garden',vi:'khu vườn'}
   ]
 };
 
@@ -236,6 +255,18 @@ const SONGS = [
     {t:'Head, shoulders, knees and toes, knees and toes', n:[[62,1],[65,1],[69,.5],[69,.5],[69,1],[69,.5],[69,.5],[69,.5],[69,1]]},
     {t:'And eyes and ears and mouth and nose', n:[[64,.5],[65,.5],[67,1],[65,.5],[64,.5],[62,1],[64,.5],[62,.5],[60,2]]},
     {t:'Head, shoulders, knees and toes, knees and toes', n:[[60,1],[64,1],[67,.5],[67,.5],[67,1],[67,.5],[67,.5],[67,1]]}
+  ]},
+  {em:'🕷️', title:'Itsy Bitsy Spider', vi:'Chú nhện tí hon', bpm:96, lines:[
+    {t:'The itsy bitsy spider climbed up the water spout', n:[[67,.5],[60,.5],[60,.5],[60,.5],[62,.5],[64,.5],[64,.5],[64,.5],[62,.5],[60,.5],[62,.5],[64,.5],[60,1]]},
+    {t:'Down came the rain and washed the spider out', n:[[64,.5],[64,.5],[65,.5],[67,1],[67,.5],[65,.5],[64,.5],[65,.5],[67,.5],[64,1]]},
+    {t:'Out came the sun and dried up all the rain', n:[[60,.5],[60,.5],[62,.5],[64,1],[64,.5],[62,.5],[60,.5],[62,.5],[64,.5],[60,1]]},
+    {t:'And the itsy bitsy spider climbed up the spout again', n:[[67,.5],[67,.5],[60,.5],[60,.5],[60,.5],[62,.5],[64,.5],[64,.5],[62,.5],[60,.5],[62,.5],[64,.5],[60,1.5]]}
+  ]},
+  {em:'🎂', title:'Happy Birthday', vi:'Chúc mừng sinh nhật', bpm:100, lines:[
+    {t:'Happy birthday to you', n:[[60,.75],[60,.25],[62,1],[60,1],[65,1],[64,2]]},
+    {t:'Happy birthday to you', n:[[60,.75],[60,.25],[62,1],[60,1],[67,1],[65,2]]},
+    {t:'Happy birthday dear friend', n:[[60,.75],[60,.25],[72,1],[69,1],[65,1],[64,1],[62,2]]},
+    {t:'Happy birthday to you', n:[[70,.75],[70,.25],[69,1],[65,1],[67,1],[65,2]]}
   ]}
 ];
 

@@ -21,6 +21,13 @@ const QUEST_LANDS = [
     {em:'🐣', t:'en', theme:'🔢 Numbers', kind:'listen'},
     {em:'🧠', t:'memory', theme:'☀️ Weather'},
     {em:'👑', t:'quiz', boss:true, q:()=>READ_BUILDERS.mix()}
+  ]},
+  {nm:'🏝️ Đảo Kho Báu', color:'#B45309', stations:[
+    {em:'🔤', t:'quiz', q:()=>shuffle([qLetter(),qVan(),qVan(),qTone(),qTone()])},
+    {em:'✏️', t:'write', ch:'g'},
+    {em:'🐣', t:'en', theme:'⚽ Sports', kind:'listen'},
+    {em:'🧠', t:'memory', theme:'🌿 Nature'},
+    {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qWord(),qSentence(),qVan(),qTone(),qLetter(),qWord()])}
   ]}
 ];
 const STATIONS = QUEST_LANDS.flatMap(l=>l.stations);

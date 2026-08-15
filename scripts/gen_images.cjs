@@ -9,7 +9,7 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'assets', 'images', 'en');
 fs.mkdirSync(OUT, { recursive: true });
 
-const PHOTO_THEMES = ['🐾 Animals', '🍔 Food', '🧸 Toys', '👕 Clothes', '🚌 Transport', '🏠 House', '🎒 School', '☀️ Weather'];
+const PHOTO_THEMES = ['🐾 Animals', '🍔 Food', '🧸 Toys', '👕 Clothes', '🚌 Transport', '🏠 House', '🎒 School', '☀️ Weather', '⚽ Sports', '🌿 Nature'];
 // từ → tên trang Wikipedia khi khác tên mặc định (viết hoa chữ đầu)
 const WIKI = {
   cow: 'Cattle', bike: 'Bicycle', plane: 'Airplane', motorbike: 'Motorcycle',
@@ -17,7 +17,10 @@ const WIKI = {
   'teddy bear': 'Teddy bear', TV: 'Television', sofa: 'Couch', bath: 'Bathtub',
   phone: 'Telephone', key: 'Key (lock)', bag: 'Backpack', orange: 'Orange (fruit)',
   lamp: 'Electric light', water: 'Drinking water',
-  'ice cream': 'Ice cream', star: 'Star', ball: 'Ball'
+  'ice cream': 'Ice cream', star: 'Star', ball: 'Ball',
+  football: 'Football (ball)', basketball: 'Basketball (ball)', tennis: 'Tennis ball',
+  badminton: 'Shuttlecock', baseball: 'Baseball (ball)', hockey: 'Field hockey',
+  shell: 'Seashell', sea: 'Wind wave', beach: 'Beach', tree: 'Tree', leaf: 'Leaf', garden: 'Garden' // sea: trang 'Sea' ra bản đồ vệ tinh, 'Ocean' ra ảnh Trái Đất — 'Wind wave' mới ra sóng biển thật
 };
 const slug = w => w.toLowerCase().replace(/\s+/g, '-');
 

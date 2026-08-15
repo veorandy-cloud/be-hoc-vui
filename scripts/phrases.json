@@ -184,6 +184,30 @@
   "lang": "vi"
  },
  {
+  "t": "Con chim bay trên trời",
+  "lang": "vi"
+ },
+ {
+  "t": "Con rùa mang mai trên lưng",
+  "lang": "vi"
+ },
+ {
+  "t": "Con bò cho sữa",
+  "lang": "vi"
+ },
+ {
+  "t": "Con ong làm mật ngọt",
+  "lang": "vi"
+ },
+ {
+  "t": "Mặt trăng sáng ban đêm",
+  "lang": "vi"
+ },
+ {
+  "t": "Quả cam màu cam",
+  "lang": "vi"
+ },
+ {
   "t": "ba",
   "lang": "vi"
  },
@@ -1396,6 +1420,54 @@
   "lang": "vi"
  },
  {
+  "t": "Tìm từ: con cua",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: con ốc",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: con chim",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: con gấu",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: quả dứa",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: quả xoài",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: quả dưa hấu",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: xe đạp",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: cái ghế",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: cái mũ",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: đôi giày",
+  "lang": "vi"
+ },
+ {
+  "t": "Tìm từ: cầu vồng",
+  "lang": "vi"
+ },
+ {
   "t": "Con gì kêu meo meo?",
   "lang": "vi"
  },
@@ -1433,6 +1505,30 @@
  },
  {
   "t": "Ban đêm, cái gì sáng trên trời cùng ông trăng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Con gì bay lượn trên trời?",
+  "lang": "vi"
+ },
+ {
+  "t": "Con gì chậm chạp, mang mai trên lưng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Con gì cho bé sữa uống?",
+  "lang": "vi"
+ },
+ {
+  "t": "Con gì nhỏ xíu, làm ra mật ngọt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ban đêm, cái gì tròn tròn sáng trên trời?",
+  "lang": "vi"
+ },
+ {
+  "t": "Quả gì màu cam, cùng tên với màu cam?",
   "lang": "vi"
  },
  {
@@ -2668,6 +2764,134 @@
   "lang": "vi"
  },
  {
+  "t": "football",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bóng đá?",
+  "lang": "vi"
+ },
+ {
+  "t": "basketball",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bóng rổ?",
+  "lang": "vi"
+ },
+ {
+  "t": "tennis",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quần vợt?",
+  "lang": "vi"
+ },
+ {
+  "t": "badminton",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cầu lông?",
+  "lang": "vi"
+ },
+ {
+  "t": "baseball",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bóng chày?",
+  "lang": "vi"
+ },
+ {
+  "t": "hockey",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là khúc côn cầu?",
+  "lang": "vi"
+ },
+ {
+  "t": "skateboard",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là ván trượt?",
+  "lang": "vi"
+ },
+ {
+  "t": "table tennis",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bóng bàn?",
+  "lang": "vi"
+ },
+ {
+  "t": "tree",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cái cây?",
+  "lang": "vi"
+ },
+ {
+  "t": "flower",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bông hoa?",
+  "lang": "vi"
+ },
+ {
+  "t": "sea",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là biển?",
+  "lang": "vi"
+ },
+ {
+  "t": "beach",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bãi biển?",
+  "lang": "vi"
+ },
+ {
+  "t": "shell",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là vỏ sò?",
+  "lang": "vi"
+ },
+ {
+  "t": "mountain",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là ngọn núi?",
+  "lang": "vi"
+ },
+ {
+  "t": "leaf",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là chiếc lá?",
+  "lang": "vi"
+ },
+ {
+  "t": "garden",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là khu vườn?",
+  "lang": "vi"
+ },
+ {
   "t": "Great job!",
   "lang": "en"
  },
@@ -2849,6 +3073,38 @@
  },
  {
   "t": "And eyes and ears and mouth and nose",
+  "lang": "en"
+ },
+ {
+  "t": "Itsy Bitsy Spider",
+  "lang": "en"
+ },
+ {
+  "t": "The itsy bitsy spider climbed up the water spout",
+  "lang": "en"
+ },
+ {
+  "t": "Down came the rain and washed the spider out",
+  "lang": "en"
+ },
+ {
+  "t": "Out came the sun and dried up all the rain",
+  "lang": "en"
+ },
+ {
+  "t": "And the itsy bitsy spider climbed up the spout again",
+  "lang": "en"
+ },
+ {
+  "t": "Happy Birthday",
+  "lang": "en"
+ },
+ {
+  "t": "Happy birthday to you",
+  "lang": "en"
+ },
+ {
+  "t": "Happy birthday dear friend",
   "lang": "en"
  },
  {
