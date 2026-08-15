@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v13'; // v13: 19 fix từ deep audit (chấm điểm, distractor, karaoke duck, quota album...)
+const VERSION = 'bhv-v14'; // v14: splash screen iPad (apple-touch-startup-image)
 const AUDIO_CACHE = 'bhv-audio-v2';   // v2: lời bài hát regen pitch/rate mới (cùng tên file, khác nội dung → PHẢI bump)
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
@@ -21,7 +21,13 @@ const CORE = [
   'assets/fonts/baloo2-700-latin.woff2','assets/fonts/baloo2-700-vietnamese.woff2',
   'assets/fonts/baloo2-800-latin.woff2','assets/fonts/baloo2-800-vietnamese.woff2',
   'assets/fonts/quicksand-500-latin.woff2','assets/fonts/quicksand-500-vietnamese.woff2',
-  'assets/fonts/quicksand-700-latin.woff2','assets/fonts/quicksand-700-vietnamese.woff2'
+  'assets/fonts/quicksand-700-latin.woff2','assets/fonts/quicksand-700-vietnamese.woff2',
+  // splash iOS (iOS tự fetch lúc mở từ home screen — cache để offline vẫn có)
+  'assets/splash/768x1024-p.png','assets/splash/768x1024-l.png',
+  'assets/splash/810x1080-p.png','assets/splash/810x1080-l.png',
+  'assets/splash/820x1180-p.png','assets/splash/820x1180-l.png',
+  'assets/splash/834x1194-p.png','assets/splash/834x1194-l.png',
+  'assets/splash/1024x1366-p.png','assets/splash/1024x1366-l.png'
 ];
 
 self.addEventListener('install', e => {
