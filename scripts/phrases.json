@@ -128,6 +128,18 @@
   "lang": "vi"
  },
  {
+  "t": "Bé đặt bút ở chấm vàng nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bấm lần nữa để nhập dữ liệu và ghi đè nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Mình chơi lâu rồi, nghỉ mắt chút nhé!",
+  "lang": "vi"
+ },
+ {
   "t": "Bé vẽ nét số một nhé!",
   "lang": "vi"
  },
@@ -1077,6 +1089,350 @@
  },
  {
   "t": "Đâu là chữ y dài?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bàn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng lan?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng khăn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ăn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tròn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ngon?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bốn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ôn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng lợn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ơn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sen?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng kèn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng nến?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tên?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng pin?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng chín?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng cam?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tám?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng năm?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tằm?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng em?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng kem?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tôm?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ôm?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tai?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng nai?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bay?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng chạy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng voi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sói?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng nồi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng đồi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sao?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng áo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng mèo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng kẹo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng rau?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng màu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng trâu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng dâu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng túi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng núi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bát?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng hát?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng mắt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng cắt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng rốt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng cột?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng vịt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng thịt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bút?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sút?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng bàng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng vàng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng trăng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng răng?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng ông?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sông?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng chanh?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tranh?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng kính?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng tính?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng sách?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vần gì trong tiếng gạch?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng chó bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng chiếc bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng khỉ bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng khăn bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng thỏ bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng thước bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng nhà bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng nhãn bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng phở bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng pháo bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng ngôi bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng ngón bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng nghé bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng nghe bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng ghế bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng ghi bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng quả bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng quần bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng giày bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng giường bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng trứng bắt đầu bằng chữ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tiếng trường bắt đầu bằng chữ gì?",
   "lang": "vi"
  },
  {
@@ -3112,6 +3468,106 @@
   "lang": "en"
  },
  {
+  "t": "Bắc Kim Thang",
+  "lang": "vi"
+ },
+ {
+  "t": "Bắc kim thang cà lang bí rợ",
+  "lang": "vi"
+ },
+ {
+  "t": "Cột qua kèo là kèo qua cột",
+  "lang": "vi"
+ },
+ {
+  "t": "Chú bán dầu qua cầu mà té",
+  "lang": "vi"
+ },
+ {
+  "t": "Chú bán ếch ở lại làm chi",
+  "lang": "vi"
+ },
+ {
+  "t": "Con le le đánh trống thổi kèn",
+  "lang": "vi"
+ },
+ {
+  "t": "Con bìm bịp thổi tò tí te tò te",
+  "lang": "vi"
+ },
+ {
+  "t": "Cò Lả",
+  "lang": "vi"
+ },
+ {
+  "t": "Con cò cò bay lả lả bay la",
+  "lang": "vi"
+ },
+ {
+  "t": "Bay từ cửa phủ bay ra cánh đồng",
+  "lang": "vi"
+ },
+ {
+  "t": "Tình tính tang là tang tính tình",
+  "lang": "vi"
+ },
+ {
+  "t": "Ơi bạn rằng, ơi bạn ơi",
+  "lang": "vi"
+ },
+ {
+  "t": "Rằng có biết biết hay chăng",
+  "lang": "vi"
+ },
+ {
+  "t": "Rằng có nhớ nhớ hay chăng",
+  "lang": "vi"
+ },
+ {
+  "t": "Lý Cây Xanh",
+  "lang": "vi"
+ },
+ {
+  "t": "Cái cây xanh xanh, thì lá cũng xanh",
+  "lang": "vi"
+ },
+ {
+  "t": "Chim đậu trên cành, chim hót líu lo",
+  "lang": "vi"
+ },
+ {
+  "t": "Líu lo là líu lo",
+  "lang": "vi"
+ },
+ {
+  "t": "Trống Cơm",
+  "lang": "vi"
+ },
+ {
+  "t": "Tình bằng có cái trống cơm",
+  "lang": "vi"
+ },
+ {
+  "t": "Khen ai khéo vỗ ố mấy bông mà nên bông",
+  "lang": "vi"
+ },
+ {
+  "t": "Một bầy tang tình con xít",
+  "lang": "vi"
+ },
+ {
+  "t": "Ố mấy lội, lội, lội sông",
+  "lang": "vi"
+ },
+ {
+  "t": "Ố mấy đi tìm, em nhớ thương ai",
+  "lang": "vi"
+ },
+ {
+  "t": "Con mắt ố mấy lim dim",
+  "lang": "vi"
+ },
+ {
   "t": "Ngựa thần",
   "lang": "vi"
  },
@@ -3589,6 +4045,414 @@
  },
  {
   "t": "Bé cần 552 sao để mở sticker này nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé đếm xem có bao nhiêu hình nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bên nào có nhiều hơn?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "1 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "2 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 trừ 10 bằng mấy?",
   "lang": "vi"
  },
  {

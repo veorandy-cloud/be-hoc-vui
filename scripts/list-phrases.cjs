@@ -35,7 +35,10 @@ const en = t => add(t, 'en');
   'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!',
   'Bé xem cô viết mẫu nhé!',
   'Chưa đúng nét, bé thử lại nhé!',
-  'Gần đúng rồi! Bé vẽ cả nét một hơi nhé!'
+  'Gần đúng rồi! Bé vẽ cả nét một hơi nhé!',
+  'Bé đặt bút ở chấm vàng nhé!',
+  'Bấm lần nữa để nhập dữ liệu và ghi đè nhé!',
+  'Mình chơi lâu rồi, nghỉ mắt chút nhé!'
 ].forEach(vi);
 // tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
 ['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));
@@ -62,6 +65,10 @@ for (const [ch, name] of Object.entries(D.LETTER_NAMES)) {
 }
 D.VN_LETTERS.forEach(ch => vi(`Đâu là chữ ${D.LETTER_NAMES[ch]}?`));
 
+// vần có âm cuối + âm ghép (reading.js qVan2/qDigraph)
+D.VAN2.forEach(v => v.words.forEach(wd => vi(`Vần gì trong tiếng ${wd.tieng}?`)));
+D.DIGRAPHS.forEach(dg => dg.words.forEach(wd => vi(`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`)));
+
 // vần + dấu thanh + từ + câu
 D.VAN_ITEMS.forEach(([c, v]) =>
   vi(`${D.LETTER_NAMES[c]} ghép với ${D.LETTER_NAMES[v]}, được tiếng gì?`));
@@ -79,8 +86,11 @@ for (const items of Object.values(D.EN_THEMES)) {
 en('Great job!');
 en('Almost! Try again!');
 
-// bài hát
-D.SONGS.forEach(s => { en(s.title); s.lines.forEach(l => en(l.t)); });
+// bài hát (dân ca Việt có lang:'vi-VN' — đọc giọng Việt)
+D.SONGS.forEach(s => {
+  const f = s.lang === 'vi-VN' ? vi : en;
+  f(s.title); s.lines.forEach(l => f(l.t));
+});
 
 // sticker (thường + tier VÀNG: GOLD_COST/GOLD_BASE phải khớp app.js)
 const GOLD_COST = 15, GOLD_BASE = D.STICKERS.length * D.STICKER_COST;
@@ -91,6 +101,12 @@ D.STICKERS.forEach((s, i) => {
   vi(`Bé cần ${(i + 1) * D.STICKER_COST} sao để mở sticker này nhé!`);
   vi(`Bé cần ${GOLD_BASE + (i + 1) * GOLD_COST} sao để mở sticker này nhé!`);
 });
+
+// toán 0-10 (math.js) — số dạng chữ số, edge-tts đọc chuẩn
+vi('Bé đếm xem có bao nhiêu hình nhé!');
+vi('Bên nào có nhiều hơn?');
+for (let a = 1; a <= 9; a++) for (let b = 1; a + b <= 10; b++) vi(`${a} cộng ${b} bằng mấy?`);
+for (let a = 1; a <= 10; a++) for (let b = 1; b <= a; b++) vi(`${a} trừ ${b} bằng mấy?`);
 
 // tô màu xong → reveal ảnh thật (drawing.js showPicReveal)
 D.PIC_META.forEach(p => {

@@ -5,17 +5,23 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v9'; // v9: đợt hotfix audit (offline manifest ảnh, rebase canvas, threshold nét, cap sao mic)
+const VERSION = 'bhv-v10'; // v10: enhance full — vần đóng + âm ghép + Toán + dân ca + decor đảo + retention + font tự host
 const AUDIO_CACHE = 'bhv-audio-v1';   // giữ ổn định giữa các version app để không tải lại 8MB audio
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
 const KEEP = [VERSION, AUDIO_CACHE, FONT_CACHE, IMG_CACHE];
 const CORE = [
   '.', 'index.html', 'css/style.css',
-  'js/data.js', 'js/strokes.js', 'js/core.js', 'js/paint.js', 'js/writing.js', 'js/reading.js',
+  'js/data.js', 'js/strokes.js', 'js/core.js', 'js/paint.js', 'js/writing.js', 'js/reading.js', 'js/math.js',
   'js/drawing.js', 'js/english.js', 'js/music.js', 'js/quest.js', 'js/island.js',
   'assets/vendor/three.min.js',
-  'manifest.webmanifest', 'assets/audio/manifest.json'
+  'manifest.webmanifest', 'assets/audio/manifest.json',
+  // font tự host — offline đẹp ngay lần mở đầu (trước đây Google Fonts chỉ cache được từ lần mở 2)
+  'assets/fonts/baloo2-500-latin.woff2','assets/fonts/baloo2-500-vietnamese.woff2',
+  'assets/fonts/baloo2-700-latin.woff2','assets/fonts/baloo2-700-vietnamese.woff2',
+  'assets/fonts/baloo2-800-latin.woff2','assets/fonts/baloo2-800-vietnamese.woff2',
+  'assets/fonts/quicksand-500-latin.woff2','assets/fonts/quicksand-500-vietnamese.woff2',
+  'assets/fonts/quicksand-700-latin.woff2','assets/fonts/quicksand-700-vietnamese.woff2'
 ];
 
 self.addEventListener('install', e => {

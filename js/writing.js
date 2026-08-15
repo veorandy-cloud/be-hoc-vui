@@ -148,11 +148,17 @@ function resetWrite(){
   const {name}=charInfo();
   const full = `${wSet==='num'?'số':'chữ'} ${name}${wSet==='up'?' hoa':''}`;
   if(wMode==='demo' && glyphStrokes()){ speak('Bé xem cô viết mẫu nhé!'); playDemo(); }
-  else if(wMode==='guide' && glyphStrokes()) speak('Bé vẽ nét số một nhé!');
+  else if(wMode==='guide' && glyphStrokes()){
+    // chữ bé CHƯA từng viết đạt: cô viết mẫu 1 lượt trước rồi mới mời đồ (flow LetterSchool)
+    if(!writeBest[charKey()]){
+      speak('Bé xem cô viết mẫu nhé!');
+      playDemo(null, ()=>{ redrawWrite(); speak('Bé vẽ nét số một nhé!'); });
+    } else speak('Bé vẽ nét số một nhé!');
+  }
   else speak(`Bé hãy viết ${full} nhé!`);
 }
 /* 👀 demo: nét chạy tuần tự như cô viết mẫu */
-function playDemo(strokeOnly){
+function playDemo(strokeOnly, onDone){
   const g = glyphStrokes(); if(!g) return;
   const token = ++wAnim, gen = uiGen;
   const list = strokeOnly!=null ? [strokeOnly] : g.strokes.map((_,i)=>i);
@@ -160,7 +166,7 @@ function playDemo(strokeOnly){
   let li=0;
   function runStroke(){
     if(token!==wAnim || gen!==uiGen) return;
-    if(li>=list.length) return;
+    if(li>=list.length){ if(onDone) onDone(); return; }
     const s = g.strokes[list[li]];
     let seg=0, t=0;
     function frame(){
@@ -223,7 +229,10 @@ function guideCheck(pts){
   }
   // threshold theo độ dài nét: nét chấm 6px không được hưởng ngưỡng 34px của nét dài
   const thr = Math.max(14, Math.min(g.k*11, tlen*0.8 + g.k*2));
-  const dist = Math.min(strokeDist(pts, target), strokeDist(pts, [...target].reverse()));
+  const fwd = strokeDist(pts, target);
+  const rev = strokeDist(pts, [...target].reverse());
+  // nét dài phải viết ĐÚNG CHIỀU (trọng tâm của dạy thứ tự nét); nét ngắn (chấm, ngang bé) miễn
+  const dist = tlen > g.k*20 ? fwd : Math.min(fwd, rev);
   if(dist < thr){
     gStroke++;
     wStrokes=[]; wHist.reset(); drawTemplate(); // "snap": thay nét run tay bằng nét chuẩn màu xanh
@@ -243,6 +252,12 @@ function guideCheck(pts){
       speak(`Bé vẽ nét số ${NUMVI[gStroke]||gStroke+1} nhé!`);
     }
   }else{
+    // đúng dáng nhưng NGƯỢC CHIỀU (vd sổ từ dưới lên): nhắc đặt bút ở badge vàng, không phạt
+    if(tlen > g.k*20 && rev < thr){
+      if(wHist.undo()) wStrokes.pop();
+      speak('Bé đặt bút ở chấm vàng nhé!');
+      return;
+    }
     // nét DÀI (khuyết trên ~400px) mà bé vẽ đúng hướng nhưng nhấc tay giữa chừng: không phạt, nhắc vẽ một hơi
     if(tlen > g.k*60){
       const frac = Math.min(1, polyLen(pts)/tlen);

@@ -90,6 +90,7 @@ function islTick(t){
     const s=0.95*easeOutBack(k);
     sp.scale.set(Math.max(0.001,s),Math.max(0.001,s),1);
   });
+  islDecorAnims.forEach(f=>f(t)); // lửa trại phập phồng, khói bay, cối xay quay
   islRenderer.render(islScene,islCam);
 }
 function islBindInput(cv){
@@ -148,9 +149,114 @@ function enterIsland(){
   }
   islW=0;                                                       // ép resize lại khi mở màn
   refreshIslandStickers(performance.now()+300);
+  refreshIslandDecor(); // đồ trang trí mở theo mốc sao (tầng thưởng 3 sau sticker vàng)
   speak(unlockedCount()+goldCount()>0
     ? 'Đây là Đảo Sticker của bé! Chạm vào sticker để nghe tên nhé!'
     : 'Đảo còn trống! Bé kiếm sao đổi sticker để đảo đông vui nhé!');
   if(!islRunning){ islRunning=true; requestAnimationFrame(islTick); }
 }
 $('#btn-island').addEventListener('click',()=>{ ensureAC(); showScreen('scr-island'); });
+
+/* ============ TẦNG THƯỞNG 3: ĐỒ TRANG TRÍ ĐẢO (mốc sao tích luỹ, không tiêu sao) ============
+   Paste toàn bộ khối này vào island.js (sau buildIsland). Móc nối: xem unlock_note. */
+
+let islDecorGroup=null;
+const islDecorAnims=[];
+
+/* cost = 552 + (i+1)*25 — sticker vàng hết ở 552⭐ (24×8 + 24×15, khớp GOLD_BASE/GOLD_COST core.js), decor nối tiếp mỗi 25⭐ */
+const ISL_DECOR=[
+  {id:'house', nm:'Nhà gỗ', cost:577, build(p){
+    islMesh(new THREE.BoxGeometry(1,0.7,0.8),0xB45309,-0.7,1.4,-4.0,p);
+    islMesh(new THREE.ConeGeometry(0.85,0.55,4),0xDC2626,-0.7,2.03,-4.0,p).rotation.y=Math.PI/4;
+    islMesh(new THREE.BoxGeometry(0.28,0.4,0.05),0x78350F,-0.7,1.25,-3.58,p); // cửa
+  }},
+  {id:'pier', nm:'Cầu tàu', cost:602, build(p){
+    const g=new THREE.Group(); g.rotation.y=Math.PI/4; p.add(g);   // chĩa ra hướng 45°, tránh dừa & vườn hoa
+    islMesh(new THREE.BoxGeometry(0.9,0.12,3),0xA16207,0,0.5,5.7,g);
+    [4.6,5.6,6.6].forEach(z=>{
+      islMesh(new THREE.CylinderGeometry(0.07,0.07,1,6),0x854D0E,-0.38,0,z,g);
+      islMesh(new THREE.CylinderGeometry(0.07,0.07,1,6),0x854D0E, 0.38,0,z,g);
+    });
+  }},
+  {id:'fire', nm:'Lửa trại', cost:627, build(p){
+    const X=-3.53, Z=1.65;
+    const l1=islMesh(new THREE.CylinderGeometry(0.08,0.08,0.9,6),0x854D0E,X,1.15,Z,p); l1.rotation.z=Math.PI/2;
+    const l2=islMesh(new THREE.CylinderGeometry(0.08,0.08,0.9,6),0x854D0E,X,1.15,Z,p); l2.rotation.x=Math.PI/2;
+    const fl=islMesh(new THREE.ConeGeometry(0.22,0.5,8),0xF97316,X,1.45,Z,p);
+    islMesh(new THREE.ConeGeometry(0.11,0.3,8),0xFDE047,X,1.42,Z,p);
+    const smk=[];
+    for(let i=0;i<3;i++){
+      const s=islMesh(new THREE.SphereGeometry(0.13,6,5),0x9CA3AF,X,1.8,Z,p);
+      s.material.transparent=true; smk.push(s);
+    }
+    islDecorAnims.push(t=>{
+      fl.scale.y=1+Math.sin(t*0.01)*0.15;                          // lửa phập phồng
+      smk.forEach((s,i)=>{
+        const k=(t*0.0004+i/3)%1;                                  // khói bay vòng lặp
+        s.position.y=1.8+k*1.4; s.material.opacity=0.75*(1-k);
+        const sc=0.6+k; s.scale.set(sc,sc,sc);
+      });
+    });
+  }},
+  {id:'boat', nm:'Thuyền nhỏ', cost:652, build(p){
+    const g=new THREE.Group(); g.position.set(5.9,0,4.3); g.rotation.y=Math.PI/4; p.add(g); // neo cạnh cầu tàu
+    islMesh(new THREE.BoxGeometry(1.3,0.35,0.65),0xB91C1C,0,-0.05,0,g);
+    islMesh(new THREE.CylinderGeometry(0.04,0.04,1,6),0x78350F,0,0.6,0,g);
+    islMesh(new THREE.BoxGeometry(0.45,0.55,0.03),0xF8FAFC,0.25,0.65,0,g); // buồm
+  }},
+  {id:'flag', nm:'Cột cờ', cost:677, build(p){
+    islMesh(new THREE.CylinderGeometry(0.05,0.07,2.4,8),0xD1D5DB,2.05,2.25,-3.55,p);
+    islMesh(new THREE.BoxGeometry(0.7,0.45,0.03),0xEF4444,2.45,3.15,-3.55,p);
+    islMesh(new THREE.SphereGeometry(0.09,8,6),0xFBBF24,2.05,3.5,-3.55,p); // chóp vàng
+  }},
+  {id:'swing', nm:'Xích đu', cost:702, build(p){
+    const g=new THREE.Group(); g.position.set(3.64,1.05,-2.1); g.rotation.y=-0.5; p.add(g);
+    islMesh(new THREE.CylinderGeometry(0.06,0.06,1.5,6),0x92400E,-0.55,0.75,0,g);
+    islMesh(new THREE.CylinderGeometry(0.06,0.06,1.5,6),0x92400E, 0.55,0.75,0,g);
+    islMesh(new THREE.CylinderGeometry(0.05,0.05,1.2,6),0x92400E,0,1.5,0,g).rotation.z=Math.PI/2;
+    islMesh(new THREE.CylinderGeometry(0.02,0.02,0.8,4),0x6B7280,-0.18,1.05,0,g);
+    islMesh(new THREE.CylinderGeometry(0.02,0.02,0.8,4),0x6B7280, 0.18,1.05,0,g);
+    islMesh(new THREE.BoxGeometry(0.45,0.06,0.2),0xF59E0B,0,0.62,0,g);   // ghế
+  }},
+  {id:'well', nm:'Giếng nước', cost:727, build(p){
+    const g=new THREE.Group(); g.position.set(-1.06,1.05,3.96); p.add(g);
+    islMesh(new THREE.CylinderGeometry(0.45,0.5,0.5,10),0x9CA3AF,0,0.25,0,g);
+    islMesh(new THREE.CylinderGeometry(0.36,0.36,0.06,10),0x2563EB,0,0.5,0,g); // mặt nước
+    islMesh(new THREE.CylinderGeometry(0.05,0.05,0.9,6),0x92400E,-0.42,0.85,0,g);
+    islMesh(new THREE.CylinderGeometry(0.05,0.05,0.9,6),0x92400E, 0.42,0.85,0,g);
+    islMesh(new THREE.ConeGeometry(0.7,0.4,4),0xDC2626,0,1.45,0,g).rotation.y=Math.PI/4;
+  }},
+  {id:'garden', nm:'Vườn hoa', cost:752, build(p){
+    const g=new THREE.Group(); g.position.set(1.5,1.05,3.85); p.add(g); // dịch từ (1.37,3.76) → né sticker vòng xoắn r=3.4 (index 11 tại ~(1.01,3.25))
+    islMesh(new THREE.CylinderGeometry(0.75,0.75,0.06,12),0x86EFAC,0,0.03,0,g);
+    const cols=[0xF472B6,0xFBBF24,0xF87171,0xA78BFA,0xFB923C,0xF472B6];
+    [[0,0],[0.35,0.2],[-0.3,0.25],[0.15,-0.3],[-0.35,-0.15],[0.4,-0.12]].forEach(([x,z],i)=>{
+      islMesh(new THREE.CylinderGeometry(0.02,0.02,0.3,4),0x16A34A,x,0.2,z,g);
+      islMesh(new THREE.SphereGeometry(0.09,8,6),cols[i],x,0.38,z,g);
+    });
+  }},
+  {id:'windmill', nm:'Cối xay gió', cost:777, build(p){
+    islMesh(new THREE.CylinderGeometry(0.18,0.42,1.6,8),0xFCD34D,-4.2,1.85,0,p);
+    islMesh(new THREE.ConeGeometry(0.28,0.4,8),0xDC2626,-4.2,2.85,0,p);
+    const piv=new THREE.Group(); piv.position.set(-4.5,2.65,0); piv.rotation.y=-Math.PI/2; p.add(piv);
+    islMesh(new THREE.SphereGeometry(0.1,8,6),0x78350F,0,0,0.05,piv);      // trục
+    const bl=new THREE.Group(); piv.add(bl);
+    const bg=new THREE.BoxGeometry(0.12,1.05,0.04); bg.translate(0,0.6,0);
+    for(let i=0;i<4;i++) islMesh(bg,0xF8FAFC,0,0,0,bl).rotation.z=i*Math.PI/2;
+    islDecorAnims.push(t=>{ bl.rotation.z=t*0.0012; });                    // cánh quay
+  }},
+  {id:'rainbow', nm:'Cầu vồng', cost:802, build(p){
+    [[0xF87171,3.4],[0xFBBF24,3.15],[0x60A5FA,2.9]].forEach(([c,r])=>
+      islMesh(new THREE.TorusGeometry(r,0.1,8,24,Math.PI),c,0.5,0.8,-4.6,p));
+  }}
+];
+
+function refreshIslandDecor(){
+  if(islDecorGroup){
+    islGroup.remove(islDecorGroup);
+    islDecorGroup.traverse(o=>{ if(o.isMesh){ o.geometry.dispose(); o.material.dispose(); } });
+  }
+  islDecorAnims.length=0;
+  islDecorGroup=new THREE.Group(); islGroup.add(islDecorGroup);
+  ISL_DECOR.forEach(d=>{ if(stars>=d.cost) d.build(islDecorGroup); });
+}

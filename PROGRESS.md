@@ -87,6 +87,12 @@ Plan cải tiến 4 đợt:
 **Verified sạch (không phải bug):** speak race khi navigate nhanh, wSet trạm quest, questDone tuyến tính, crayon replay, backing band 396 node/31s (headroom >10×), coverage 949/949, hash JS↔Python, memory game theme mới, table tennis substring match, quota iOS (18MB ≪ ~7GB), reveal + 🏠 (z-index chặn sẵn).
 **Nợ đã ghi nhận (chưa sửa — nằm trong plan enhance):** nét ngang chữ t vẽ vuông góc vẫn đậu (cần chấm hướng nét), font Google mất offline first-visit (nên self-host), localStorage mất nếu KHÔNG Add to Home Screen (persist() iOS vô tác dụng — cần export/import + banner A2HS), thiếu splash iPad.
 
+### Enhance FULL (4 đợt, workflow 12 agent sinh+phản biện) — 2026-08-15
+- **Đợt 1 — Tiếng Việt sâu**: `VAN2` 32 vần có âm cuối (an→ach, tuần 10-17 SGK) + `DIGRAPHS` 11 âm ghép (ch th nh ph kh ng ngh gh qu gi tr, tuần 5-9) — mỗi mục 2 từ minh hoạ đã phản biện đúng vần/luật chính tả ngh-gh · 2 chế độ đọc mới: 🔚 Vần cuối (qVan2) + 🔗 Chữ ghép (qDigraph) · **lộ trình tuần** `bhv_learn`: bắt đầu 2 tuần đầu, đúng ≥70% lượt mở tuần kế · mix có vần đóng/âm ghép
+- **Đợt 2 — Toán 0-10**: module `js/math.js` mới (thẻ 🔢 màn hình chính): Đếm số, Phép cộng (a+b≤10, emoji 2 nhóm), Phép trừ (emoji gạch bỏ), Nhiều hơn (so sánh 2 nhóm), Trộn — engine runQuiz dùng chung, 102 câu đọc số dạng chữ số
+- **Đợt 3 — Retention**: 📤 Sao lưu / 📥 Nhập lại tiến độ (base64, validate trước khi ghi đè — chống mất sao khi iOS dọn storage) · nudge nghỉ mắt sau 25 phút tương tác liên tục (🐰 + 1 nút) · banner nhắc Add to Home Screen (iPad Safari chưa standalone, tắt được) · **font tự host** 10 woff2 Baloo 2 + Quicksand vietnamese+latin trong CORE — bỏ hẳn Google Fonts, offline đẹp từ lần mở đầu
+- **Đợt 4 — Vui + học sâu**: Ca hát **16 bài** (+4 dân ca public domain: Bắc Kim Thang, Cò Lả, Lý Cây Xanh, Trống Cơm — `lang:'vi-VN'`, sửa luôn bug readSong đọc lời Việt bằng giọng Anh) · **10 món trang trí đảo 3D** mở theo mốc sao 577→802⭐ nối sau sticker vàng (nhà gỗ, cầu tàu, lửa trại khói bay, thuyền, cột cờ, xích đu, giếng, vườn hoa, cối xay gió QUAY, cầu vồng) · quest **vùng 5 🌋 Núi Lửa Trí Tuệ** (25 trạm: vần cuối, viết b, chữ ghép, toán, boss tổng hợp) · tập viết: **cô viết mẫu tự động** chữ mới + **chấm đúng chiều nét** ("Bé đặt bút ở chấm vàng nhé!")
+
 ## Quyết định thiết kế đã chốt
 - 2D cho phần học, 3D chỉ cho khu phần thưởng (không full 3D)
 - Ảnh thật (photo CC0) cho từ vựng; thư viện/asset mã nguồn mở bundle local; **không** nhúng iframe/dịch vụ bên thứ ba

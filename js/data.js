@@ -64,6 +64,56 @@ const TONE_SETS = [
   ['bo','bò','bó','bỏ','bõ','bọ'],
   ['me','mè','mé','mẻ','mẽ','mẹ']
 ];
+/* Vần có âm cuối — nửa sau HK1 SGK lớp 1; week = tuần học, lộ trình mở dần (bhv_learn) */
+const VAN2 = [
+  {van:'an',week:10,words:[{w:'bàn tay',tieng:'bàn',em:'🖐️'},{w:'hoa lan',tieng:'lan',em:'🌸'}]},
+  {van:'ăn',week:10,words:[{w:'cái khăn',tieng:'khăn',em:'🧣'},{w:'ăn cơm',tieng:'ăn',em:'🍚'}]},
+  {van:'on',week:10,words:[{w:'hình tròn',tieng:'tròn',em:'⭕'},{w:'cơm ngon',tieng:'ngon',em:'😋'}]},
+  {van:'ôn',week:10,words:[{w:'số bốn',tieng:'bốn',em:'4️⃣'},{w:'ôn bài',tieng:'ôn',em:'📖'}]},
+  {van:'ơn',week:11,words:[{w:'con lợn',tieng:'lợn',em:'🐷'},{w:'cảm ơn',tieng:'ơn',em:'🙏'}]},
+  {van:'en',week:11,words:[{w:'hoa sen',tieng:'sen',em:'🪷'},{w:'cái kèn',tieng:'kèn',em:'🎺'}]},
+  {van:'ên',week:11,words:[{w:'cây nến',tieng:'nến',em:'🕯️'},{w:'mũi tên',tieng:'tên',em:'🏹'}]},
+  {van:'in',week:11,words:[{w:'đèn pin',tieng:'pin',em:'🔦'},{w:'số chín',tieng:'chín',em:'9️⃣'}]},
+  {van:'am',week:12,words:[{w:'quả cam',tieng:'cam',em:'🍊'},{w:'số tám',tieng:'tám',em:'8️⃣'}]},
+  {van:'ăm',week:12,words:[{w:'số năm',tieng:'năm',em:'5️⃣'},{w:'con tằm',tieng:'tằm',em:'🐛'}]},
+  {van:'em',week:12,words:[{w:'em bé',tieng:'em',em:'👶'},{w:'que kem',tieng:'kem',em:'🍦'}]},
+  {van:'ôm',week:12,words:[{w:'con tôm',tieng:'tôm',em:'🦐'},{w:'ôm mẹ',tieng:'ôm',em:'🤗'}]},
+  {van:'ai',week:13,words:[{w:'cái tai',tieng:'tai',em:'👂'},{w:'con nai',tieng:'nai',em:'🦌'}]},
+  {van:'ay',week:13,words:[{w:'máy bay',tieng:'bay',em:'✈️'},{w:'chạy bộ',tieng:'chạy',em:'🏃'}]},
+  {van:'oi',week:13,words:[{w:'con voi',tieng:'voi',em:'🐘'},{w:'chó sói',tieng:'sói',em:'🐺'}]},
+  {van:'ôi',week:13,words:[{w:'cái nồi',tieng:'nồi',em:'🍲'},{w:'ngọn đồi',tieng:'đồi',em:'⛰️'}]},
+  {van:'ao',week:14,words:[{w:'ngôi sao',tieng:'sao',em:'⭐'},{w:'cái áo',tieng:'áo',em:'👕'}]},
+  {van:'eo',week:14,words:[{w:'con mèo',tieng:'mèo',em:'🐱'},{w:'viên kẹo',tieng:'kẹo',em:'🍬'}]},
+  {van:'au',week:14,words:[{w:'rau xanh',tieng:'rau',em:'🥬'},{w:'màu đỏ',tieng:'màu',em:'🔴'}]},
+  {van:'âu',week:14,words:[{w:'con trâu',tieng:'trâu',em:'🐃'},{w:'quả dâu',tieng:'dâu',em:'🍓'}]},
+  {van:'ui',week:14,words:[{w:'cái túi',tieng:'túi',em:'👜'},{w:'ngọn núi',tieng:'núi',em:'🏔️'}]},
+  {van:'at',week:15,words:[{w:'cái bát',tieng:'bát',em:'🥣'},{w:'ca hát',tieng:'hát',em:'🎤'}]},
+  {van:'ăt',week:15,words:[{w:'đôi mắt',tieng:'mắt',em:'👀'},{w:'cắt giấy',tieng:'cắt',em:'✂️'}]},
+  {van:'ôt',week:15,words:[{w:'cà rốt',tieng:'rốt',em:'🥕'},{w:'cột cờ',tieng:'cột',em:'🚩'}]},
+  {van:'it',week:15,words:[{w:'con vịt',tieng:'vịt',em:'🦆'},{w:'miếng thịt',tieng:'thịt',em:'🥩'}]},
+  {van:'ut',week:15,words:[{w:'cây bút',tieng:'bút',em:'✏️'},{w:'sút bóng',tieng:'sút',em:'⚽'}]},
+  {van:'ang',week:16,words:[{w:'cây bàng',tieng:'bàng',em:'🌳'},{w:'màu vàng',tieng:'vàng',em:'💛'}]},
+  {van:'ăng',week:16,words:[{w:'ông trăng',tieng:'trăng',em:'🌙'},{w:'cái răng',tieng:'răng',em:'🦷'}]},
+  {van:'ông',week:16,words:[{w:'ông bà',tieng:'ông',em:'👴'},{w:'dòng sông',tieng:'sông',em:'🏞️'}]},
+  {van:'anh',week:17,words:[{w:'quả chanh',tieng:'chanh',em:'🍋'},{w:'bức tranh',tieng:'tranh',em:'🖼️'}]},
+  {van:'inh',week:17,words:[{w:'cái kính',tieng:'kính',em:'👓'},{w:'máy tính',tieng:'tính',em:'💻'}]},
+  {van:'ach',week:17,words:[{w:'cuốn sách',tieng:'sách',em:'📚'},{w:'viên gạch',tieng:'gạch',em:'🧱'}]}
+];
+/* Âm ghép (chữ ghép) tuần 5-9 SGK — app dạy từ 'chó, thỏ' thì phải dạy đọc 'ch, th' */
+const DIGRAPHS = [
+  {d:'ch',name:'chờ',week:5,words:[{w:'chó con',em:'🐶',tieng:'chó'},{w:'chiếc lá',em:'🍃',tieng:'chiếc'}]},
+  {d:'kh',name:'khờ',week:5,words:[{w:'khỉ con',em:'🐵',tieng:'khỉ'},{w:'khăn quàng',em:'🧣',tieng:'khăn'}]},
+  {d:'th',name:'thờ',week:6,words:[{w:'thỏ trắng',em:'🐰',tieng:'thỏ'},{w:'thước kẻ',em:'📏',tieng:'thước'}]},
+  {d:'nh',name:'nhờ',week:6,words:[{w:'nhà ga',em:'🚉',tieng:'nhà'},{w:'nhãn vở',em:'🏷️',tieng:'nhãn'}]},
+  {d:'ph',name:'phờ',week:6,words:[{w:'phở bò',em:'🍜',tieng:'phở'},{w:'pháo hoa',em:'🎆',tieng:'pháo'}]},
+  {d:'ng',name:'ngờ',week:7,words:[{w:'ngôi sao',em:'⭐',tieng:'ngôi'},{w:'ngón tay',em:'👆',tieng:'ngón'}]},
+  {d:'ngh',name:'ngờ kép',week:7,words:[{w:'nghé con',em:'🐃',tieng:'nghé'},{w:'nghe nhạc',em:'🎧',tieng:'nghe'}]},
+  {d:'gh',name:'gờ kép',week:7,words:[{w:'ghế gỗ',em:'🪑',tieng:'ghế'},{w:'ghi ta',em:'🎸',tieng:'ghi'}]},
+  {d:'qu',name:'quờ',week:8,words:[{w:'quả cam',em:'🍊',tieng:'quả'},{w:'quần áo',em:'👖',tieng:'quần'}]},
+  {d:'gi',name:'giờ',week:8,words:[{w:'giày dép',em:'👟',tieng:'giày'},{w:'giường ngủ',em:'🛏️',tieng:'giường'}]},
+  {d:'tr',name:'trờ',week:9,words:[{w:'trứng gà',em:'🥚',tieng:'trứng'},{w:'trường học',em:'🏫',tieng:'trường'}]}
+];
+
 const WORD_ITEMS = [
   {em:'🐱', w:'con mèo'},{em:'🐶', w:'con chó'},{em:'🐟', w:'con cá'},
   {em:'🐔', w:'con gà'},{em:'🐘', w:'con voi'},{em:'🍎', w:'quả táo'},
@@ -267,6 +317,37 @@ const SONGS = [
     {t:'Happy birthday to you', n:[[60,.75],[60,.25],[62,1],[60,1],[67,1],[65,2]]},
     {t:'Happy birthday dear friend', n:[[60,.75],[60,.25],[72,1],[69,1],[65,1],[64,1],[62,2]]},
     {t:'Happy birthday to you', n:[[70,.75],[70,.25],[69,1],[65,1],[67,1],[65,2]]}
+  ]},
+  /* 4 bài dân ca/đồng dao Việt Nam (public domain — không tác giả bản quyền), lang:'vi-VN' để đọc lời bằng giọng Việt */
+  {em:"🎋", title:"Bắc Kim Thang", vi:"Bài đồng dao Nam Bộ", bpm:104, lang:'vi-VN', lines:[
+    {t:"Bắc kim thang cà lang bí rợ", n:[[67,1],[67,1],[67,1],[64,0.5],[64,0.5],[67,1],[69,1],[67,2]]},
+    {t:"Cột qua kèo là kèo qua cột", n:[[69,1],[67,1],[64,1],[62,0.5],[64,0.5],[62,1],[60,1],[62,2]]},
+    {t:"Chú bán dầu qua cầu mà té", n:[[67,1],[67,1],[69,1],[72,0.5],[69,0.5],[67,1],[64,1],[62,2]]},
+    {t:"Chú bán ếch ở lại làm chi", n:[[62,1],[64,1],[62,1],[60,0.5],[62,0.5],[60,1],[57,1],[60,2]]},
+    {t:"Con le le đánh trống thổi kèn", n:[[67,1],[67,0.5],[67,0.5],[69,1],[67,1],[64,1],[62,1],[64,2]]},
+    {t:"Con bìm bịp thổi tò tí te tò te", n:[[64,0.5],[64,0.5],[64,1],[62,0.5],[62,0.5],[60,1],[62,0.5],[60,0.5],[57,3]]}
+  ]},
+  {em:"🕊️", title:"Cò Lả", vi:"Cánh cò bay lả bay la", bpm:92, lang:'vi-VN', lines:[
+    {t:"Con cò cò bay lả lả bay la", n:[[69,1],[67,1],[69,1],[72,0.5],[69,0.5],[67,1],[65,1],[67,2]]},
+    {t:"Bay từ cửa phủ bay ra cánh đồng", n:[[67,0.5],[69,0.5],[67,1],[65,1],[62,1],[65,1],[62,1],[60,2]]},
+    {t:"Tình tính tang là tang tính tình", n:[[60,1],[62,1],[65,1],[65,0.5],[67,0.5],[65,1],[62,2]]},
+    {t:"Ơi bạn rằng, ơi bạn ơi", n:[[67,1],[69,1],[67,1],[65,1],[62,1],[60,2]]},
+    {t:"Rằng có biết biết hay chăng", n:[[62,1],[65,1],[65,0.5],[67,0.5],[65,1],[62,2]]},
+    {t:"Rằng có nhớ nhớ hay chăng", n:[[62,1],[65,1],[62,0.5],[62,0.5],[60,1],[60,2]]}
+  ]},
+  {em:"🌳", title:"Lý Cây Xanh", vi:"Chim hót líu lo trên cành", bpm:108, lang:'vi-VN', lines:[
+    {t:"Cái cây xanh xanh, thì lá cũng xanh", n:[[67,1],[67,1],[69,1],[67,1],[67,0.5],[69,0.5],[72,1],[67,2]]},
+    {t:"Chim đậu trên cành, chim hót líu lo", n:[[67,1],[69,1],[67,1],[64,1],[67,0.5],[67,0.5],[64,1],[62,2]]},
+    {t:"Líu lo là líu lo", n:[[64,0.5],[62,0.5],[64,1],[62,1],[60,2]]},
+    {t:"Líu lo là líu lo", n:[[64,0.5],[62,0.5],[64,1],[62,1],[60,2]]}
+  ]},
+  {em:"🥁", title:"Trống Cơm", vi:"Tiếng trống cơm rộn ràng", bpm:112, lang:'vi-VN', lines:[
+    {t:"Tình bằng có cái trống cơm", n:[[64,1],[67,1],[67,1],[69,1],[67,1],[64,2]]},
+    {t:"Khen ai khéo vỗ ố mấy bông mà nên bông", n:[[67,0.5],[69,0.5],[72,1],[69,0.5],[67,0.5],[69,0.5],[67,0.5],[64,1],[62,1],[64,2]]},
+    {t:"Một bầy tang tình con xít", n:[[62,0.5],[62,0.5],[64,1],[62,1],[60,1],[57,2]]},
+    {t:"Ố mấy lội, lội, lội sông", n:[[60,0.5],[62,0.5],[64,1],[64,1],[62,1],[60,2]]},
+    {t:"Ố mấy đi tìm, em nhớ thương ai", n:[[64,0.5],[64,0.5],[67,1],[69,1],[67,0.5],[64,0.5],[62,1],[60,2]]},
+    {t:"Con mắt ố mấy lim dim", n:[[62,1],[64,1],[62,0.5],[62,0.5],[60,1],[57,2]]}
   ]}
 ];
 
@@ -434,5 +515,5 @@ const PIC_META=[
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS };
 }

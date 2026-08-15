@@ -246,7 +246,7 @@ function showScreen(id){
   const t = {'scr-home':'🌈 Bé Học Vui','scr-write':'✏️ Tập viết','scr-read':'📖 Tập đọc',
              'scr-draw':'🎨 Vẽ','scr-en':'🐣 Tiếng Anh','scr-stickers':'🎁 Bộ sưu tập',
              'scr-quest':'🗺️ Thám hiểm','scr-music':'🎵 Ca hát','scr-parent':'👨‍👩‍👧 Phụ huynh',
-             'scr-island':'🏝️ Đảo Sticker'};
+             'scr-island':'🏝️ Đảo Sticker','scr-math':'🔢 Toán'};
   $('#hdr-title').textContent = t[id];
   $('#btn-parent').style.display = id==='scr-home' ? '' : 'none';
   if(id==='scr-home'){ $('#hello-text').textContent = helloLine(); }
@@ -256,6 +256,7 @@ function showScreen(id){
   if(id==='scr-en') initEnglish();
   if(id==='scr-stickers') renderStickers();
   if(id==='scr-island') enterIsland();
+  if(id==='scr-math') initMath();
   if(id==='scr-quest') questShowMap();
   if(id==='scr-parent') initParent();
   if(id==='scr-music') initMusic();
@@ -325,3 +326,40 @@ function quizStars(right, total){
   const r = right/total;
   return r>=0.85?3 : r>=0.5?2 : right>0?1:0;
 }
+
+/* ============ NUDGE NGHỈ MẮT — thêm cuối js/core.js ============ */
+document.body.insertAdjacentHTML('beforeend',
+  '<div id="nudge"><div id="nudge-box">' +
+    '<div id="nudge-em">🐰</div>' +
+    '<div id="nudge-msg">Mình chơi lâu rồi, nghỉ mắt chút nhé!</div>' +
+    '<button class="btn primary" id="nudge-ok">Dạ, nghỉ 1 chút 👀</button>' +
+  '</div></div>');
+const NUDGE_AFTER = 25*60e3, NUDGE_IDLE = 5*60e3;
+let nudgeStart = 0, nudgeLast = 0;
+// capture trên document — đếm MỌI tương tác, kể cả element stopPropagation
+document.addEventListener('pointerdown', ()=>{
+  const now = Date.now();
+  if(!nudgeStart || now - nudgeLast > NUDGE_IDLE) nudgeStart = now; // nghỉ >5 phút → tính lại từ đầu
+  nudgeLast = now;
+  if(now - nudgeStart >= NUDGE_AFTER && !$('#nudge').classList.contains('show')){
+    $('#nudge').classList.add('show');
+    speak('Mình chơi lâu rồi, nghỉ mắt chút nhé!');
+  }
+}, true);
+$('#nudge-ok').addEventListener('click', ()=>{
+  $('#nudge').classList.remove('show');
+  nudgeStart = nudgeLast = Date.now(); // đóng = reset đồng hồ 25 phút
+});
+
+/* ============ BANNER A2HS — thêm cuối js/core.js ============ */
+(function(){
+  // iPadOS 13+ mặc định giả UA Macintosh — nhận diện bằng maxTouchPoints
+  const isIOS = /iPad|iPhone/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(!isIOS || navigator.standalone || localStorage.getItem('bhv_a2hs')) return;
+  const el = document.createElement('div');
+  el.id = 'a2hs';
+  el.innerHTML = '<span>📲 Thêm vào Màn hình chính để không mất sticker nhé!</span><button id="a2hs-x" title="Đóng">✖</button>';
+  $('#scr-home').prepend(el);
+  $('#a2hs-x').addEventListener('click', ()=>{ localStorage.setItem('bhv_a2hs','1'); el.remove(); });
+})();

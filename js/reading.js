@@ -47,15 +47,46 @@ function qSentence(){
     choices:[{html:s.a,correct:true,cls:'word'},{html:s.d[0],cls:'word'},{html:s.d[1],cls:'word'}]
   };
 }
+/* ==== lộ trình tuần SGK: vần đóng/âm ghép mở dần theo tiến độ, tránh dội cả 32 vần vào bé ngày đầu ==== */
+let learnWeek = safeParse('bhv_learn', {v:11, d:6}, isObj); // bắt đầu có sẵn 2 tuần đầu để chơi
+function learnAdvance(kind, right, total){
+  if(right < Math.ceil(total*0.7)) return; // đúng ≥70% lượt mới mở tuần kế
+  const max = kind==='v' ? 17 : 9;
+  if(learnWeek[kind] < max){ learnWeek[kind]++; localStorage.setItem('bhv_learn', JSON.stringify(learnWeek)); }
+}
+function qVan2(){
+  const pool = VAN2.filter(x=>x.week<=learnWeek.v);
+  const t = rand(pool);
+  const wd = rand(t.words);
+  const [d1, d2] = pick(VAN2.filter(x=>x!==t), 2);
+  return {
+    say:`Vần gì trong tiếng ${wd.tieng}?`,
+    html:`<div style="font-size:52px">${wd.em}</div><div class="sentence">${wd.w}</div>`,
+    choices:[{html:t.van,correct:true},{html:d1.van},{html:d2.van}]
+  };
+}
+function qDigraph(){
+  const pool = DIGRAPHS.filter(x=>x.week<=learnWeek.d);
+  const t = rand(pool);
+  const wd = rand(t.words);
+  const [d1, d2] = pick(DIGRAPHS.filter(x=>x!==t), 2);
+  return {
+    say:`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`,
+    html:`<div style="font-size:52px">${wd.em}</div><div class="sentence">${wd.w}</div>`,
+    choices:[{html:t.d,correct:true},{html:d1.d},{html:d2.d}]
+  };
+}
 const READ_BUILDERS = {
   letters: ()=>Array.from({length:8}, qLetter),
   van: ()=>shuffle([qVan(),qVan(),qVan(),qVan(),qTone(),qTone(),qTone(),qTone()]),
+  van2: ()=>Array.from({length:6}, qVan2),
+  digraph: ()=>Array.from({length:6}, qDigraph),
   words: ()=>Array.from({length:8}, qWord),
   sentences: ()=>pick(SENTENCES,6).map(s=>({
     say:s.say, html:`<div class="sentence">${s.html.replace('___','<b style="color:var(--coral)">___</b>')}</div>`,
     choices:[{html:s.a,correct:true,cls:'word'},{html:s.d[0],cls:'word'},{html:s.d[1],cls:'word'}]
   })),
-  mix: ()=>shuffle([qLetter(),qLetter(),qVan(),qTone(),qWord(),qWord(),qSentence(),qSentence()])
+  mix: ()=>shuffle([qLetter(),qVan(),qTone(),qVan2(),qDigraph(),qWord(),qSentence(),qSentence()])
 };
 function readShowMenu(){
   $('#read-menu').style.display='grid';
@@ -74,6 +105,9 @@ function startReadRound(level){
     choicesEl:$('#read-choices'), progressEl:$('#read-progress'),
     questions: READ_BUILDERS[level](),
     onDone(right,total){
+      // lộ trình: làm tốt lượt vần cuối / chữ ghép thì mở tuần học kế tiếp
+      if(level==='van2') learnAdvance('v', right, total);
+      if(level==='digraph') learnAdvance('d', right, total);
       ovCallback = readShowMenu;
       showResult(quizStars(right,total), `Đúng ${right}/${total} câu!`);
     }

@@ -109,10 +109,10 @@ function openSong(i){
   curSong.lines.forEach((ln,li)=>{
     const d=document.createElement('div');
     d.className='lyric-line'; d.textContent=ln.t;
-    d.onclick=()=>{ if(!singing) speak(ln.t,'en-US'); };
+    d.onclick=()=>{ if(!singing) speak(ln.t, curSong.lang||'en-US'); }; // dân ca đọc giọng Việt
     ly.appendChild(d);
   });
-  speak(curSong.title,'en-US');
+  speak(curSong.title, curSong.lang||'en-US');
 }
 function highlightLine(li){
   $$('.lyric-line').forEach((l,i)=>l.classList.toggle('now', i===li));
@@ -155,7 +155,7 @@ function readSong(){
     if(sess!==songSession) return;
     if(i>=curSong.lines.length){ stopSong(); return; }
     highlightLine(i);
-    speakAsync(curSong.lines[i].t,'en-US').then(()=>{
+    speakAsync(curSong.lines[i].t, curSong.lang||'en-US').then(()=>{
       if(sess!==songSession) return;
       i++; songTimers.push(setTimeout(nextLine,400));
     });

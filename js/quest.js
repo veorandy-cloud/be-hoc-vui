@@ -28,6 +28,13 @@ const QUEST_LANDS = [
     {em:'🐣', t:'en', theme:'⚽ Sports', kind:'listen'},
     {em:'🧠', t:'memory', theme:'🌿 Nature'},
     {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qWord(),qSentence(),qVan(),qTone(),qLetter(),qWord()])}
+  ]},
+  {nm:'🌋 Núi Lửa Trí Tuệ', color:'#DC2626', stations:[
+    {em:'🔚', t:'quiz', q:()=>Array.from({length:5}, qVan2)},
+    {em:'✏️', t:'write', ch:'b'},
+    {em:'🔗', t:'quiz', q:()=>Array.from({length:5}, qDigraph)},
+    {em:'🔢', t:'quiz', q:()=>MATH_BUILDERS.mix().slice(0,5)},
+    {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qVan2(),qDigraph(),qCount(),qAdd(),qWord(),qSentence()])}
   ]}
 ];
 const STATIONS = QUEST_LANDS.flatMap(l=>l.stations);
@@ -220,3 +227,47 @@ document.fonts.ready.then(()=>{
 /* khởi động: lời chào + thưởng ngày mới (streak) */
 $('#hello-text').textContent = helloLine();
 if(newDay && streak>1){ addStars(2); confetti(); }
+
+/* ============ BACKUP / RESTORE (phụ huynh) — thêm cuối js/quest.js ============ */
+$('#ps-export').addEventListener('click', ()=>{
+  const data = {};
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith('bhv_')) data[k] = localStorage.getItem(k);
+  }
+  // base64 unicode-safe (tên sticker/quest có dấu tiếng Việt)
+  $('#ps-backup').value = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  $('#ps-backup-row').style.display = 'flex';
+  $('#ps-import-msg').textContent = '';
+  $('#ps-backup').select();
+});
+$('#ps-copy').addEventListener('click', ()=>{
+  const ta = $('#ps-backup');
+  const done = ()=>{ $('#ps-copy').textContent='✅ Đã chép'; setTimeout(()=>{ $('#ps-copy').textContent='📋 Chép'; }, 1500); };
+  const legacy = ()=>{ ta.focus(); ta.select(); try{ document.execCommand('copy'); }catch(e){} done(); };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(ta.value).then(done).catch(legacy);
+  else legacy();
+});
+$('#ps-import').addEventListener('click', function(){
+  const row = $('#ps-backup-row');
+  if(row.style.display === 'none'){ // lần đầu: chỉ mở ô dán, chưa ghi gì
+    row.style.display = 'flex';
+    $('#ps-import-msg').textContent = 'Dán mã sao lưu vào ô trên rồi bấm 📥 lần nữa';
+    $('#ps-backup').value = ''; $('#ps-backup').focus();
+    return;
+  }
+  confirmTap(this, 'Bấm lần nữa để nhập dữ liệu và ghi đè nhé!', ()=>{
+    // validate kiểu safeParse: parse hỏng / sai shape → KHÔNG đụng vào dữ liệu hiện có
+    let data = null;
+    try{
+      const v = JSON.parse(decodeURIComponent(escape(atob($('#ps-backup').value.trim()))));
+      if(isObj(v) && Object.keys(v).length &&
+         Object.entries(v).every(([k,x])=>k.startsWith('bhv_') && typeof x==='string')) data = v;
+    }catch(e){}
+    if(!data){ $('#ps-import-msg').textContent = '❌ Mã sao lưu không hợp lệ, chưa ghi đè gì cả'; return; }
+    Object.keys(localStorage).filter(k=>k.startsWith('bhv_')).forEach(k=>localStorage.removeItem(k));
+    Object.entries(data).forEach(([k,x])=>localStorage.setItem(k,x));
+    location.reload();
+  });
+});

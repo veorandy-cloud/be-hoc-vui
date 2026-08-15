@@ -17,6 +17,8 @@ page.on('pageerror', e => errors.push('pageerror: ' + (e.stack || e.message).spl
 page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
 page.on('response', r => { if (r.status() >= 400) errors.push(`HTTP ${r.status()}: ${r.url()}`); });
 
+// chữ 'a' đã có điểm → không kích hoạt "cô viết mẫu trước" (demo cũng vẽ mực coral, nhiễu assertion đếm pixel)
+await page.addInitScript(() => localStorage.setItem('bhv_write', '{"a":3}'));
 await page.goto(BASE, { waitUntil: 'load', timeout: 15000 });
 await page.waitForTimeout(800);
 
@@ -34,7 +36,7 @@ async function goHome() {
 ok(await page.title() === 'Bé Học Vui', 'title đúng');
 
 // 2. vào được cả 6 màn từ home + quay về
-for (const id of ['scr-write', 'scr-read', 'scr-draw', 'scr-en', 'scr-quest', 'scr-music']) {
+for (const id of ['scr-write', 'scr-read', 'scr-draw', 'scr-en', 'scr-quest', 'scr-music', 'scr-math']) {
   await page.click(`[data-go="${id}"]`);
   await page.waitForTimeout(450);
   ok(await page.$eval('#' + id, el => el.classList.contains('active')), 'vào màn ' + id);
@@ -68,6 +70,16 @@ await page.waitForSelector('#read-choices .choice', { timeout: 5000 });
 for (const b of await page.$$('#read-choices .choice')) { await b.click({ force: true }); await page.waitForTimeout(120); }
 const cls = await page.$$eval('#read-choices .choice', els => els.map(e => e.className).join(' '));
 ok(/good/.test(cls), 'quiz: chọn đáp án có phản hồi .good');
+await goHome();
+
+// 3b. toán 0-10: menu → đếm số → chọn đáp án có phản hồi
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+await page.click('#math-menu [data-level="count"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+for (const b of await page.$$('#math-choices .choice')) { await b.click({ force: true }); await page.waitForTimeout(120); }
+const mcls = await page.$$eval('#math-choices .choice', els => els.map(e => e.className).join(' '));
+ok(/good/.test(mcls), 'toán: chọn đáp án có phản hồi .good');
 await goHome();
 
 // 4. tập viết: stroke data + chế độ Từng nét từ chối nét sai + Tự viết nhận nét

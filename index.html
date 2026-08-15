@@ -10,9 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="icon" href="assets/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;700&display=swap&subset=vietnamese" rel="stylesheet">
+<!-- font tự host trong css/style.css (@font-face) — offline đẹp từ lần mở đầu, không phụ thuộc Google -->
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -33,6 +31,7 @@
         <div class="big-card" id="card-read"  data-go="scr-read"><div class="em">📖</div><div class="tt">Tập đọc</div></div>
         <div class="big-card" id="card-draw"  data-go="scr-draw"><div class="em">🎨</div><div class="tt">Vẽ</div></div>
         <div class="big-card" id="card-en"    data-go="scr-en"><div class="em">🐣</div><div class="tt">Tiếng Anh</div></div>
+        <div class="big-card" id="card-math"  data-go="scr-math" style="background:#0EA5E9"><div class="em">🔢</div><div class="tt">Toán</div></div>
         <div class="big-card" id="card-quest" data-go="scr-quest"><div class="em">🗺️</div><div class="tt">Thám hiểm <span id="quest-count"></span></div></div>
         <div class="big-card" id="card-music" data-go="scr-music"><div class="em">🎵</div><div class="tt">Ca hát</div></div>
       </div>
@@ -106,6 +105,8 @@
       <div id="read-menu" class="menu-grid">
         <div class="menu-card" style="background:var(--coral)" data-level="letters"><div class="em">🔤</div><div class="tt">Chữ cái</div></div>
         <div class="menu-card" style="background:#0284C7" data-level="van"><div class="em">🎵</div><div class="tt">Vần &amp; dấu</div></div>
+        <div class="menu-card" style="background:#DB2777" data-level="van2"><div class="em">🔚</div><div class="tt">Vần cuối</div></div>
+        <div class="menu-card" style="background:#7C3AED" data-level="digraph"><div class="em">🔗</div><div class="tt">Chữ ghép</div></div>
         <div class="menu-card" style="background:#65A30D" data-level="words"><div class="em">🖼️</div><div class="tt">Từ ngữ</div></div>
         <div class="menu-card" style="background:var(--violet)" data-level="sentences"><div class="em">📝</div><div class="tt">Điền câu</div></div>
         <div class="menu-card" style="background:#F59E0B" data-level="repeat"><div class="em">🗣️</div><div class="tt">Đọc theo</div></div>
@@ -200,6 +201,25 @@
       <div id="sticker-grid"></div>
     </section>
 
+    <!-- MATH: toán 0-10 -->
+    <section id="scr-math" class="screen">
+      <div id="math-menu" class="menu-grid">
+        <div class="menu-card" style="background:var(--coral)" data-level="count"><div class="em">🔢</div><div class="tt">Đếm số</div></div>
+        <div class="menu-card" style="background:#0284C7" data-level="add"><div class="em">➕</div><div class="tt">Phép cộng</div></div>
+        <div class="menu-card" style="background:#65A30D" data-level="sub"><div class="em">➖</div><div class="tt">Phép trừ</div></div>
+        <div class="menu-card" style="background:var(--violet)" data-level="compare"><div class="em">⚖️</div><div class="tt">Nhiều hơn</div></div>
+        <div class="menu-card" style="background:var(--pink)" data-level="mix"><div class="em">🎲</div><div class="tt">Trộn tất cả</div></div>
+      </div>
+      <div id="math-quiz" style="display:none;flex:1;min-height:0;flex-direction:column;gap:12px">
+        <div class="quiz-progress" id="math-progress"></div>
+        <div class="quiz-prompt">
+          <div class="big" id="math-prompt"></div>
+          <button class="btn round" id="math-speak">🔊</button>
+        </div>
+        <div class="choices" id="math-choices"></div>
+      </div>
+    </section>
+
     <!-- PIC REVEAL: ảnh thật "sống" hiện sau khi bé lưu tranh tô -->
     <div id="pic-reveal">
       <div class="pr-card">
@@ -226,7 +246,16 @@
       </div>
       <div id="parent-stats" style="display:none;flex:1;min-height:0;flex-direction:column;gap:10px;max-width:560px;margin:0 auto;width:100%">
         <div id="ps-grid" style="display:flex;flex-direction:column;gap:8px;overflow:auto"></div>
+        <div id="ps-backup-row" style="display:none;flex-direction:column;gap:6px">
+          <textarea id="ps-backup" rows="4" placeholder="Dán mã sao lưu vào đây..."></textarea>
+          <div class="toolbar">
+            <button class="btn" id="ps-copy">📋 Chép</button>
+            <span id="ps-import-msg" style="font-size:14px;font-weight:700;color:var(--coral)"></span>
+          </div>
+        </div>
         <div class="toolbar">
+          <button class="btn" id="ps-export">📤 Sao lưu</button>
+          <button class="btn" id="ps-import">📥 Nhập lại</button>
           <button class="btn" id="ps-reset">🗑️ Xoá toàn bộ dữ liệu bé học</button>
         </div>
       </div>
@@ -263,6 +292,7 @@
 <script src="js/paint.js"></script>
 <script src="js/writing.js"></script>
 <script src="js/reading.js"></script>
+<script src="js/math.js"></script>
 <script src="js/drawing.js"></script>
 <script src="js/english.js"></script>
 <script src="js/music.js"></script>
