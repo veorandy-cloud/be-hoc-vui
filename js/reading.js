@@ -273,8 +273,8 @@ function startGhep(){
           if(firstTry) right++;
           $('#ghep-out').textContent = `${c} + ${vv} = ${target}`;
           b.classList.add('good'); sndGood();
-          speak(target);
-          setTimeout(()=>{ if(gen!==uiGen) return; i++; if(i<total) round(); else done(); }, 1200);
+          // ghép xong không dừng ở tìm chữ: cô đọc ĐÁNH VẦN chuẩn SGK rồi bé đánh vần lại
+          setTimeout(()=>{ if(gen===uiGen) spellStep(target); }, 700);
         }else{
           firstTry=false;
           wrongs++;
@@ -286,6 +286,24 @@ function startGhep(){
       row2.appendChild(b);
     });
     setTimeout(()=>{ if(gen===uiGen) speak('Tìm tiếng: '+target); }, 300);
+  }
+  /* bước đánh vần sau khi ghép đúng: cô đọc 'bờ, a, ba, huyền, bà', bé nghe lại / 🎤 đánh vần theo */
+  function spellStep(target){
+    const say = spellTieng(target);
+    $('#read-prompt').innerHTML =
+      `<div style="font-size:46px;font-weight:800">${target}</div>` +
+      `<div class="sentence">🗣️ ${say.split(', ').join(' – ')}</div>`;
+    $('#read-speak').onclick = ()=>speak(say);
+    const ch=$('#read-choices'); ch.innerHTML='';
+    const mk=(label, fn)=>{
+      const b=document.createElement('button');
+      b.className='choice word ctrl'; b.textContent=label; b.onclick=fn;
+      ch.appendChild(b); return b;
+    };
+    mk('🔊 Nghe đánh vần', ()=>speak(say));
+    if(SRCls) mk('🎤 Bé đánh vần', function(){ listenVi([target], this, ()=>{}); });
+    mk('Câu tiếp ▶', ()=>{ i++; if(i<total) round(); else done(); });
+    speak(say);
   }
   function done(){
     ovCallback = readShowMenu;

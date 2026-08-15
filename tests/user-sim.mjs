@@ -64,6 +64,36 @@ await page.click('[data-level="letters"]', { force: true });
 await playQuiz('#read-choices', 'Tập đọc - Chữ cái');
 await page.click('[data-level="van2"]', { force: true });
 await playQuiz('#read-choices', 'Tập đọc - Vần cuối');
+// Ghép vần: ghép chữ + vần (thử sai như bé), cô đọc đánh vần SGK, rồi Câu tiếp — trọn 6 câu
+await page.click('[data-level="ghep"]', { force: true });
+let spellSeen = 0;
+for (let r = 0; r < 6; r++) {
+  try { await page.waitForSelector('#read-choices .choices .choice', { timeout: 5000 }); } catch (e) { break; }
+  outer: for (let ci = 0; ci < 3; ci++) {
+    const rows = await page.$$('#read-choices .choices');
+    if (rows.length < 2) break;
+    const cons = await rows[0].$$('.choice');
+    if (!cons[ci]) break;
+    await cons[ci].click({ force: true }); await page.waitForTimeout(250);
+    for (let vi = 0; vi < 3; vi++) {
+      const rows2 = await page.$$('#read-choices .choices');
+      if (rows2.length < 2) break outer;
+      const vans = await rows2[1].$$('.choice');
+      if (!vans[vi]) continue;
+      await vans[vi].click({ force: true }); await page.waitForTimeout(350);
+      const out = await page.$eval('#ghep-out', el => el.textContent).catch(() => '');
+      if (out.includes('=')) break outer;
+    }
+  }
+  try { await page.waitForSelector('#read-choices .ctrl', { timeout: 4000 }); } catch (e) { break; }
+  if (await page.$eval('#read-prompt', el => el.textContent.includes('–'))) spellSeen++;
+  if (r === 0) await shot('ghep-danh-van');
+  await page.click('#read-choices .ctrl:has-text("Câu tiếp")', { force: true });
+  await page.waitForTimeout(600);
+}
+ok(spellSeen >= 5, `Ghép vần: ghép đúng ${spellSeen}/6 câu, mỗi câu cô đọc chuỗi đánh vần`);
+ok(await page.isVisible('#ov-next'), 'Ghép vần: chơi trọn lượt, bảng kết quả hiện ra');
+await closeOverlay();
 ok(await goHome(), 'về home sau Tập đọc');
 
 // ===== 2. TOÁN: Đếm số + Trộn =====

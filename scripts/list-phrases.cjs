@@ -48,8 +48,9 @@ const en = t => add(t, 'en');
 const stripDeco = s => s.replace(/[^\p{L}\p{N}\s,!?.]/gu, '').replace(/\s+/g, ' ').trim();
 D.SENTENCES.forEach(s => vi(stripDeco(s.html.replace('___', s.a))));
 
-// tập đọc — Ghép vần: đọc tiếng vừa ghép được
+// tập đọc — Ghép vần: đọc tiếng vừa ghép được + chuỗi đánh vần SGK ('bờ, a, ba, huyền, bà')
 D.TONE_SETS.flat().forEach(t => vi(t));
+D.TONE_SETS.flat().forEach(t => vi(D.spellTieng(t)));
 
 // chữ cái & số (tập viết + tập đọc)
 for (const [ch, name] of Object.entries(D.LETTER_NAMES)) {

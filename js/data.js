@@ -64,6 +64,17 @@ const TONE_SETS = [
   ['bo','bò','bó','bỏ','bõ','bọ'],
   ['me','mè','mé','mẻ','mẽ','mẹ']
 ];
+/* đánh vần tiếng CV (TONE_SETS) theo SGK lớp 1: 'bà' → 'bờ, a, ba, huyền, bà' — chuỗi cô đọc mẫu.
+   Dùng CHUNG cho app + scripts/list-phrases.cjs (chuỗi phải khớp 100% để có mp3 thu sẵn) */
+const TONE_MARKS = {'̀':'huyền','́':'sắc','̉':'hỏi','̃':'ngã','̣':'nặng'};
+function spellTieng(t){
+  const c = t[0], d = t.slice(1).normalize('NFD');
+  const mark = [...d].find(ch=>TONE_MARKS[ch]);
+  const v0 = d.replace(/[̣̀́̃̉]/g,'').normalize('NFC');
+  const base = c + v0;
+  return mark ? `${LETTER_NAMES[c]}, ${v0}, ${base}, ${TONE_MARKS[mark]}, ${t}`
+              : `${LETTER_NAMES[c]}, ${v0}, ${base}`;
+}
 /* Vần có âm cuối — nửa sau HK1 SGK lớp 1; week = tuần học, lộ trình mở dần (bhv_learn) */
 const VAN2 = [
   {van:'an',week:10,words:[{w:'bàn tay',tieng:'bàn',em:'🖐️'},{w:'hoa lan',tieng:'lan',em:'🌸'}]},
@@ -515,5 +526,5 @@ const PIC_META=[
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS, spellTieng };
 }

@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v14'; // v14: splash screen iPad (apple-touch-startup-image)
+const VERSION = 'bhv-v15'; // v15: Ghép vần dạy đánh vần SGK (cô đọc 'bờ, a, ba, huyền, bà' + bé 🎤 đánh vần lại)
 const AUDIO_CACHE = 'bhv-audio-v2';   // v2: lời bài hát regen pitch/rate mới (cùng tên file, khác nội dung → PHẢI bump)
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
