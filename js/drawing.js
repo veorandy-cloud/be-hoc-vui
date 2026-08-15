@@ -76,7 +76,25 @@ function initDraw(){
     });
     dReady=true;
   }
-  requestAnimationFrame(()=>{ if(sizeCanvas($('#draw-canvas'))) freeHist.reset(); });
+  requestAnimationFrame(rescaleFreeDraw);
+}
+/* resize/hiện lại canvas vẽ tự do: chụp tranh cũ → scale vào kích thước mới → rebase history
+   (dùng chung cho resize handler + initDraw + switchDrawTab — trước đây tab ẩn khi xoay là mất tranh) */
+function rescaleFreeDraw(){
+  const cv=$('#draw-canvas');
+  if(!cv) return;
+  const old=document.createElement('canvas');
+  old.width=cv.width; old.height=cv.height;
+  if(old.width && old.height) old.getContext('2d').drawImage(cv,0,0);
+  if(sizeCanvas(cv)){
+    if(old.width && old.height){
+      const c=cv.getContext('2d');
+      c.save(); c.setTransform(1,0,0,1,0,0);
+      c.drawImage(old, 0,0, cv.width, cv.height);
+      c.restore();
+    }
+    freeHist.rebase(); // tranh hiện tại thành nền — undo/auto-bake không xoá trắng nữa
+  }
 }
 function syncTools(){
   $('#d-eraser').classList.toggle('on', dMode==='eraser');
@@ -88,7 +106,7 @@ function switchDrawTab(free){
   $('#tab-color').classList.toggle('on',!free);
   $('#draw-free').style.display = free?'flex':'none';
   $('#draw-color').style.display = free?'none':'flex';
-  if(free) requestAnimationFrame(()=>{ if(sizeCanvas($('#draw-canvas'))) freeHist.reset(); });
+  if(free) requestAnimationFrame(rescaleFreeDraw);
   else initColor();
 }
 function saveToGallery(canvas, withWhiteBg, onSaved){
@@ -123,12 +141,12 @@ function showPicReveal(i){
   const m=PIC_META[i]; if(!m) return;
   const img=$('#pr-img'), emo=$('#pr-emoji');
   const file = m.key && IMG_MAN && IMG_MAN[m.key];
+  // emoji hiện trước, ảnh chỉ hiện KHI decode xong — không flash ảnh của tranh lưu lần trước
+  img.style.display='none'; emo.style.display='flex'; emo.textContent=m.em;
   if(file){
+    img.onload=()=>{ img.style.display='block'; emo.style.display='none'; };
+    img.onerror=()=>{ img.style.display='none'; emo.style.display='flex'; };
     img.src='assets/images/en/'+file;
-    img.style.display='block'; emo.style.display='none';
-    img.onerror=()=>{ img.style.display='none'; emo.style.display='flex'; emo.textContent=m.em; };
-  }else{ // không có ảnh thật (kỳ lân) hoặc manifest chưa tải → emoji nhún nhảy
-    img.style.display='none'; emo.style.display='flex'; emo.textContent=m.em;
   }
   $('#pr-title').innerHTML=`${m.em} ${m.nm}<br><span class="pr-en">Tiếng Anh: ${m.en}</span>`;
   $('#pic-reveal').classList.add('show');

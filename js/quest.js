@@ -104,7 +104,8 @@ function launchStation(idx){
     wSet = s.set||'low';
     wMode = 'guide'; // trạm viết dạy đúng thứ tự nét
     $$('#write-modes [data-wmode]').forEach(x=>x.classList.toggle('on', x.dataset.wmode==='guide'));
-    $$('#scr-write .tab').forEach(x=>x.classList.toggle('on', x.dataset.set===wSet));
+    // CHỈ nút có data-set — nút chế độ (#write-modes) cũng mang class .tab (bẫy đã ghi ở writing.js:39)
+    $$('#scr-write [data-set]').forEach(x=>x.classList.toggle('on', x.dataset.set===wSet));
     wIdx = Math.max(0, WRITE_SETS[wSet].indexOf(s.ch));
     showScreen('scr-write');
   }else if(s.t==='en'){
@@ -201,20 +202,12 @@ let resizeTmr=null; // debounce: xoay iPad bắn nhiều resize liên tiếp —
 window.addEventListener('resize', ()=>{
   clearTimeout(resizeTmr);
   resizeTmr=setTimeout(()=>{
-    if(wReady && $('#scr-write').classList.contains('active') && sizeCanvas(wCanvas)) redrawWrite();
+    if(wReady && $('#scr-write').classList.contains('active') && sizeCanvas(wCanvas)){
+      wResized=true; // nét đang vẽ dở trộn 2 hệ toạ độ — guideCheck bỏ qua, không phạt oan
+      redrawWrite();
+    }
     if($('#scr-draw').classList.contains('active')){
-      // xoay màn không được nuốt tranh vẽ tự do: chụp lại rồi scale vào kích thước mới
-      const cv=$('#draw-canvas');
-      const old=document.createElement('canvas');
-      old.width=cv.width; old.height=cv.height;
-      if(old.width && old.height) old.getContext('2d').drawImage(cv,0,0);
-      if(sizeCanvas(cv)){
-        const c=cv.getContext('2d');
-        c.save(); c.setTransform(1,0,0,1,0,0);
-        c.drawImage(old, 0,0, cv.width, cv.height);
-        c.restore();
-        freeHist.reset(); // ponytail: tranh còn nhưng undo mất sau xoay — chấp nhận, đủ tốt
-      }
+      rescaleFreeDraw(); // chụp tranh cũ → scale → rebase history (không mất tranh, không mất undo)
       if(colorInit) fitColorWrap(); // tranh tô không mất khi xoay màn hình (canvas độ phân giải cố định)
     }
   }, 150);

@@ -34,7 +34,8 @@ const en = t => add(t, 'en');
   'Bấm lần nữa để về nhà, lượt chơi này sẽ mất nhé!',
   'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!',
   'Bé xem cô viết mẫu nhé!',
-  'Chưa đúng nét, bé thử lại nhé!'
+  'Chưa đúng nét, bé thử lại nhé!',
+  'Gần đúng rồi! Bé vẽ cả nét một hơi nhé!'
 ].forEach(vi);
 // tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
 ['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));

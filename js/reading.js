@@ -31,7 +31,10 @@ function qTone(){
   };
 }
 function qWord(){
-  const [t, d1, d2] = pick(WORD_ITEMS, 3);
+  const t = rand(WORD_ITEMS);
+  // distractor không được trùng tiếng-cuối-bỏ-dấu với đáp án (quả DỨA vs quả DƯA hấu — bé chưa đọc thạo dấu)
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').split(' ').pop();
+  const [d1, d2] = pick(WORD_ITEMS.filter(x => x!==t && norm(x.w)!==norm(t.w)), 2);
   return {
     say:`Tìm từ: ${t.w}`, html:t.em,
     choices:[{html:t.w,correct:true,cls:'word'},{html:d1.w,cls:'word'},{html:d2.w,cls:'word'}]
@@ -102,7 +105,7 @@ function listenVi(matches, btn, cb){
         return mm.length<=1 ? toks.includes(mm)
                             : said.includes(mm) || norm(said).includes(norm(mm));
       });
-      if(ok){ sndGood(); confetti(); addStars(1); speak(rand(PRAISE)); }
+      if(ok){ sndGood(); confetti(); if(micStar()) addStars(1); speak(rand(PRAISE)); }
       else { sndBad(); speak(rand(CHEER)); }
       cb(ok);
     };
@@ -171,7 +174,8 @@ function startRepeat(){
   }
   function done(){
     ovCallback = readShowMenu;
-    if(SRCls && tried) showResult(quizStars(got, tried), `Bé đọc đúng ${got}/${tried} lần!`);
+    // sao đã cộng từng câu (+1/câu qua micStar) — kết lượt chỉ thưởng hoàn thành 1⭐, hết thưởng đúp
+    if(SRCls && tried) showResult(Math.min(1, quizStars(got, tried)), `Bé đọc đúng ${got}/${tried} lần!`);
     else showResult(1, 'Bé luyện đọc chăm chỉ lắm!');
   }
   render();

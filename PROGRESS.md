@@ -76,6 +76,17 @@ Plan cải tiến 4 đợt:
 - `PIC_META` thêm `key` (ảnh manifest) + `en`; **+18 ảnh thật mới** (120 tổng) — soi mắt từng ảnh, đổi 4 trang Wikipedia sau khi soi (House→vườn Nhật ✗ → Single-family detached home; Dinosaur→phiến hoá thạch ✗ → Tyrannosaurus xương dựng; Turtle→ảnh ghép ✗ → Green sea turtle; Orchard ✗ → Fruit tree). Video thật KHÔNG khả thi: Wikimedia chỉ có WebM, iOS không phát được.
 - Audio **948/948** (+49: 32 câu khen theo tên tranh + từ EN mới; câu "Bánh kem" fail 4 lần liên tiếp — vẫn chỉ là flaky, thử tay câu gốc ra 30KB → rerun là xong) · saveToGallery nhận callback `onSaved`, có reveal thì không đọc chồng câu "Đã lưu" · sw `bhv-v8` · e2e **25 assertion**.
 
+### Audit toàn diện lần 3 — 2026-08-15 (5 agent: logic, canvas/3D, audio, PWA, sư phạm)
+**11 bug xác nhận, Đợt 0 hotfix đã sửa hết trong ngày:**
+- [HIGH] `else stopSong()` cuối showScreen giết lời chào đảo 3D → dời stopSong lên đầu hàm
+- [HIGH] Xoay iPad rồi undo/auto-bake → xoá trắng tranh vẽ tự do (history mất base) → thêm `makeHistory.rebase()`, helper `rescaleFreeDraw()` dùng chung 3 chỗ (cả case xoay khi tab ẩn)
+- [HIGH] `assets/images/manifest.json` không được cache ở đâu → offline lần 2 mất toàn bộ ảnh tiếng Anh dù 119 jpg nằm sẵn trong cache → warmImages cache.put manifest
+- [MED] guideCheck: threshold cố định 34px khiến nét chấm chữ i (6px) chạm đâu cũng đậu → thr scale theo độ dài nét (`min(k*11, tlen*0.8+k*2)`, sàn 14px); tap 1 điểm giờ chấm được nét chấm; nét khuyết dài vẽ dở đúng hướng không bị phạt oan ("Gần đúng rồi! Bé vẽ cả nét một hơi nhé!"); xoay màn giữa nét không tính sai (`wResized`)
+- [MED] Kinh tế sao: exploit mic +1⭐/từ vô hạn (180⭐/30phút) → `micStar()` cap 10⭐/ngày; viết lặp chữ đã max chỉ còn 1⭐; Đọc theo hết thưởng đúp (kết lượt tối đa 1⭐)
+- [LOW] quest.js selector `.tab` xoá highlight mode tab (tái phạm bẫy writing.js:39) → `[data-set]` · qWord lọc distractor trùng tiếng-cuối-bỏ-dấu (quả dứa vs quả dưa hấu) · reveal flash ảnh tranh trước → ẩn img tới onload · lineCap set lại mỗi move (xoay giữa nét hết đầu vuông) · unlock `<audio>` ngay trong gesture (ensureAC) — iOS cũ hết câm câu đầu · mic EN nhận alias ping pong/soccer/airplane, match từng alternative · SW dọn mp3/ảnh mồ côi sau warm
+**Verified sạch (không phải bug):** speak race khi navigate nhanh, wSet trạm quest, questDone tuyến tính, crayon replay, backing band 396 node/31s (headroom >10×), coverage 949/949, hash JS↔Python, memory game theme mới, table tennis substring match, quota iOS (18MB ≪ ~7GB), reveal + 🏠 (z-index chặn sẵn).
+**Nợ đã ghi nhận (chưa sửa — nằm trong plan enhance):** nét ngang chữ t vẽ vuông góc vẫn đậu (cần chấm hướng nét), font Google mất offline first-visit (nên self-host), localStorage mất nếu KHÔNG Add to Home Screen (persist() iOS vô tác dụng — cần export/import + banner A2HS), thiếu splash iPad.
+
 ## Quyết định thiết kế đã chốt
 - 2D cho phần học, 3D chỉ cho khu phần thưởng (không full 3D)
 - Ảnh thật (photo CC0) cho từ vựng; thư viện/asset mã nguồn mở bundle local; **không** nhúng iframe/dịch vụ bên thứ ba

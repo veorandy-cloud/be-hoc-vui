@@ -47,7 +47,17 @@ function makeHistory(getCv, getCtx, baseDraw){
       }
     },
     undo(){ if(!acts.length) return false; acts.pop(); replayAll(); return true; },
-    reset(){ acts=[]; base=null; }
+    reset(){ acts=[]; base=null; },
+    // sau xoay màn: nhận canvas HIỆN TẠI làm nền — undo/auto-bake không xoá trắng tranh đã vẽ trước xoay
+    rebase(){
+      acts=[];
+      const cv=getCv(), ctx=getCtx();
+      if(cv && ctx && cv.width && cv.height){
+        ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+        base = ctx.getImageData(0,0,cv.width,cv.height);
+        ctx.restore();
+      } else base=null;
+    }
   };
 }
 function applyBrushCtx(ctx, brush, style, k){
@@ -97,6 +107,8 @@ function bindDraw(cv, ctx, getTool, onStroke, getScale, hist){
     return w;
   };
   function styleFor(tool){
+    // set lại mỗi lần: sizeCanvas giữa nét (xoay màn) reset toàn bộ ctx state → không set là đầu nét vuông 'butt'
+    ctx.lineCap='round'; ctx.lineJoin='round';
     if(tool.mode==='eraser'){
       ctx.globalCompositeOperation='destination-out'; ctx.globalAlpha=1; ctx.shadowBlur=0;
       return '#000';

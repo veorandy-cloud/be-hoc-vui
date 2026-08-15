@@ -24,6 +24,8 @@ function ensureAC(){
   if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)();
   // iOS suspend AudioContext khi khoá màn hình/chuyển app — không resume là mất nhạc/sfx vĩnh viễn
   if(AC.state!=='running' && AC.resume) AC.resume().catch(()=>{});
+  // unlock <audio> NGAY TRONG gesture — iOS cũ drop token nếu play() đầu tiên nằm sau rAF/setTimeout
+  if(!audioEl){ audioEl = new Audio(); try{ audioEl.play().catch(()=>{}); }catch(e){} }
 }
 function tone(freq, t0, dur, vol=.22){
   const o=AC.createOscillator(), g=AC.createGain();
@@ -155,6 +157,15 @@ function addStars(n){
   const p = $('#star-pop');
   p.textContent = '+'+n+' ⭐'; p.classList.remove('go'); void p.offsetWidth; p.classList.add('go');
 }
+/* chống farm sao bằng mic (chạm thẻ → nói → +1⭐ lặp vô hạn): tối đa 10 sao mic/ngày */
+function micStar(){
+  const d = safeParse('bhv_mic', {}, isObj);
+  const today = dayKey(new Date());
+  if(d.day!==today){ d.day=today; d.n=0; }
+  if(d.n>=10) return false;
+  d.n++; localStorage.setItem('bhv_mic', JSON.stringify(d));
+  return true;
+}
 
 /* ============ DAILY STREAK ============ */
 const dayKey = d => `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
@@ -227,6 +238,8 @@ $('#ov-next').addEventListener('click', ()=>{
 let uiGen=0; // tăng khi đổi màn hình / bắt đầu lượt chơi mới → timer của lượt cũ tự huỷ
 function showScreen(id){
   uiGen++;
+  // dừng nhạc TRƯỚC khi init màn mới — để else-branch cuối hàm không giết lời chào màn mới (vd đảo 3D)
+  if(id!=='scr-music') stopSong();
   $$('.screen').forEach(s=>s.classList.remove('active'));
   $('#'+id).classList.add('active');
   $('#btn-home').style.display = id==='scr-home' ? 'none' : '';
@@ -246,7 +259,6 @@ function showScreen(id){
   if(id==='scr-quest') questShowMap();
   if(id==='scr-parent') initParent();
   if(id==='scr-music') initMusic();
-  else stopSong();
 }
 $$('.big-card').forEach(c=>c.addEventListener('click', ()=>{ ensureAC(); showScreen(c.dataset.go); }));
 let roundActive=false; // đang giữa một lượt chơi — bấm 🏠 phải xác nhận kẻo mất tiến độ oan

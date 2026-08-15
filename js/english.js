@@ -72,9 +72,13 @@ function listenFor(word, card){
     const cleanup=()=>{ card.style.outline=''; recBusy=false; };
     r.onresult=e=>{
       if(gen!==uiGen) return;
-      const said=[...e.results[0]].map(a=>a.transcript.toLowerCase()).join(' ');
-      if(said.includes(word.toLowerCase())){
-        sndWin(); confetti(); addStars(1);
+      const alts=[...e.results[0]].map(a=>a.transcript.toLowerCase());
+      const said=alts.join(' ');
+      // alias: cách gọi phổ biến của trẻ vẫn tính đúng (match từng alternative riêng để không ghép giả 2 alt)
+      const ALIAS={'table tennis':['ping pong'],'football':['soccer'],'plane':['airplane']};
+      const names=[word.toLowerCase(), ...(ALIAS[word.toLowerCase()]||[])];
+      if(names.some(n=>alts.some(a=>a.includes(n)))){
+        sndWin(); confetti(); if(micStar()) addStars(1);
         speak('Great job!','en-US');
       }else{
         speak('Almost! Try again!','en-US');

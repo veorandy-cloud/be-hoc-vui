@@ -2,7 +2,7 @@
 /* ============ WRITING ============ */
 let wCanvas, wCtx, wStrokes=[], wSet='low', wIdx=0, wReady=false, wPen='#FF5C5C', wNib='pen';
 /* Phase 3 — 3 mức như LetterSchool: 👀 demo nét chạy · 🔢 đồ từng nét có chấm · ✍️ tự viết (chấm coverage) */
-let wMode='guide', gStroke=0, strokeFails=0, gFailsTotal=0, wAnim=0;
+let wMode='guide', gStroke=0, strokeFails=0, gFailsTotal=0, wAnim=0, wResized=false;
 const NUMVI=['một','hai','ba','bốn','năm'];
 const wHist = makeHistory(()=>wCanvas, ()=>wCtx, ()=>drawTemplate());
 let writeBest = safeParse('bhv_write', {}, isObj);
@@ -206,29 +206,55 @@ function strokeDist(a, b){
   for(let i=0;i<n;i++) sum+=Math.hypot(ra[i][0]-rb[i][0], ra[i][1]-rb[i][1]);
   return sum/n;
 }
+function polyLen(pts){
+  let l=0;
+  for(let i=1;i<pts.length;i++) l+=Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
+  return l;
+}
 function guideCheck(pts){
   const g = glyphStrokes(); if(!g || gStroke>=g.strokes.length) return;
-  if(!pts || pts.length<2){ if(wHist.undo()) wStrokes.pop(); return; } // chạm 1 điểm: bỏ qua, không tính sai
+  if(wResized){ wResized=false; if(wHist.undo()) wStrokes.pop(); return; } // nét vẽ xuyên lúc xoay màn: bỏ qua, không phạt
   const target = g.strokes[gStroke];
-  const thr = Math.max(18, g.k*11);
+  const tlen = polyLen(target);
+  if(!pts || pts.length<2){
+    // chạm 1 điểm: với nét NGẮN (dấu chấm chữ i/j) đó là cử chỉ đúng — biến thành nét tí hon để chấm
+    if(!pts || !pts.length || tlen > g.k*8){ if(wHist.undo()) wStrokes.pop(); return; }
+    pts = [pts[0], [pts[0][0]+0.1, pts[0][1]+0.1]];
+  }
+  // threshold theo độ dài nét: nét chấm 6px không được hưởng ngưỡng 34px của nét dài
+  const thr = Math.max(14, Math.min(g.k*11, tlen*0.8 + g.k*2));
   const dist = Math.min(strokeDist(pts, target), strokeDist(pts, [...target].reverse()));
   if(dist < thr){
     gStroke++;
     wStrokes=[]; wHist.reset(); drawTemplate(); // "snap": thay nét run tay bằng nét chuẩn màu xanh
     if(gStroke >= g.strokes.length){
       const earned = gFailsTotal<=1?3 : gFailsTotal<=3?2 : 1;
+      // chống farm: viết lại chữ đã đạt điểm bằng/thấp hơn best chỉ ăn tối đa 1⭐ (vẫn khuyến khích ôn, hết cày 7⭐/phút)
+      const award = earned > (writeBest[charKey()]||0) ? earned : Math.min(1, earned);
       if(earned > (writeBest[charKey()]||0)){
         writeBest[charKey()]=earned;
         localStorage.setItem('bhv_write', JSON.stringify(writeBest));
       }
       ovCallback = ()=>{ wIdx=(wIdx+1)%WRITE_SETS[wSet].length; resetWrite(); };
       if(questActive!==null) ovCallback = (curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;
-      showResult(earned, 'Bé viết đúng thứ tự nét!');
+      showResult(award, 'Bé viết đúng thứ tự nét!');
     }else{
       sndGood(); strokeFails=0;
       speak(`Bé vẽ nét số ${NUMVI[gStroke]||gStroke+1} nhé!`);
     }
   }else{
+    // nét DÀI (khuyết trên ~400px) mà bé vẽ đúng hướng nhưng nhấc tay giữa chừng: không phạt, nhắc vẽ một hơi
+    if(tlen > g.k*60){
+      const frac = Math.min(1, polyLen(pts)/tlen);
+      if(frac>0.3 && frac<0.9){
+        const part = resample(target, 24).slice(0, Math.max(2, Math.round(24*frac)));
+        if(Math.min(strokeDist(pts, part), strokeDist(pts, [...part].reverse())) < thr){
+          if(wHist.undo()) wStrokes.pop();
+          speak('Gần đúng rồi! Bé vẽ cả nét một hơi nhé!');
+          return;
+        }
+      }
+    }
     gFailsTotal++; strokeFails++;
     if(wHist.undo()) wStrokes.pop(); // xoá nét sai của bé
     sndBad();
@@ -276,6 +302,7 @@ function gradeWrite(){
   const precision = checked?near/checked:0;
   const pct = coverage * Math.min(1, precision/0.55);
   const earned = pct>=0.75?3 : pct>=0.5?2 : pct>=0.28?1 : 0;
+  const award = earned > (writeBest[charKey()]||0) ? earned : Math.min(1, earned); // chống farm như guide mode
   if(earned > (writeBest[charKey()]||0)){
     writeBest[charKey()]=earned;
     localStorage.setItem('bhv_write', JSON.stringify(writeBest));
@@ -284,5 +311,5 @@ function gradeWrite(){
   if(earned===0) ovCallback = resetWrite;
   // quest: phải viết ĐÚNG chữ của trạm — đổi sang chữ/số dễ hơn không được tính qua trạm
   if(questActive!==null) ovCallback = (earned>=1 && curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;
-  showResult(earned, earned>0 ? `Viết đẹp lắm! (${Math.round(pct*100)}%)` : 'Thử lại nhé!');
+  showResult(award, earned>0 ? `Viết đẹp lắm! (${Math.round(pct*100)}%)` : 'Thử lại nhé!');
 }

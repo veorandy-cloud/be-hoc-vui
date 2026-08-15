@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v8'; // v8: reveal ảnh thật sau khi tô màu (pic-reveal)
+const VERSION = 'bhv-v9'; // v9: đợt hotfix audit (offline manifest ảnh, rebase canvas, threshold nét, cap sao mic)
 const AUDIO_CACHE = 'bhv-audio-v1';   // giữ ổn định giữa các version app để không tải lại 8MB audio
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
@@ -46,12 +46,21 @@ async function warmAudio() {
         fetch(u).then(r => { if (r.status === 200) return cache.put(u, r); }).catch(() => {})
       ));
     }
+    // dọn mp3 mồ côi (câu đã đổi/xoá qua các đợt deploy) — cache không phình vô hạn trên iPad
+    const valid = new Set(urls);
+    for (const req of await cache.keys()) if (!valid.has(req.url)) await cache.delete(req);
   } catch (e) {}
 }
 async function warmImages() {
   try {
-    const man = await (await fetch('assets/images/manifest.json')).json();
+    const manUrl = new URL('assets/images/manifest.json', self.registration.scope).href;
+    const res = await fetch(manUrl);
+    if (!res.ok) return;
     const cache = await caches.open(IMG_CACHE);
+    // PHẢI cache chính manifest: english.js fetch nó lúc boot TRƯỚC khi SW control trang (lần mở đầu)
+    // — không có bản cache thì offline lần 2 IMG_MAN=null, 119 ảnh nằm sẵn trong cache mà không có map để dùng
+    await cache.put(manUrl, res.clone());
+    const man = await res.json();
     const urls = Object.values(man).map(f => new URL('assets/images/en/' + f, self.registration.scope).href);
     for (let i = 0; i < urls.length; i += 8) {
       await Promise.all(urls.slice(i, i + 8).map(async u => {
@@ -59,6 +68,9 @@ async function warmImages() {
         return fetch(u).then(r => { if (r.status === 200) return cache.put(u, r); }).catch(() => {});
       }));
     }
+    // dọn ảnh mồ côi (từ đã đổi trang Wikipedia qua các đợt) — trừ chính manifest
+    const valid = new Set(urls); valid.add(manUrl);
+    for (const req of await cache.keys()) if (!valid.has(req.url)) await cache.delete(req);
   } catch (e) {}
 }
 self.addEventListener('message', e => {
