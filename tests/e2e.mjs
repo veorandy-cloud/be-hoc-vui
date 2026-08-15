@@ -43,6 +43,21 @@ for (const id of ['scr-write', 'scr-read', 'scr-draw', 'scr-en', 'scr-quest', 's
 await page.click('#sticker-shelf');
 await page.waitForTimeout(300);
 ok(await page.$eval('#scr-stickers', el => el.classList.contains('active')), 'vào màn sticker');
+
+// 2b. đảo sticker 3D: WebGL render ra hình (hoặc fallback tử tế nếu máy không có WebGL)
+await page.click('#btn-island', { force: true });
+await page.waitForTimeout(1500);
+const isl = await page.evaluate(() => {
+  const fb = !!document.querySelector('.island-fallback');
+  let px = 0;
+  const c = document.querySelector('#island-canvas');
+  // không có preserveDrawingBuffer → phải render đồng bộ ngay trước khi đọc pixel (cùng task JS)
+  if (c && typeof islReady !== 'undefined' && islReady) {
+    try { islRenderer.render(islScene, islCam); px = c.toDataURL().length; } catch (e) { px = -1; }
+  }
+  return { fb, px, ready: typeof islReady !== 'undefined' && islReady };
+});
+ok(isl.ready && isl.px > 20000, `đảo 3D render (canvas ${isl.px}b${isl.fb ? ', FALLBACK' : ''})`);
 await goHome();
 
 // 3. quiz tập đọc phản hồi khi chọn đáp án

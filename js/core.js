@@ -232,7 +232,8 @@ function showScreen(id){
   $('#btn-home').style.display = id==='scr-home' ? 'none' : '';
   const t = {'scr-home':'🌈 Bé Học Vui','scr-write':'✏️ Tập viết','scr-read':'📖 Tập đọc',
              'scr-draw':'🎨 Vẽ','scr-en':'🐣 Tiếng Anh','scr-stickers':'🎁 Bộ sưu tập',
-             'scr-quest':'🗺️ Thám hiểm','scr-music':'🎵 Ca hát','scr-parent':'👨‍👩‍👧 Phụ huynh'};
+             'scr-quest':'🗺️ Thám hiểm','scr-music':'🎵 Ca hát','scr-parent':'👨‍👩‍👧 Phụ huynh',
+             'scr-island':'🏝️ Đảo Sticker'};
   $('#hdr-title').textContent = t[id];
   $('#btn-parent').style.display = id==='scr-home' ? '' : 'none';
   if(id==='scr-home'){ $('#hello-text').textContent = helloLine(); }
@@ -241,6 +242,7 @@ function showScreen(id){
   if(id==='scr-draw') initDraw();
   if(id==='scr-en') initEnglish();
   if(id==='scr-stickers') renderStickers();
+  if(id==='scr-island') enterIsland();
   if(id==='scr-quest') questShowMap();
   if(id==='scr-parent') initParent();
   if(id==='scr-music') initMusic();

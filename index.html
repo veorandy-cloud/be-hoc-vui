@@ -196,7 +196,16 @@
     <!-- STICKERS -->
     <section id="scr-stickers" class="screen">
       <div id="sticker-progress"></div>
+      <button id="btn-island" class="btn">🏝️ Xem Đảo Sticker 3D</button>
       <div id="sticker-grid"></div>
+    </section>
+
+    <!-- ISLAND 3D -->
+    <section id="scr-island" class="screen">
+      <div id="island-wrap">
+        <canvas id="island-canvas"></canvas>
+        <div id="island-hint">👆 Vuốt để xoay đảo — chạm sticker để nghe tên</div>
+      </div>
     </section>
 
     <!-- PARENT -->
@@ -249,6 +258,8 @@
 <script src="js/english.js"></script>
 <script src="js/music.js"></script>
 <script src="js/quest.js"></script>
+<script src="assets/vendor/three.min.js"></script>
+<script src="js/island.js"></script>
 <script>
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   navigator.serviceWorker.register('sw.js')

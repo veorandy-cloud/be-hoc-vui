@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v5'; // v4: thêm js/strokes.js (Phase 3 thứ tự nét)
+const VERSION = 'bhv-v6'; // v6: Đảo Sticker 3D (three.min.js + js/island.js)
 const AUDIO_CACHE = 'bhv-audio-v1';   // giữ ổn định giữa các version app để không tải lại 8MB audio
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
@@ -13,7 +13,8 @@ const KEEP = [VERSION, AUDIO_CACHE, FONT_CACHE, IMG_CACHE];
 const CORE = [
   '.', 'index.html', 'css/style.css',
   'js/data.js', 'js/strokes.js', 'js/core.js', 'js/paint.js', 'js/writing.js', 'js/reading.js',
-  'js/drawing.js', 'js/english.js', 'js/music.js', 'js/quest.js',
+  'js/drawing.js', 'js/english.js', 'js/music.js', 'js/quest.js', 'js/island.js',
+  'assets/vendor/three.min.js',
   'manifest.webmanifest', 'assets/audio/manifest.json'
 ];
 

@@ -91,6 +91,10 @@ D.STICKERS.forEach((s, i) => {
   vi(`Bé cần ${GOLD_BASE + (i + 1) * GOLD_COST} sao để mở sticker này nhé!`);
 });
 
+// đảo sticker 3D (island.js)
+vi('Đây là Đảo Sticker của bé! Chạm vào sticker để nghe tên nhé!');
+vi('Đảo còn trống! Bé kiếm sao đổi sticker để đảo đông vui nhé!');
+
 fs.writeFileSync(path.join(__dirname, 'phrases.json'), JSON.stringify(out, null, 1), 'utf8');
 console.log('phrases:', out.length,
   'vi:', out.filter(p => p.lang === 'vi').length,

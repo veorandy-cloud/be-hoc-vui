@@ -122,7 +122,7 @@ function highlightLine(li){
 function singSong(){
   if(!curSong) return;
   stopSong(); ensureAC(); singing=true;
-  songGain=AC.createGain(); songGain.connect(AC.destination);
+  songGain=AC.createGain(); songGain.gain.value=.85; songGain.connect(AC.destination); // đỉnh tổng pad+kick+bass+melody+hat ≈1.04 → hạ chút cho khỏi clip
   const beat=60/curSong.bpm;
   let t=0.2;
   curSong.lines.forEach((ln,li)=>{
@@ -132,7 +132,8 @@ function singSong(){
     playPad(root, t, lineDur); playPad(root+7, t, lineDur); // nền hoà âm: gốc + quãng 5
     // nhịp đệm: kick + bass gảy (gốc/quãng 5 luân phiên) mỗi phách, hi-hat ở phách lệch
     let bi=0;
-    for(let bt=0; bt<lineDur-.01; bt+=beat, bi++){
+    const fullBeats=Math.floor(lineDur/beat+.001)*beat; // dòng lẻ nửa phách: không đặt bass/kick vào nửa phách cuối (tràn vào khoảng nghỉ)
+    for(let bt=0; bt<fullBeats-.01; bt+=beat, bi++){
       if(bi%2===0) playKick(t+bt);
       playBass(bi%2 ? root+7 : root, t+bt, beat*.9);
       playHat(t+bt+beat/2);
