@@ -410,14 +410,24 @@ const PICS = [
 `<svg viewBox="0 0 400 300"><ellipse cx="200" cy="284" rx="170" ry="9" fill="#fff" stroke="#333" stroke-width="4"/><polygon points="60,66 66,80 60,94 54,80" fill="#fff" stroke="#333" stroke-width="3"/><polygon points="340,46 346,60 340,74 334,60" fill="#fff" stroke="#333" stroke-width="3"/><polygon points="360,140 366,154 360,168 354,154" fill="#fff" stroke="#333" stroke-width="3"/><path d="M70 150 Q60 135 48 145 Q38 155 48 168 L70 185 L92 168 Q102 155 92 145 Q80 135 70 150 Z" fill="#fff" stroke="#333" stroke-width="3"/><circle cx="316" cy="180" r="18" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="330" cy="210" r="16" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="314" cy="238" r="15" fill="#fff" stroke="#333" stroke-width="4"/><ellipse cx="225" cy="195" rx="82" ry="52" fill="#fff" stroke="#333" stroke-width="4"/><rect x="165" y="235" width="17" height="48" rx="6" fill="#fff" stroke="#333" stroke-width="4"/><rect x="205" y="235" width="17" height="48" rx="6" fill="#fff" stroke="#333" stroke-width="4"/><rect x="250" y="235" width="17" height="48" rx="6" fill="#fff" stroke="#333" stroke-width="4"/><rect x="288" y="235" width="17" height="48" rx="6" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="208" cy="98" r="18" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="216" cy="130" r="17" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="222" cy="162" r="16" fill="#fff" stroke="#333" stroke-width="4"/><polygon points="170,180 148,85 200,75 225,185" fill="#fff" stroke="#333" stroke-width="4"/><polygon points="135,52 115,4 158,44" fill="#fff" stroke="#333" stroke-width="4"/><path d="M128 36 L142 46 M121 22 L136 33" fill="none" stroke="#333" stroke-width="3"/><polygon points="165,54 178,26 190,56" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="158" cy="46" r="13" fill="#fff" stroke="#333" stroke-width="4"/><ellipse cx="152" cy="78" rx="42" ry="30" transform="rotate(-12 152 78)" fill="#fff" stroke="#333" stroke-width="4"/><circle cx="140" cy="74" r="5" fill="#333"/><path d="M132 64 L124 58 M138 62 L134 54" fill="none" stroke="#333" stroke-width="3"/><circle cx="118" cy="86" r="3" fill="#333"/></svg>`
 ];
 
+/* key = tên file ảnh THẬT trong assets/images (manifest) — hiện sau khi bé lưu tranh tô; en = từ tiếng Anh đọc kèm */
 const PIC_META=[
-  {em:'🐟',nm:'Cá'},{em:'🏠',nm:'Nhà'},{em:'🦋',nm:'Bướm'},{em:'🌸',nm:'Hoa'},
-  {em:'🚗',nm:'Ô tô'},{em:'🚀',nm:'Tên lửa'},{em:'🦕',nm:'Khủng long'},{em:'🐱',nm:'Mèo'},
-  {em:'🌳',nm:'Cây táo'},{em:'🍦',nm:'Kem'},{em:'🤖',nm:'Robot'},{em:'🏰',nm:'Lâu đài'},
-  {em:'🦁',nm:'Sư tử'},{em:'🚂',nm:'Tàu hoả'},{em:'🦚',nm:'Con công'},{em:'🌻',nm:'Hướng dương'},{em:'🐬',nm:'Cá heo'},{em:'🦉',nm:'Cú mèo'},{em:'🚒',nm:'Xe cứu hoả'},{em:'🌈',nm:'Cầu vồng'},
-  {em:'🐘',nm:'Voi'},{em:'🦒',nm:'Hươu cao cổ'},{em:'🐢',nm:'Rùa'},{em:'🦀',nm:'Cua'},
-  {em:'🚁',nm:'Trực thăng'},{em:'⛵',nm:'Thuyền buồm'},{em:'🐝',nm:'Ong'},{em:'🍄',nm:'Nhà nấm'},
-  {em:'🎂',nm:'Bánh kem'},{em:'🐧',nm:'Cánh cụt'},{em:'🌙',nm:'Đêm trăng'},{em:'🦄',nm:'Kỳ lân'}
+  {em:'🐟',nm:'Cá',key:'fish',en:'fish'},{em:'🏠',nm:'Nhà',key:'house',en:'house'},
+  {em:'🦋',nm:'Bướm',key:'butterfly',en:'butterfly'},{em:'🌸',nm:'Hoa',key:'flower',en:'flower'},
+  {em:'🚗',nm:'Ô tô',key:'car',en:'car'},{em:'🚀',nm:'Tên lửa',key:'rocket',en:'rocket'},
+  {em:'🦕',nm:'Khủng long',key:'dinosaur',en:'dinosaur'},{em:'🐱',nm:'Mèo',key:'cat',en:'cat'},
+  {em:'🌳',nm:'Cây táo',key:'apple tree',en:'apple tree'},{em:'🍦',nm:'Kem',key:'ice cream',en:'ice cream'},
+  {em:'🤖',nm:'Robot',key:'robot',en:'robot'},{em:'🏰',nm:'Lâu đài',key:'castle',en:'castle'},
+  {em:'🦁',nm:'Sư tử',key:'lion',en:'lion'},{em:'🚂',nm:'Tàu hoả',key:'train',en:'train'},
+  {em:'🦚',nm:'Con công',key:'peacock',en:'peacock'},{em:'🌻',nm:'Hướng dương',key:'sunflower',en:'sunflower'},
+  {em:'🐬',nm:'Cá heo',key:'dolphin',en:'dolphin'},{em:'🦉',nm:'Cú mèo',key:'owl',en:'owl'},
+  {em:'🚒',nm:'Xe cứu hoả',key:'fire truck',en:'fire truck'},{em:'🌈',nm:'Cầu vồng',key:'rainbow',en:'rainbow'},
+  {em:'🐘',nm:'Voi',key:'elephant',en:'elephant'},{em:'🦒',nm:'Hươu cao cổ',key:'giraffe',en:'giraffe'},
+  {em:'🐢',nm:'Rùa',key:'turtle',en:'turtle'},{em:'🦀',nm:'Cua',key:'crab',en:'crab'},
+  {em:'🚁',nm:'Trực thăng',key:'helicopter',en:'helicopter'},{em:'⛵',nm:'Thuyền buồm',key:'boat',en:'boat'},
+  {em:'🐝',nm:'Ong',key:'bee',en:'bee'},{em:'🍄',nm:'Nhà nấm',key:'mushroom',en:'mushroom'},
+  {em:'🎂',nm:'Bánh kem',key:'cake',en:'cake'},{em:'🐧',nm:'Cánh cụt',key:'penguin',en:'penguin'},
+  {em:'🌙',nm:'Đêm trăng',key:'night sky',en:'moon'},{em:'🦄',nm:'Kỳ lân',key:null,en:'unicorn'}
 ];
 
 /* export cho node (scripts/list-phrases.cjs); browser bỏ qua */

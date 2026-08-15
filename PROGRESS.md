@@ -71,6 +71,11 @@ Plan cải tiến 4 đợt:
 - **Nội dung dày thêm**: Tập đọc **44 từ** (+14: cua, ốc, chim, gấu, dứa, xoài, dưa hấu, xe đạp, ghế, mũ, giày, cầu vồng…) + **16 câu điền từ** (+6) · Tiếng Anh **16 chủ đề / 149 từ** (+⚽ Sports 8 từ, +🌿 Nature 8 từ) với **102 ảnh thật** (soi mắt cả 16 ảnh mới; sea phải thử 3 trang Wikipedia: Sea→bản đồ, Ocean→Trái Đất, Wind wave→✓ sóng biển) · Ca hát **12 bài** (+Itsy Bitsy Spider, +Happy Birthday — đều public domain) · Thám hiểm **4 vùng / 20 trạm** (+🏝️ Đảo Kho Báu: trạm viết chữ g khuyết dưới, EN Sports, memory Nature, boss)
 - Audio **899/899** (+64 câu; gen_audio từng dính lỗi console cp1252 khi in chữ 'Đ' → chạy với `PYTHONIOENCODING=utf-8`) · sw `bhv-v7` · e2e **ALL PASS 23/23**
 
+### Reveal ảnh thật sau khi tô màu — 2026-08-15
+- Bé bấm 💾 lưu tranh tô → hiện **ảnh THẬT của thứ vừa tô** với hiệu ứng "sống" (ken-burns: zoom + lướt chéo + nghiêng nhẹ như máy quay tài liệu) + giọng đọc "Bé tô xong bức tranh X rồi!" + từ tiếng Anh. Kỳ lân không có ảnh thật → emoji nhún nhảy.
+- `PIC_META` thêm `key` (ảnh manifest) + `en`; **+18 ảnh thật mới** (120 tổng) — soi mắt từng ảnh, đổi 4 trang Wikipedia sau khi soi (House→vườn Nhật ✗ → Single-family detached home; Dinosaur→phiến hoá thạch ✗ → Tyrannosaurus xương dựng; Turtle→ảnh ghép ✗ → Green sea turtle; Orchard ✗ → Fruit tree). Video thật KHÔNG khả thi: Wikimedia chỉ có WebM, iOS không phát được.
+- Audio **948/948** (+49: 32 câu khen theo tên tranh + từ EN mới; câu "Bánh kem" fail 4 lần liên tiếp — vẫn chỉ là flaky, thử tay câu gốc ra 30KB → rerun là xong) · saveToGallery nhận callback `onSaved`, có reveal thì không đọc chồng câu "Đã lưu" · sw `bhv-v8` · e2e **25 assertion**.
+
 ## Quyết định thiết kế đã chốt
 - 2D cho phần học, 3D chỉ cho khu phần thưởng (không full 3D)
 - Ảnh thật (photo CC0) cho từ vựng; thư viện/asset mã nguồn mở bundle local; **không** nhúng iframe/dịch vụ bên thứ ba

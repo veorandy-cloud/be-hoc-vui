@@ -91,6 +91,12 @@ D.STICKERS.forEach((s, i) => {
   vi(`Bé cần ${GOLD_BASE + (i + 1) * GOLD_COST} sao để mở sticker này nhé!`);
 });
 
+// tô màu xong → reveal ảnh thật (drawing.js showPicReveal)
+D.PIC_META.forEach(p => {
+  vi(`Bé tô xong bức tranh ${p.nm} rồi! Đẹp tuyệt vời!`);
+  if (p.en) en(p.en);
+});
+
 // đảo sticker 3D (island.js)
 vi('Đây là Đảo Sticker của bé! Chạm vào sticker để nghe tên nhé!');
 vi('Đảo còn trống! Bé kiếm sao đổi sticker để đảo đông vui nhé!');

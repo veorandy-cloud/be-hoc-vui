@@ -119,6 +119,15 @@ const linePixels = await page.$eval('#color-line', c => {
 ok(linePixels > 5000, `tô màu: nét tranh đã render (${linePixels} px)`);
 const picsN = await page.evaluate(() => PICS.length);
 ok(picsN >= 32, `kho tranh tô: ${picsN} tranh`);
+
+// 5c. lưu tranh tô → reveal ảnh THẬT "sống" của thứ vừa tô
+await page.click('#c-save', { force: true });
+await page.waitForTimeout(800);
+ok(await page.$eval('#pic-reveal', el => el.classList.contains('show')), 'lưu tranh tô: reveal ảnh thật hiện ra');
+const prImg = await page.$eval('#pr-img', img => img.style.display !== 'none' && img.naturalWidth > 50);
+ok(prImg, 'reveal: ảnh thật đã tải');
+await page.click('#pr-close', { force: true });
+await page.waitForTimeout(250);
 await goHome();
 
 // 5b. bài hát có nhạc đệm: bấm Hát → melody + bass/hat/kick được lên lịch

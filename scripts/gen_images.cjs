@@ -20,8 +20,15 @@ const WIKI = {
   'ice cream': 'Ice cream', star: 'Star', ball: 'Ball',
   football: 'Football (ball)', basketball: 'Basketball (ball)', tennis: 'Tennis ball',
   badminton: 'Shuttlecock', baseball: 'Baseball (ball)', hockey: 'Field hockey',
-  shell: 'Seashell', sea: 'Wind wave', beach: 'Beach', tree: 'Tree', leaf: 'Leaf', garden: 'Garden' // sea: trang 'Sea' ra bản đồ vệ tinh, 'Ocean' ra ảnh Trái Đất — 'Wind wave' mới ra sóng biển thật
+  shell: 'Seashell', sea: 'Wind wave', beach: 'Beach', tree: 'Tree', leaf: 'Leaf', garden: 'Garden', // sea: trang 'Sea' ra bản đồ vệ tinh, 'Ocean' ra ảnh Trái Đất — 'Wind wave' mới ra sóng biển thật
+  peacock: 'Peafowl', 'fire truck': 'Fire engine', 'night sky': 'Night sky',
+  'apple tree': 'Fruit tree', sunflower: 'Common sunflower',
+  // soi mắt: House→vườn Nhật, Dinosaur→phiến hoá thạch, Turtle→ảnh ghép — đổi trang cụ thể hơn
+  house: 'Single-family detached home', dinosaur: 'Tyrannosaurus', turtle: 'Green sea turtle'
 };
+// ảnh thật cho tranh tô màu (PIC_META.key) — hiện khi bé lưu tranh
+const PIC_EXTRA = ['house','butterfly','rocket','dinosaur','apple tree','robot','castle','peacock',
+  'sunflower','dolphin','owl','fire truck','turtle','crab','bee','mushroom','penguin','night sky'];
 const slug = w => w.toLowerCase().replace(/\s+/g, '-');
 
 const UA = { 'User-Agent': 'BeHocVui-kids-app/1.0 (education; contact via github veorandy-cloud)' };
@@ -41,6 +48,7 @@ async function fetchRetry(url, asJson) {
 (async () => {
   const words = [];
   for (const th of PHOTO_THEMES) (D.EN_THEMES[th] || []).forEach(it => words.push(it.w));
+  PIC_EXTRA.forEach(w => words.push(w));
   const manifest = {};
   let okCount = 0, fail = [];
   for (const w of words) {

@@ -361,3 +361,21 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
 #island-canvas{width:100%;height:100%;display:block;touch-action:none}
 #island-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(255,255,255,.88);padding:8px 18px;border-radius:999px;font-size:15px;font-weight:700;pointer-events:none;white-space:nowrap}
 .island-fallback{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:700;line-height:1.6}
+
+/* ===== Pic reveal: anh that "song" sau khi be luu tranh to ===== */
+#pic-reveal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(30,25,60,.55);padding:20px}
+#pic-reveal.show{display:flex}
+.pr-card{background:var(--card);border:4px solid var(--ink);border-radius:28px;box-shadow:var(--shadow);padding:16px;max-width:min(560px,92vw);width:100%;display:flex;flex-direction:column;gap:12px;align-items:center;animation:prPop .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes prPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.pr-imgwrap{width:100%;aspect-ratio:4/3;border-radius:18px;overflow:hidden;border:3px solid var(--ink);background:#EAF4FF;position:relative}
+#pr-img{width:100%;height:100%;object-fit:cover;display:none;animation:kenburns 9s ease-in-out infinite alternate}
+@keyframes kenburns{ /* may quay tai lieu: zoom + luot cheo + nghieng nhe nhu dang tho */
+  0%{transform:scale(1.04) translate(0,0) rotate(0deg)}
+  50%{transform:scale(1.14) translate(-2.5%,-1.5%) rotate(.4deg)}
+  100%{transform:scale(1.24) translate(2%,-3%) rotate(-.4deg)}
+}
+#pr-emoji{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:120px;animation:prBounce 1.6s ease-in-out infinite}
+@keyframes prBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.08)}}
+#pr-title{font-family:"Baloo 2";font-size:26px;font-weight:800;text-align:center}
+#pr-title .pr-en{font-size:19px;color:#0284C7;font-weight:700}
+#pr-close{font-family:"Baloo 2";font-size:20px;font-weight:800;padding:12px 30px;border-radius:999px;border:3px solid var(--ink);background:var(--sun);cursor:pointer;box-shadow:var(--shadow)}

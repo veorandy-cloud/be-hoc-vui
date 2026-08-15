@@ -91,7 +91,7 @@ function switchDrawTab(free){
   if(free) requestAnimationFrame(()=>{ if(sizeCanvas($('#draw-canvas'))) freeHist.reset(); });
   else initColor();
 }
-function saveToGallery(canvas, withWhiteBg){
+function saveToGallery(canvas, withWhiteBg, onSaved){
   const out=document.createElement('canvas');
   out.width=canvas.width; out.height=canvas.height;
   const octx=out.getContext('2d');
@@ -115,7 +115,26 @@ function saveToGallery(canvas, withWhiteBg){
   document.body.appendChild(fly);
   setTimeout(()=>fly.remove(), 2600);
   confetti(); sndWin();
-  speak(overwrote ? 'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!' : 'Đã lưu tranh của bé! Đẹp lắm!');
+  if(onSaved) onSaved(); // reveal tự nói câu khen riêng — không đọc chồng câu "Đã lưu"
+  else speak(overwrote ? 'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!' : 'Đã lưu tranh của bé! Đẹp lắm!');
+}
+/* ==== reveal: ảnh THẬT "sống" (ken-burns) của thứ bé vừa tô — bé thấy con vật/đồ vật thật ==== */
+function showPicReveal(i){
+  const m=PIC_META[i]; if(!m) return;
+  const img=$('#pr-img'), emo=$('#pr-emoji');
+  const file = m.key && IMG_MAN && IMG_MAN[m.key];
+  if(file){
+    img.src='assets/images/en/'+file;
+    img.style.display='block'; emo.style.display='none';
+    img.onerror=()=>{ img.style.display='none'; emo.style.display='flex'; emo.textContent=m.em; };
+  }else{ // không có ảnh thật (kỳ lân) hoặc manifest chưa tải → emoji nhún nhảy
+    img.style.display='none'; emo.style.display='flex'; emo.textContent=m.em;
+  }
+  $('#pr-title').innerHTML=`${m.em} ${m.nm}<br><span class="pr-en">Tiếng Anh: ${m.en}</span>`;
+  $('#pic-reveal').classList.add('show');
+  const gen=uiGen;
+  speakAsync(`Bé tô xong bức tranh ${m.nm} rồi! Đẹp tuyệt vời!`)
+    .then(()=>{ if(gen===uiGen && $('#pic-reveal').classList.contains('show')) speak(m.en,'en-US'); });
 }
 function saveArt(){ saveToGallery($('#draw-canvas'), true); }
 function openGallery(){
@@ -187,12 +206,17 @@ function initColor(){
     out.width=CW; out.height=CH;
     const octx=out.getContext('2d');
     octx.drawImage(paint,0,0); octx.drawImage(line,0,0);
-    saveToGallery(out, false);
+    saveToGallery(out, false, ()=>showPicReveal(curPic));
   };
+  const closeReveal=()=>{ $('#pic-reveal').classList.remove('show'); stopSpeak(); };
+  $('#pr-close').onclick=closeReveal;
+  $('#pic-reveal').onclick=e=>{ if(e.target.id==='pic-reveal') closeReveal(); };
   loadPic(0);
 }
 let picGen=0; // token chống race: onload của tranh cũ (decode chậm) không được vẽ đè tranh mới
+let curPic=0; // tranh đang tô — dùng cho reveal ảnh thật khi lưu
 function loadPic(i){
+  curPic=i;
   const paint=$('#color-paint'), line=$('#color-line');
   const pctx=paint.getContext('2d'), lctx=line.getContext('2d');
   pctx.fillStyle='#fff'; pctx.fillRect(0,0,CW,CH);
