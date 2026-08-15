@@ -18,6 +18,8 @@ function initWrite(){
     bindDraw(wCanvas, wCtx,
       ()=>({mode:'pen', brush:wNib, color:wPen, size:wNib==='marker'?11:14}),
       pts=>{ wStrokes.push(pts); if(wMode==='guide') guideCheck(pts); }, undefined, wHist);
+    // nét đặt bút SAU khi xoay màn là toạ độ sạch — giải giáp cờ để không nuốt im lặng nét đúng đầu tiên
+    wCanvas.addEventListener('pointerdown', ()=>{ wResized=false; }, true);
     $$('#write-modes [data-wmode]').forEach(b=>b.onclick=()=>{
       wMode=b.dataset.wmode;
       $$('#write-modes [data-wmode]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
@@ -34,7 +36,6 @@ function initWrite(){
     $('#w-speak').onclick = speakChar;
     $('#w-clear').onclick = function(){ confirmTap(this, 'Bấm lần nữa để xoá nhé!', resetWrite); };
     $('#w-grade').onclick = gradeWrite;
-    $('#w-grade').style.display = wMode==='free' ? '' : 'none'; // chấm coverage chỉ có nghĩa ở chế độ Tự viết
     $('#write-word').onclick = ()=>{ const {ex}=charInfo(); speak(ex.w); };
     // CHỈ nút có data-set — nút chế độ (#write-modes) cũng mang class .tab, không được bắt nhầm
     $$('#scr-write [data-set]').forEach(b=>b.onclick=()=>{
@@ -48,6 +49,8 @@ function initWrite(){
     });
     wReady=true;
   }
+  // chạy MỖI lần vào màn (không chỉ lần đầu): quest ép wMode='guide' thì nút ✅ phải ẩn theo
+  $('#w-grade').style.display = wMode==='free' ? '' : 'none';
   requestAnimationFrame(()=>{ sizeCanvas(wCanvas); resetWrite(); });
 }
 function speakChar(){
@@ -147,7 +150,7 @@ function drawTemplate(){
   wCtx.strokeText(curChar(), r.width/2, r.height/2);
   wCtx.setLineDash([]);
 }
-function redrawWrite(){ wStrokes=[]; wHist.reset(); drawTemplate(); }
+function redrawWrite(){ wAnim++; wStrokes=[]; wHist.reset(); drawTemplate(); } // wAnim++: huỷ demo đang bay (resize/fonts.ready vẽ lại canvas thì demo cũ vẽ theo toạ độ cũ)
 function resetWrite(){
   wAnim++; gStroke=0; strokeFails=0; gFailsTotal=0;
   redrawWrite();
@@ -157,7 +160,9 @@ function resetWrite(){
   const speakThenDemo = onDone => {
     const gen=uiGen, tok=wAnim;
     speakAsync('Bé xem cô viết mẫu nhé!').then(()=>{
-      if(gen!==uiGen || tok!==wAnim) return;
+      // gStroke>0: bé sốt ruột đồ đúng nét NGAY trong lúc cô nói (speak của guideCheck cắt câu
+      // này làm promise resolve sớm) — bé đã bắt đầu thì bỏ demo mở màn, đừng vẽ đè tiến độ
+      if(gen!==uiGen || tok!==wAnim || gStroke>0) return;
       playDemo(null, onDone);
     });
   };
@@ -314,7 +319,10 @@ function gradeWrite(){
   if(!targets.length) return;
   const pts = wStrokes.flat();
   if(pts.length<5){ speak('Bé hãy viết theo nét mờ nhé!'); return; }
-  const TH2 = 26*26;
+  // bán kính trúng phải scale theo cỡ chữ: 26px cố định to hơn nửa thân chữ thường trên màn nhỏ
+  // → kẻ 1 đường thẳng cũng được 100%; 26 chỉ giữ cho đường font-fallback (raster thưa 7px)
+  const TH = g ? Math.max(12, g.k*5) : 26;
+  const TH2 = TH*TH;
   let hit=0;
   for(const [tx,ty] of targets){
     for(const [px,py] of pts){

@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v12'; // v12: Tự viết theo mẫu VN + karaoke giọng hát đè nhạc đệm
+const VERSION = 'bhv-v13'; // v13: 19 fix từ deep audit (chấm điểm, distractor, karaoke duck, quota album...)
 const AUDIO_CACHE = 'bhv-audio-v2';   // v2: lời bài hát regen pitch/rate mới (cùng tên file, khác nội dung → PHẢI bump)
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
@@ -140,6 +140,11 @@ self.addEventListener('fetch', e => {
       e.respondWith(serveAudio(req).catch(() => new Response('', { status: 503 })));
     } else if (url.pathname.includes('/assets/images/')) {
       e.respondWith(serveSWR(req, IMG_CACHE)); // ảnh Phase 2: cache riêng, bump VERSION không mất
+    } else if (req.mode === 'navigate') {
+      // link share kèm ?fbclid/?zarsrc lúc offline: cache chỉ có '.' và 'index.html' (không query)
+      // → miss; fallback về index.html thay vì trang trắng 'offline'
+      e.respondWith(serveSWR(req, VERSION).then(r =>
+        !r.ok ? caches.match('index.html').then(h => h || r) : r));
     } else {
       e.respondWith(serveSWR(req, VERSION));
     }

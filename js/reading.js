@@ -32,9 +32,15 @@ function qTone(){
 }
 function qWord(){
   const t = rand(WORD_ITEMS);
-  // distractor không được trùng tiếng-cuối-bỏ-dấu với đáp án (quả DỨA vs quả DƯA hấu — bé chưa đọc thạo dấu)
-  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').split(' ').pop();
-  const [d1, d2] = pick(WORD_ITEMS.filter(x => x!==t && norm(x.w)!==norm(t.w)), 2);
+  // distractor không được trùng tiếng-bỏ-dấu với đáp án (quả DỨA vs quả DƯA hấu — bé chưa đọc thạo dấu)
+  // tiếng gây nhầm có thể đứng GIỮA từ ('dưa' trong 'quả dưa hấu') → so tiếng-cuối mỗi bên với MỌI tiếng bên kia
+  const syls = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').split(' ');
+  const ts = syls(t.w), tl = ts[ts.length-1];
+  const [d1, d2] = pick(WORD_ITEMS.filter(x => {
+    if(x===t) return false;
+    const xs = syls(x.w);
+    return !xs.includes(tl) && !ts.includes(xs[xs.length-1]);
+  }), 2);
   return {
     say:`Tìm từ: ${t.w}`, html:t.em,
     choices:[{html:t.w,correct:true,cls:'word'},{html:d1.w,cls:'word'},{html:d2.w,cls:'word'}]
@@ -58,7 +64,10 @@ function qVan2(){
   const pool = VAN2.filter(x=>x.week<=learnWeek.v);
   const t = rand(pool);
   const wd = rand(t.words);
-  const [d1, d2] = pick(VAN2.filter(x=>x!==t), 2);
+  // loại vần THẬT SỰ có trong từ đang hiển thị (bỏ dấu thanh, giữ ă/â/ô/ơ/ư): 'con lợn' hiện trên
+  // màn hình thì 'on' không được làm distractor — tiếng 'con' chứa vần on, bé chọn sẽ bị chấm sai oan
+  const bare = wd.w.normalize('NFD').replace(/[̣̀́̃̉]/g,'').normalize('NFC');
+  const [d1, d2] = pick(VAN2.filter(x=>x!==t && !bare.includes(x.van)), 2);
   return {
     say:`Vần gì trong tiếng ${wd.tieng}?`,
     html:`<div style="font-size:52px">${wd.em}</div><div class="sentence">${wd.w}</div>`,
@@ -69,7 +78,8 @@ function qDigraph(){
   const pool = DIGRAPHS.filter(x=>x.week<=learnWeek.d);
   const t = rand(pool);
   const wd = rand(t.words);
-  const [d1, d2] = pick(DIGRAPHS.filter(x=>x!==t), 2);
+  // loại âm ghép mở đầu BẤT KỲ tiếng nào của từ hiển thị ('khăn quàng' → loại cả 'qu'), bao luôn target
+  const [d1, d2] = pick(DIGRAPHS.filter(x=>!wd.w.split(' ').some(s=>s.startsWith(x.d))), 2);
   return {
     say:`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`,
     html:`<div style="font-size:52px">${wd.em}</div><div class="sentence">${wd.w}</div>`,

@@ -17,6 +17,9 @@ function initEnglish(){
       const b=document.createElement('button');
       b.className='btn chip'+(i===0?' on':''); b.textContent=th;
       b.onclick=()=>{ enTheme=th;
+        // chip luôn hiện kể cả giữa quiz/trạm quest: bấm = kết thúc lượt dở — huỷ timer câu hỏi cũ,
+        // bỏ xác nhận 🏠 oan, và QUAN TRỌNG: rời trạm (không thì bé qua trạm nghe bằng game lật hình chắc-thắng)
+        uiGen++; roundActive=false; questActive=null;
         $$('#en-chips .chip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
         renderFlash(); showEnLearn(); };
       chips.appendChild(b);
@@ -51,10 +54,11 @@ function renderFlash(){
     c.innerHTML=`${phFor(it,'ph')}<div class="wd">${it.w}</div><div class="vi">${it.vi}</div>`;
     c.onclick=()=>{
       c.classList.remove('wiggle'); void c.offsetWidth; c.classList.add('wiggle');
-      const gen=uiGen;
+      const gen=uiGen, tap=++flashTap;
       // mic chỉ bật SAU khi cô đọc xong từ — bật lúc 900ms cố định thì mic thu chính giọng app (loa ngoài tự "nói đúng" ăn sao)
+      // tap token: chạm nhanh thẻ A→B thì promise thẻ A (bị cắt) không được mở mic nghe từ CŨ chặn lượt thẻ mới
       speakAsync(it.w,'en-US').then(()=>{
-        if(micMode && SRCls) setTimeout(()=>{ if(gen===uiGen) listenFor(it.w, c); }, 150);
+        if(micMode && SRCls) setTimeout(()=>{ if(gen===uiGen && tap===flashTap) listenFor(it.w, c); }, 150);
       });
     };
     grid.appendChild(c);
@@ -62,7 +66,7 @@ function renderFlash(){
 }
 /* 🎤 bé nói theo — Web Speech Recognition (chỉ hiện khi trình duyệt hỗ trợ) */
 const SRCls = window.SpeechRecognition || window.webkitSpeechRecognition;
-let micMode=false, recBusy=false;
+let micMode=false, recBusy=false, flashTap=0;
 function listenFor(word, card){
   if(recBusy) return;
   try{
@@ -79,7 +83,9 @@ function listenFor(word, card){
       // alias: cách gọi phổ biến của trẻ vẫn tính đúng (match từng alternative riêng để không ghép giả 2 alt)
       const ALIAS={'table tennis':['ping pong'],'football':['soccer'],'plane':['airplane']};
       const names=[word.toLowerCase(), ...(ALIAS[word.toLowerCase()]||[])];
-      if(names.some(n=>alts.some(a=>a.includes(n)))){
+      // so theo RANH GIỚI TỪ, không substring trần: bé nói 'bear' không được tính đúng cho thẻ 'ear'
+      const tokWords = s => ' ' + s.replace(/[^a-z0-9]+/g,' ').trim() + ' ';
+      if(names.some(n=>alts.some(a=>tokWords(a).includes(tokWords(n))))){
         sndWin(); confetti(); if(micStar()) addStars(1);
         speak('Great job!','en-US');
       }else{

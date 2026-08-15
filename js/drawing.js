@@ -39,9 +39,10 @@ function initDraw(){
         $$('.stamp-btn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); };
       stampRow.appendChild(b);
     });
-    $$('.size-btn').forEach(b=>b.onclick=()=>{
+    // chỉ nút cỡ của tab Vẽ tự do ([data-size]) — '.size-btn' trần quét luôn 3 nút [data-csize] của tab Tô màu
+    $$('.size-btn[data-size]').forEach(b=>b.onclick=()=>{
       dSize=+b.dataset.size;
-      $$('.size-btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      $$('.size-btn[data-size]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
     });
     $$('#draw-brushes [data-brush]').forEach(b=>b.onclick=()=>{
       dBrush=b.dataset.brush; if(dMode==='eraser'||dMode==='stamp'){ dMode='pen'; syncTools(); }
@@ -124,7 +125,7 @@ function saveToGallery(canvas, withWhiteBg, onSaved){
   let saved=false;
   while(true){
     try{ localStorage.setItem('bhv_gallery', JSON.stringify(gal)); saved=true; break; }
-    catch(e){ if(!gal.length) break; gal.shift(); }
+    catch(e){ if(gal.length<=1) break; gal.shift(); } // KHÔNG shift tranh mới (phần tử cuối) — thà báo đầy còn hơn lưu album rỗng mà vẫn khen 'Đã lưu'
   }
   if(!saved){ sndBad(); speak('Bộ nhớ đầy rồi, không lưu được tranh bé ơi!'); return; }
   // magic moment: tranh nhảy múa rồi bay lên trời
@@ -220,6 +221,8 @@ function initColor(){
     $$('#scr-draw [data-csize]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   });
   $('#c-save').onclick=()=>{
+    // chưa tô nét nào mà bấm 💾: đừng khen 'tô xong đẹp tuyệt vời' + đừng cho tranh trắng chiếm slot album
+    if(!colorHist.len()){ sndBad(); speak('Bé tô màu trước rồi lưu nhé!'); return; }
     const out=document.createElement('canvas');
     out.width=CW; out.height=CH;
     const octx=out.getContext('2d');

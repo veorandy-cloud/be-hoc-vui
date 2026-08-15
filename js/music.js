@@ -2,10 +2,10 @@
 /* ============ MUSIC (Ca hát tiếng Anh) ============ */
 /* Giai điệu tổng hợp bằng Web Audio (nhạc dân gian public domain) — không cần file mp3 */
 
-let songTimers=[], singing=false, curSong=null, musicReady=false;
+let songTimers=[], singing=false, curSong=null, musicReady=false, curLine=-1;
 let songGain=null, songOscs=[], songSession=0; // session token: chuỗi async của lượt cũ tự chết khi dừng/đổi bài
 function stopSong(){
-  songSession++;
+  songSession++; curLine=-1;
   songTimers.forEach(clearTimeout); songTimers=[];
   singing=false;
   // dừng THẬT các nốt đã lên lịch trên timeline Web Audio (clearTimeout không chạm tới chúng)
@@ -14,6 +14,9 @@ function stopSong(){
   stopSpeak();
   $$('.lyric-line').forEach(l=>l.classList.remove('now'));
 }
+// khoá máy/chuyển app giữa bài: timer nền bị throttle, mở lại sẽ bắn dồn 1 lượt (bài nhảy thẳng
+// tới kết thúc + sao oan). Dừng sạch khi page ẩn — bé quay lại tự bấm Hát.
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden && singing) stopSong(); });
 function playNote(midi, t, dur){
   const f = 440*Math.pow(2,(midi-69)/12);
   const o=AC.createOscillator(), g=AC.createGain();
@@ -130,9 +133,10 @@ function singSong(){
     // karaoke: giọng cô đọc lời ĐÈ lên nhạc đệm theo đúng timeline; nhạc tự hạ xuống khi hát rồi trả lại
     songTimers.push(setTimeout(()=>{
       if(!singing) return;
+      curLine=li; // token: câu bị câu sau cắt thì .then của nó KHÔNG được trả nhạc to đè lên câu đang hát
       if(songGain) songGain.gain.setTargetAtTime(0.28, AC.currentTime, 0.08);
       speakAsync(ln.t, curSong.lang||'en-US').then(()=>{
-        if(singing && songGain) songGain.gain.setTargetAtTime(0.85, AC.currentTime, 0.15);
+        if(singing && songGain && curLine===li) songGain.gain.setTargetAtTime(0.85, AC.currentTime, 0.15);
       });
     }, t*1000));
     const lineDur = ln.n.reduce((s,[,b])=>s+b,0)*beat;

@@ -137,7 +137,19 @@ ok(linePixels > 5000, `tô màu: nét tranh đã render (${linePixels} px)`);
 const picsN = await page.evaluate(() => PICS.length);
 ok(picsN >= 32, `kho tranh tô: ${picsN} tranh`);
 
-// 5c. lưu tranh tô → reveal ảnh THẬT "sống" của thứ vừa tô
+// 5c-guard. chưa tô gì mà bấm 💾 → bị chặn, KHÔNG reveal, không chiếm slot album
+await page.click('#c-save', { force: true });
+await page.waitForTimeout(400);
+ok(await page.$eval('#pic-reveal', el => !el.classList.contains('show')), 'lưu tranh trắng: bị chặn, không reveal');
+
+// 5c. tô 1 nét thật rồi lưu → reveal ảnh THẬT "sống" của thứ vừa tô
+const cbox = await page.$eval('#color-paint', el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; });
+await page.mouse.move(cbox.x + cbox.width * 0.4, cbox.y + cbox.height * 0.5);
+await page.mouse.down();
+for (let i = 1; i <= 8; i++)
+  await page.mouse.move(cbox.x + cbox.width * (0.4 + i * 0.02), cbox.y + cbox.height * 0.5);
+await page.mouse.up();
+await page.waitForTimeout(300);
 await page.click('#c-save', { force: true });
 await page.waitForTimeout(800);
 ok(await page.$eval('#pic-reveal', el => el.classList.contains('show')), 'lưu tranh tô: reveal ảnh thật hiện ra');

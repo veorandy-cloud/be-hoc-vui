@@ -47,6 +47,7 @@ function makeHistory(getCv, getCtx, baseDraw){
       }
     },
     undo(){ if(!acts.length) return false; acts.pop(); replayAll(); return true; },
+    len(){ return acts.length; }, // đã vẽ/tô gì chưa (auto-bake luôn giữ ≥10 acts nên không về 0 oan)
     reset(){ acts=[]; base=null; },
     // sau xoay màn: nhận canvas HIỆN TẠI làm nền — undo/auto-bake không xoá trắng tranh đã vẽ trước xoay
     rebase(){

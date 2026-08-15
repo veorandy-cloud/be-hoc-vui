@@ -38,6 +38,7 @@ const en = t => add(t, 'en');
   'Gần đúng rồi! Bé vẽ cả nét một hơi nhé!',
   'Bé đặt bút ở chấm vàng nhé!',
   'Bấm lần nữa để nhập dữ liệu và ghi đè nhé!',
+  'Bé tô màu trước rồi lưu nhé!',
   'Mình chơi lâu rồi, nghỉ mắt chút nhé!'
 ].forEach(vi);
 // tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
