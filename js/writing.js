@@ -129,8 +129,14 @@ function drawTemplate(){
   const r = wCanvas.parentElement.getBoundingClientRect();
   wCtx.clearRect(0,0,r.width,r.height);
   drawGrid(r);
-  if(wMode!=='free' && glyphStrokes()){
-    drawSkeleton(wMode==='guide'?gStroke:0, wMode==='guide'?gStroke:-1);
+  const g = glyphStrokes();
+  if(g){
+    // MỌI chế độ đều dùng mẫu chữ tập viết VN (strokes.js) — font Baloo là chữ in Latin (chữ 'a' 2 tầng), sai mẫu
+    if(wMode==='free'){
+      g.strokes.forEach(s=>drawPoly(s, '#E3E3EE', Math.max(6,g.k*5), [10,8])); // nét mờ đứt để bé đồ tự do
+    }else{
+      drawSkeleton(wMode==='guide'?gStroke:0, wMode==='guide'?gStroke:-1);
+    }
     return;
   }
   wCtx.font = templateFont(wCanvas);
@@ -147,12 +153,19 @@ function resetWrite(){
   redrawWrite();
   const {name}=charInfo();
   const full = `${wSet==='num'?'số':'chữ'} ${name}${wSet==='up'?' hoa':''}`;
-  if(wMode==='demo' && glyphStrokes()){ speak('Bé xem cô viết mẫu nhé!'); playDemo(); }
+  // nói XONG mới chạy demo — chữ ngắn (c, o) demo xong trong <1s, chạy song song thì callback cắt ngang lời cô
+  const speakThenDemo = onDone => {
+    const gen=uiGen, tok=wAnim;
+    speakAsync('Bé xem cô viết mẫu nhé!').then(()=>{
+      if(gen!==uiGen || tok!==wAnim) return;
+      playDemo(null, onDone);
+    });
+  };
+  if(wMode==='demo' && glyphStrokes()){ speakThenDemo(); }
   else if(wMode==='guide' && glyphStrokes()){
     // chữ bé CHƯA từng viết đạt: cô viết mẫu 1 lượt trước rồi mới mời đồ (flow LetterSchool)
     if(!writeBest[charKey()]){
-      speak('Bé xem cô viết mẫu nhé!');
-      playDemo(null, ()=>{ redrawWrite(); speak('Bé vẽ nét số một nhé!'); });
+      speakThenDemo(()=>{ redrawWrite(); speak('Bé vẽ nét số một nhé!'); });
     } else speak('Bé vẽ nét số một nhé!');
   }
   else speak(`Bé hãy viết ${full} nhé!`);
@@ -220,6 +233,8 @@ function polyLen(pts){
 function guideCheck(pts){
   const g = glyphStrokes(); if(!g || gStroke>=g.strokes.length) return;
   if(wResized){ wResized=false; if(wHist.undo()) wStrokes.pop(); return; } // nét vẽ xuyên lúc xoay màn: bỏ qua, không phạt
+  // nudge nghỉ mắt vừa hiện GIỮA nét (pointer capture vẫn trả pointerup về canvas): bỏ qua nét, đừng speak đè lời nhắc
+  if($('#nudge') && $('#nudge').classList.contains('show')){ if(wHist.undo()) wStrokes.pop(); return; }
   const target = g.strokes[gStroke];
   const tlen = polyLen(target);
   if(!pts || pts.length<2){
@@ -278,19 +293,24 @@ function guideCheck(pts){
   }
 }
 function gradeWrite(){
-  // ponytail: coverage x precision, chưa xét thứ tự nét — nâng cấp bằng stroke-path data nếu cần chặt hơn
-  const r = wCanvas.parentElement.getBoundingClientRect();
-  const off = document.createElement('canvas');
-  off.width=r.width; off.height=r.height;
-  const oc = off.getContext('2d');
-  oc.font = templateFont(wCanvas);
-  oc.textAlign='center'; oc.textBaseline='middle';
-  oc.fillStyle='#000';
-  oc.fillText(curChar(), r.width/2, r.height/2);
-  const img = oc.getImageData(0,0,off.width,off.height).data;
-  const targets=[];
-  for(let y=0;y<off.height;y+=7) for(let x=0;x<off.width;x+=7)
-    if(img[(y*off.width+x)*4+3]>128) targets.push([x,y]);
+  // ponytail: coverage x precision, chưa xét thứ tự nét — chấm theo MẪU CHỮ VN (strokes.js), font chỉ là fallback
+  const g = glyphStrokes();
+  let targets=[];
+  if(g){
+    g.strokes.forEach(s=>{ targets.push(...resample(s, Math.max(4, Math.round(polyLen(s)/7)))); });
+  }else{
+    const r = wCanvas.parentElement.getBoundingClientRect();
+    const off = document.createElement('canvas');
+    off.width=r.width; off.height=r.height;
+    const oc = off.getContext('2d');
+    oc.font = templateFont(wCanvas);
+    oc.textAlign='center'; oc.textBaseline='middle';
+    oc.fillStyle='#000';
+    oc.fillText(curChar(), r.width/2, r.height/2);
+    const img = oc.getImageData(0,0,off.width,off.height).data;
+    for(let y=0;y<off.height;y+=7) for(let x=0;x<off.width;x+=7)
+      if(img[(y*off.width+x)*4+3]>128) targets.push([x,y]);
+  }
   if(!targets.length) return;
   const pts = wStrokes.flat();
   if(pts.length<5){ speak('Bé hãy viết theo nét mờ nhé!'); return; }

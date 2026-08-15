@@ -88,6 +88,11 @@ function ttsSpeak(text, lang){
   return new Promise(res=>{
     let done=false;
     const fin=()=>{ if(!done){ done=true; res(); } };
+    // máy KHÔNG có giọng vi (getVoices đã load mà VOICES.vi null): voice mặc định tiếng Anh
+    // đọc tiếng Việt thành tiếng ngọng vô nghĩa — thà im lặng còn hơn
+    try{
+      if(lang.startsWith('vi') && !VOICES.vi && speechSynthesis.getVoices().length){ fin(); return; }
+    }catch(e){}
     try{
       const u = makeUtter(text, lang);
       u.rate = 0.9;

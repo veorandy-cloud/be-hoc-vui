@@ -6,11 +6,11 @@ const path = require('path');
 
 const out = []; // {t, lang}
 const seen = new Set();
-function add(t, lang) {
+function add(t, lang, kind) {
   const key = lang + '|' + t;
   if (seen.has(key)) return;
   seen.add(key);
-  out.push({ t, lang });
+  out.push(kind ? { t, lang, kind } : { t, lang });
 }
 const vi = t => add(t, 'vi');
 const en = t => add(t, 'en');
@@ -86,10 +86,11 @@ for (const items of Object.values(D.EN_THEMES)) {
 en('Great job!');
 en('Almost! Try again!');
 
-// bài hát (dân ca Việt có lang:'vi-VN' — đọc giọng Việt)
+// bài hát (dân ca Việt có lang:'vi-VN' — đọc giọng Việt); LỜI hát tag kind:'song' → gen pitch/rate tươi hơn
 D.SONGS.forEach(s => {
-  const f = s.lang === 'vi-VN' ? vi : en;
-  f(s.title); s.lines.forEach(l => f(l.t));
+  const lg = s.lang === 'vi-VN' ? 'vi' : 'en';
+  add(s.title, lg);
+  s.lines.forEach(l => add(l.t, lg, 'song'));
 });
 
 // sticker (thường + tier VÀNG: GOLD_COST/GOLD_BASE phải khớp app.js)

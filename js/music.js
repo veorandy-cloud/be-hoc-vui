@@ -127,6 +127,14 @@ function singSong(){
   let t=0.2;
   curSong.lines.forEach((ln,li)=>{
     songTimers.push(setTimeout(()=>highlightLine(li), t*1000));
+    // karaoke: giọng cô đọc lời ĐÈ lên nhạc đệm theo đúng timeline; nhạc tự hạ xuống khi hát rồi trả lại
+    songTimers.push(setTimeout(()=>{
+      if(!singing) return;
+      if(songGain) songGain.gain.setTargetAtTime(0.28, AC.currentTime, 0.08);
+      speakAsync(ln.t, curSong.lang||'en-US').then(()=>{
+        if(singing && songGain) songGain.gain.setTargetAtTime(0.85, AC.currentTime, 0.15);
+      });
+    }, t*1000));
     const lineDur = ln.n.reduce((s,[,b])=>s+b,0)*beat;
     const root = ln.n[0][0]-12;
     playPad(root, t, lineDur); playPad(root+7, t, lineDur); // nền hoà âm: gốc + quãng 5

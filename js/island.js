@@ -114,6 +114,7 @@ function islBindInput(cv){
   const up=e=>{
     if(!down || e.pointerId!==down.id) return;
     const dt=performance.now()-down.t, dist=Math.hypot(e.clientX-down.x,e.clientY-down.y);
+    if($('#nudge') && $('#nudge').classList.contains('show')){ down=null; return; } // đừng speak tên sticker đè lời nhắc nghỉ mắt
     if(dt<400 && dist<8){                                       // chạm (không phải vuốt) → tìm sticker
       const r=cv.getBoundingClientRect();
       const ndc=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1);

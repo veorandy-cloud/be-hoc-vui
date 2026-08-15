@@ -100,7 +100,7 @@ function launchStation(idx){
       promptEl:$('#qp-prompt'), speakBtn:$('#qp-speak'),
       choicesEl:$('#qp-choices'), progressEl:$('#qp-progress'),
       questions:s.q(),
-      firstDelay: s.boss ? 2500 : 300,
+      firstDelay: s.boss ? 4500 : 300, // câu "Trạm trùm đây!..." dài 4.1s ĐO THẬT — 2500ms cũ cắt giữa câu 100%
       onDone(right,total){
         const pass = right>=Math.ceil(total/2);
         ovCallback = pass ? questComplete : questRetry;

@@ -50,10 +50,12 @@ function renderFlash(){
     c.className='flash';
     c.innerHTML=`${phFor(it,'ph')}<div class="wd">${it.w}</div><div class="vi">${it.vi}</div>`;
     c.onclick=()=>{
-      speak(it.w,'en-US');
       c.classList.remove('wiggle'); void c.offsetWidth; c.classList.add('wiggle');
-      const gen=uiGen; // rời màn trong 900ms thì không bật mic trên màn khác
-      if(micMode && SRCls) setTimeout(()=>{ if(gen===uiGen) listenFor(it.w, c); }, 900);
+      const gen=uiGen;
+      // mic chỉ bật SAU khi cô đọc xong từ — bật lúc 900ms cố định thì mic thu chính giọng app (loa ngoài tự "nói đúng" ăn sao)
+      speakAsync(it.w,'en-US').then(()=>{
+        if(micMode && SRCls) setTimeout(()=>{ if(gen===uiGen) listenFor(it.w, c); }, 150);
+      });
     };
     grid.appendChild(c);
   });

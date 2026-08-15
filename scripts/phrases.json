@@ -3265,27 +3265,33 @@
  },
  {
   "t": "A B C D E F G",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "H I J K L M N O P",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Q R S — T U V",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "W — X — Y and Z",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Now I know my A B C",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Next time won’t you sing with me",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Twinkle Twinkle Little Star",
@@ -3293,19 +3299,23 @@
  },
  {
   "t": "Twinkle, twinkle, little star",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "How I wonder what you are",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Up above the world so high",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Like a diamond in the sky",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Mary Had a Little Lamb",
@@ -3313,15 +3323,18 @@
  },
  {
   "t": "Mary had a little lamb",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Little lamb, little lamb",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Its fleece was white as snow",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Baa Baa Black Sheep",
@@ -3329,19 +3342,23 @@
  },
  {
   "t": "Baa, baa, black sheep, have you any wool?",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Yes sir, yes sir, three bags full",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "One for the master, one for the dame",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "One for the little boy who lives down the lane",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Old MacDonald Had a Farm",
@@ -3349,15 +3366,18 @@
  },
  {
   "t": "Old MacDonald had a farm",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "E-I-E-I-O",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "And on his farm he had a cow",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Rain, Rain, Go Away",
@@ -3365,15 +3385,18 @@
  },
  {
   "t": "Rain, rain, go away",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Come again another day",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Little Johnny wants to play",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Row, Row, Row Your Boat",
@@ -3381,19 +3404,23 @@
  },
  {
   "t": "Row, row, row your boat",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Gently down the stream",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Merrily, merrily, merrily, merrily",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Life is but a dream",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "London Bridge Is Falling Down",
@@ -3401,15 +3428,18 @@
  },
  {
   "t": "London Bridge is falling down",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Falling down, falling down",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "My fair lady",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "If You’re Happy and You Know It",
@@ -3417,11 +3447,13 @@
  },
  {
   "t": "If you’re happy and you know it, clap your hands!",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "If you’re happy and you know it, then your face will surely show it",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Head, Shoulders, Knees and Toes",
@@ -3429,11 +3461,13 @@
  },
  {
   "t": "Head, shoulders, knees and toes, knees and toes",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "And eyes and ears and mouth and nose",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Itsy Bitsy Spider",
@@ -3441,19 +3475,23 @@
  },
  {
   "t": "The itsy bitsy spider climbed up the water spout",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Down came the rain and washed the spider out",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Out came the sun and dried up all the rain",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "And the itsy bitsy spider climbed up the spout again",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Happy Birthday",
@@ -3461,11 +3499,13 @@
  },
  {
   "t": "Happy birthday to you",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Happy birthday dear friend",
-  "lang": "en"
+  "lang": "en",
+  "kind": "song"
  },
  {
   "t": "Bắc Kim Thang",
@@ -3473,27 +3513,33 @@
  },
  {
   "t": "Bắc kim thang cà lang bí rợ",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Cột qua kèo là kèo qua cột",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Chú bán dầu qua cầu mà té",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Chú bán ếch ở lại làm chi",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Con le le đánh trống thổi kèn",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Con bìm bịp thổi tò tí te tò te",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Cò Lả",
@@ -3501,27 +3547,33 @@
  },
  {
   "t": "Con cò cò bay lả lả bay la",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Bay từ cửa phủ bay ra cánh đồng",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Tình tính tang là tang tính tình",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Ơi bạn rằng, ơi bạn ơi",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Rằng có biết biết hay chăng",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Rằng có nhớ nhớ hay chăng",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Lý Cây Xanh",
@@ -3529,15 +3581,18 @@
  },
  {
   "t": "Cái cây xanh xanh, thì lá cũng xanh",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Chim đậu trên cành, chim hót líu lo",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Líu lo là líu lo",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Trống Cơm",
@@ -3545,27 +3600,33 @@
  },
  {
   "t": "Tình bằng có cái trống cơm",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Khen ai khéo vỗ ố mấy bông mà nên bông",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Một bầy tang tình con xít",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Ố mấy lội, lội, lội sông",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Ố mấy đi tìm, em nhớ thương ai",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Con mắt ố mấy lim dim",
-  "lang": "vi"
+  "lang": "vi",
+  "kind": "song"
  },
  {
   "t": "Ngựa thần",

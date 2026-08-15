@@ -14,6 +14,8 @@ os.makedirs(AUDIO_DIR, exist_ok=True)
 
 VOICES = {"vi": "vi-VN-HoaiMyNeural", "en": "en-US-AnaNeural"}
 RATE = "-10%"  # chậm lại một chút cho trẻ
+# lời bài hát (kind='song'): nhanh + cao hơn cho tươi, đỡ "đơ" khi hát karaoke đè nhạc đệm
+SONG_RATE, SONG_PITCH = "+6%", "+25Hz"
 
 def phrase_id(lang: str, text: str) -> str:
     """djb2-xor, PHẢI khớp với phraseId() trong js/app.js.
@@ -35,7 +37,10 @@ async def gen_one(sem, item, results):
     async with sem:
         for attempt in range(3):
             try:
-                tts = edge_tts.Communicate(item["t"], VOICES[item["lang"]], rate=RATE)
+                if item.get("kind") == "song":
+                    tts = edge_tts.Communicate(item["t"], VOICES[item["lang"]], rate=SONG_RATE, pitch=SONG_PITCH)
+                else:
+                    tts = edge_tts.Communicate(item["t"], VOICES[item["lang"]], rate=RATE)
                 await tts.save(path)
                 print("ok ", item["lang"], item["t"][:50])
                 return
