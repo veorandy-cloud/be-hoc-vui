@@ -2,13 +2,15 @@
 /* ============ READING ============ */
 // cặp đồng âm với giọng Bắc (HoaiMy/voice iPad): nghe không phân biệt được → không cho làm nhiễu của nhau
 const AMBIG = [['s','x'],['d','r'],['i','y']];
+// tiếng Việt không có tiếng nào dùng 'q' một mình — thẻ dạy ÂM hiển thị 'qu' (đọc quờ, ví dụ quả quýt)
+const dispLetter = ch => ch==='q' ? 'qu' : ch;
 function qLetter(){
   const t = rand(VN_LETTERS);
   const grp = AMBIG.find(g=>g.includes(t)) || [];
   const [d1, d2] = pick(VN_LETTERS.filter(x=>x!==t && !grp.includes(x)), 2);
   return {
     say:`Đâu là chữ ${LETTER_NAMES[t]}?`, html:'❓',
-    choices:[{html:t,correct:true},{html:d1},{html:d2}]
+    choices:[{html:dispLetter(t),correct:true},{html:dispLetter(d1)},{html:dispLetter(d2)}]
   };
 }
 function qVan(){
@@ -180,9 +182,11 @@ function startRepeat(){
   $('#read-menu').style.display='none';
   $('#read-quiz').style.display='flex';
   const letters = pick(VN_LETTERS, 3).map(ch=>({
-    html:`<div style="font-size:52px">${EXAMPLES[ch].em}</div><div>${ch}</div>`,
+    html:`<div style="font-size:52px">${EXAMPLES[ch].em}</div><div>${dispLetter(ch)}</div>`,
     say:'Chữ '+LETTER_NAMES[ch],
-    match: ch==='y' ? [LETTER_NAMES[ch], ch, 'i'] : [LETTER_NAMES[ch], ch] // y đọc /i/ — bé nói 'i' vẫn đúng
+    match: ch==='y' ? [LETTER_NAMES[ch], ch, 'i']        // y đọc /i/ — bé nói 'i' vẫn đúng
+         : ch==='q' ? [LETTER_NAMES[ch], 'qu']           // thẻ hiện 'qu' — bé nói 'quờ'/'qu'
+         : [LETTER_NAMES[ch], ch]
   }));
   const words = pick(VN_LETTERS, 3).map(ch=>({
     html:`<div style="font-size:52px">${EXAMPLES[ch].em}</div><div class="sentence">${EXAMPLES[ch].w}</div>`,

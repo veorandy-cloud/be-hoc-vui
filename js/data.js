@@ -20,7 +20,7 @@ const STICKER_COST = 8; // 8 sao = 1 sticker mới
 const LETTER_NAMES = {
   a:'a', ă:'á', â:'ớ', b:'bờ', c:'cờ', d:'dờ', đ:'đờ', e:'e', ê:'ê', g:'gờ',
   h:'hờ', i:'i', k:'ca', l:'lờ', m:'mờ', n:'nờ', o:'o', ô:'ô', ơ:'ơ', p:'pờ',
-  q:'quy', r:'rờ', s:'sờ', t:'tờ', u:'u', ư:'ư', v:'vờ', x:'xờ', y:'y dài',
+  q:'quờ', r:'rờ', s:'sờ', t:'tờ', u:'u', ư:'ư', v:'vờ', x:'xờ', y:'y dài', // q đọc ÂM 'quờ' như bài qu (DIGRAPHS) — 'quy' là tên chữ, lạc hệ âm đọc bờ/cờ/dờ
   f:'ép', j:'giây', w:'vê kép', z:'dét',
   0:'không',1:'một',2:'hai',3:'ba',4:'bốn',5:'năm',6:'sáu',7:'bảy',8:'tám',9:'chín'
 };

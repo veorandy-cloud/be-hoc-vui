@@ -133,13 +133,40 @@ await flashes[1].click(); await page.waitForTimeout(700);
 await page.click('#en-g1', { force: true });
 await playQuiz('#en-choices', 'Tiếng Anh - Nghe chọn hình');
 await page.click('#en-g3', { force: true }); await page.waitForTimeout(600);
-for (let i = 0; i < 40 && !(await page.isVisible('#ov-next')); i++) {
-  const cards = await page.$$('#mem-grid button:not(.done):not(.open)');
-  if (cards.length < 2) { await page.waitForTimeout(400); continue; }
-  await cards[0].click({ force: true }); await page.waitForTimeout(250);
-  const again = await page.$$('#mem-grid button:not(.done):not(.open)');
-  if (again.length) await again[Math.floor(Math.random() * again.length)].click({ force: true });
-  await page.waitForTimeout(650);
+// chơi có trí nhớ như bé thật: cặp = emoji ↔ từ cùng item (đọc EN_THEMES), nhớ label thẻ đã lật
+const pairOf = await page.evaluate(() => {
+  const m = {};
+  EN_THEMES[enTheme].forEach(it => { m[it.em] = it.w; m[it.w] = it.em; });
+  return m;
+});
+const known = {};
+const readCard = i => page.$eval(`#mem-grid .mem-card:nth-child(${i + 1})`, e => e.textContent);
+for (let iter = 0; iter < 30 && !(await page.isVisible('#ov-next')); iter++) {
+  const states = await page.$$eval('#mem-grid .mem-card', els => els.map(e => e.classList.contains('done')));
+  const els = await page.$$('#mem-grid .mem-card');
+  // đã biết 1 cặp chưa lật xong → lật đúng cặp đó
+  let a = null, b = null;
+  for (const [i, l] of Object.entries(known)) {
+    if (states[+i]) continue;
+    const j = Object.keys(known).find(j => +j !== +i && !states[+j] && pairOf[l] === known[j]);
+    if (j !== undefined) { a = +i; b = +j; break; }
+  }
+  if (a !== null) {
+    await els[a].click({ force: true }); await page.waitForTimeout(300);
+    await els[b].click({ force: true }); await page.waitForTimeout(800);
+    continue;
+  }
+  // lật 1 thẻ chưa biết, ghi nhớ; nếu ra cặp với thẻ đã biết thì lật luôn, không thì lật thêm thẻ lạ
+  const u1 = states.findIndex((d, i) => !d && !(i in known));
+  if (u1 < 0) { await page.waitForTimeout(500); continue; }
+  await els[u1].click({ force: true }); await page.waitForTimeout(300);
+  known[u1] = await readCard(u1);
+  const mate = Object.keys(known).find(j => +j !== u1 && !states[+j] && pairOf[known[u1]] === known[j]);
+  let u2 = mate !== undefined ? +mate : states.findIndex((d, i) => !d && !(i in known) && i !== u1);
+  if (u2 < 0) u2 = states.findIndex((d, i) => !d && i !== u1);
+  await els[u2].click({ force: true }); await page.waitForTimeout(300);
+  known[u2] = await readCard(u2);
+  await page.waitForTimeout(1000); // chờ flip-back nếu lật sai
 }
 ok(await page.isVisible('#ov-next'), 'Tìm cặp: lật hết ra bảng kết quả');
 await shot('en-memory');
