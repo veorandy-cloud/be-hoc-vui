@@ -168,6 +168,8 @@ await page.click('#song-sing');
 await page.waitForTimeout(700);
 const oscN = await page.evaluate(() => songOscs.length);
 ok(oscN > 30, `bài hát lên lịch ${oscN} nguồn âm (melody + nhạc đệm)`);
+const pianoN = await page.evaluate(() => Object.keys(pianoBuf).length);
+ok(pianoN >= 17, `piano thật: ${pianoN}/17 sample đã decode (không còn nhạc bíp)`);
 await page.evaluate(() => stopSong());
 await goHome();
 

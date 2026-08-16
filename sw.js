@@ -5,7 +5,7 @@
      Precache toàn bộ theo manifest khi trang gửi 'warm-audio'.
    - Safari phát <audio> bằng Range request (206) — Cache API cấm put(206), nên SW tự cắt 206 từ bản full 200 trong cache.
    - Google Fonts (cross-origin) cache riêng để chữ không vỡ khi offline. */
-const VERSION = 'bhv-v16'; // v16: chữ q dạy đúng âm 'quờ' + thẻ hiển thị 'qu' (q không đứng một mình)
+const VERSION = 'bhv-v17'; // v17: bài hát thành nhạc không lời piano thật (bỏ giọng TTS đọc đè nhạc)
 const AUDIO_CACHE = 'bhv-audio-v2';   // v2: lời bài hát regen pitch/rate mới (cùng tên file, khác nội dung → PHẢI bump)
 const FONT_CACHE = 'bhv-fonts-v1';
 const IMG_CACHE = 'bhv-img-v1';       // ảnh thật Phase 2 (assets/images/) — cache riêng như audio
@@ -22,6 +22,15 @@ const CORE = [
   'assets/fonts/baloo2-800-latin.woff2','assets/fonts/baloo2-800-vietnamese.woff2',
   'assets/fonts/quicksand-500-latin.woff2','assets/fonts/quicksand-500-vietnamese.woff2',
   'assets/fonts/quicksand-700-latin.woff2','assets/fonts/quicksand-700-vietnamese.woff2',
+  // sample piano thật cho bài hát (FluidR3) — offline vẫn có nhạc
+  'assets/instruments/manifest.json',
+  'assets/instruments/piano/A3.mp3','assets/instruments/piano/A4.mp3',
+  'assets/instruments/piano/B3.mp3','assets/instruments/piano/Bb3.mp3','assets/instruments/piano/Bb4.mp3',
+  'assets/instruments/piano/C3.mp3','assets/instruments/piano/C4.mp3','assets/instruments/piano/C5.mp3',
+  'assets/instruments/piano/D3.mp3','assets/instruments/piano/D4.mp3',
+  'assets/instruments/piano/E3.mp3','assets/instruments/piano/E4.mp3',
+  'assets/instruments/piano/F3.mp3','assets/instruments/piano/F4.mp3',
+  'assets/instruments/piano/G2.mp3','assets/instruments/piano/G3.mp3','assets/instruments/piano/G4.mp3',
   // splash iOS (iOS tự fetch lúc mở từ home screen — cache để offline vẫn có)
   'assets/splash/768x1024-p.png','assets/splash/768x1024-l.png',
   'assets/splash/810x1080-p.png','assets/splash/810x1080-l.png',

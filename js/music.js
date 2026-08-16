@@ -1,11 +1,13 @@
 "use strict";
-/* ============ MUSIC (Ca hát tiếng Anh) ============ */
-/* Giai điệu tổng hợp bằng Web Audio (nhạc dân gian public domain) — không cần file mp3 */
+/* ============ MUSIC (Ca hát) ============ */
+/* Nhạc KHÔNG LỜI: giai điệu public domain chơi bằng sample piano thật (FluidR3, assets/instruments/),
+   oscillator chỉ là fallback khi sample chưa tải xong. Lời hiện highlight theo nhịp để bé tự hát;
+   giọng TTS chỉ còn ở "Đọc lời"/chạm từng câu (học đọc) — Hát không còn giọng máy đọc đè nhạc. */
 
-let songTimers=[], singing=false, curSong=null, musicReady=false, curLine=-1;
+let songTimers=[], singing=false, curSong=null, musicReady=false;
 let songGain=null, songOscs=[], songSession=0; // session token: chuỗi async của lượt cũ tự chết khi dừng/đổi bài
 function stopSong(){
-  songSession++; curLine=-1;
+  songSession++;
   songTimers.forEach(clearTimeout); songTimers=[];
   singing=false;
   // dừng THẬT các nốt đã lên lịch trên timeline Web Audio (clearTimeout không chạm tới chúng)
@@ -17,7 +19,33 @@ function stopSong(){
 // khoá máy/chuyển app giữa bài: timer nền bị throttle, mở lại sẽ bắn dồn 1 lượt (bài nhảy thẳng
 // tới kết thúc + sao oan). Dừng sạch khi page ẩn — bé quay lại tự bấm Hát.
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden && singing) stopSong(); });
+/* ==== sample piano thật — tải 1 lần khi vào màn Ca hát (~480KB, 17 nốt) ==== */
+let pianoBuf={}, pianoLoading=null;
+function loadPiano(){
+  if(pianoLoading) return pianoLoading;
+  pianoLoading = fetch('assets/instruments/manifest.json').then(r=>r.json()).then(man=>
+    Promise.all(Object.entries(man.notes).map(([m,f])=>
+      fetch('assets/instruments/piano/'+f).then(r=>r.arrayBuffer())
+        .then(ab=>new Promise((res,rej)=>AC.decodeAudioData(ab,res,rej)))
+        .then(buf=>{ pianoBuf[m]=buf; }).catch(()=>{})
+    ))
+  ).catch(()=>{}); // offline lần đầu chưa có sample → fallback oscillator, lần sau SW đã cache
+  return pianoLoading;
+}
+function playPiano(midi, t, dur, vol){
+  const buf = pianoBuf[midi];
+  if(!buf) return false;
+  const s=AC.createBufferSource(), g=AC.createGain();
+  s.buffer=buf; s.connect(g); g.connect(songGain||AC.destination);
+  const st=AC.currentTime+t;
+  g.gain.setValueAtTime(vol,st);
+  g.gain.setTargetAtTime(0.001, st+Math.max(.15,dur), .09); // piano tự vang — chỉ hãm đuôi cho khỏi chồng
+  s.start(st); s.stop(st+dur+0.7);
+  songOscs.push(s);
+  return true;
+}
 function playNote(midi, t, dur){
+  if(playPiano(midi, t, dur, .5)) return;
   const f = 440*Math.pow(2,(midi-69)/12);
   const o=AC.createOscillator(), g=AC.createGain();
   o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(songGain||AC.destination);
@@ -31,6 +59,7 @@ function playNote(midi, t, dur){
 /* ==== ban nhạc đệm (Web Audio, không cần file mp3) ==== */
 /* bass gảy từng phách — sine trầm, tắt nhanh như tiếng ukulele bass */
 function playBass(midi, t, dur){
+  if(playPiano(midi, t, Math.min(dur,.5), .3)) return;
   const f = 440*Math.pow(2,(midi-69)/12);
   const o=AC.createOscillator(), g=AC.createGain();
   o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(songGain||AC.destination);
@@ -72,6 +101,7 @@ function playKick(t){
 }
 /* bè đệm cho dày tiếng: sine trầm giữ suốt câu hát */
 function playPad(midi, t, dur){
+  if(playPiano(midi, t, dur, .12)) return;
   const f = 440*Math.pow(2,(midi-69)/12);
   const o=AC.createOscillator(), g=AC.createGain();
   o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(songGain||AC.destination);
@@ -99,6 +129,7 @@ function initMusic(){
     $('#song-back').onclick=()=>{ stopSong(); $('#song-view').style.display='none'; $('#song-list').style.display='grid'; };
     musicReady=true;
   }
+  loadPiano(); // tải sample sớm — bấm Hát là có piano thật ngay
   stopSong();
   $('#song-view').style.display='none';
   $('#song-list').style.display='grid';
@@ -129,16 +160,8 @@ function singSong(){
   const beat=60/curSong.bpm;
   let t=0.2;
   curSong.lines.forEach((ln,li)=>{
+    // nhạc không lời: chỉ highlight lời theo nhịp cho bé tự hát — không còn giọng TTS đọc đè nhạc
     songTimers.push(setTimeout(()=>highlightLine(li), t*1000));
-    // karaoke: giọng cô đọc lời ĐÈ lên nhạc đệm theo đúng timeline; nhạc tự hạ xuống khi hát rồi trả lại
-    songTimers.push(setTimeout(()=>{
-      if(!singing) return;
-      curLine=li; // token: câu bị câu sau cắt thì .then của nó KHÔNG được trả nhạc to đè lên câu đang hát
-      if(songGain) songGain.gain.setTargetAtTime(0.28, AC.currentTime, 0.08);
-      speakAsync(ln.t, curSong.lang||'en-US').then(()=>{
-        if(singing && songGain && curLine===li) songGain.gain.setTargetAtTime(0.85, AC.currentTime, 0.15);
-      });
-    }, t*1000));
     const lineDur = ln.n.reduce((s,[,b])=>s+b,0)*beat;
     const root = ln.n[0][0]-12;
     playPad(root, t, lineDur); playPad(root+7, t, lineDur); // nền hoà âm: gốc + quãng 5

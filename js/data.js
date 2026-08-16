@@ -311,7 +311,7 @@ const SONGS = [
     {t:'If you’re happy and you know it, then your face will surely show it', n:[[69,.5],[69,.5],[70,.5],[70,.5],[70,.5],[70,.5],[70,.5],[70,.5],[69,.5],[67,.5],[65,.5],[65,.5],[65,.5],[65,.5],[64,.5],[65,.5],[67,1.5]]},
     {t:'If you’re happy and you know it, clap your hands!', n:[[67,.5],[67,.5],[65,.5],[65,.5],[65,.5],[65,.5],[64,.5],[65,.5],[64,.5],[62,.5],[60,2]]}
   ]},
-  {em:'🙆', title:'Head, Shoulders, Knees and Toes', vi:'Đầu, vai, đầu gối, ngón chân', bpm:80, lines:[ // 108 → clip lời 4.92s tràn cửa sổ 3.89s, câu sau cắt cụt câu trước
+  {em:'🙆', title:'Head, Shoulders, Knees and Toes', vi:'Đầu, vai, đầu gối, ngón chân', bpm:108, lines:[ // nhạc không lời — không còn ràng buộc độ dài clip giọng, trả nhịp vui 108
     {t:'Head, shoulders, knees and toes, knees and toes', n:[[60,1],[64,1],[67,.5],[67,.5],[67,1],[67,.5],[67,.5],[67,.5],[67,1]]},
     {t:'Head, shoulders, knees and toes, knees and toes', n:[[62,1],[65,1],[69,.5],[69,.5],[69,1],[69,.5],[69,.5],[69,.5],[69,1]]},
     {t:'And eyes and ears and mouth and nose', n:[[64,.5],[65,.5],[67,1],[65,.5],[64,.5],[62,1],[64,.5],[62,.5],[60,2]]},
