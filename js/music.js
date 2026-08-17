@@ -32,7 +32,23 @@ function loadPiano(){
   ).catch(()=>{}); // offline lần đầu chưa có sample → fallback oscillator, lần sau SW đã cache
   return pianoLoading;
 }
-function playPiano(midi, t, dur, vol){
+/* FX bus dùng chung (tạo 1 lần): compressor "dán" tổng mix cho to mà không vỡ + reverb hall nhỏ tự sinh */
+let songFxIn=null;
+function songFx(){
+  if(songFxIn) return songFxIn;
+  const comp=AC.createDynamicsCompressor();
+  comp.threshold.value=-16; comp.knee.value=12; comp.ratio.value=3; comp.attack.value=.008; comp.release.value=.25;
+  comp.connect(AC.destination);
+  const inBus=AC.createGain(); inBus.connect(comp);
+  const sr=AC.sampleRate, len=Math.floor(sr*1.4);
+  const ir=AC.createBuffer(2,len,sr);
+  for(let ch=0;ch<2;ch++){ const d=ir.getChannelData(ch); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.8); }
+  const cv=AC.createConvolver(); cv.buffer=ir;
+  const wet=AC.createGain(); wet.gain.value=.28;
+  inBus.connect(cv); cv.connect(wet); wet.connect(comp);
+  return songFxIn=inBus;
+}
+function playPiano(midi, t, dur, vol, pan){
   // sample gần nhất + playbackRate — chơi được MỌI nốt (hợp âm đệm cần nốt ngoài 17 sample)
   let src=null, bd=99;
   for(const k in pianoBuf){ const d=Math.abs(k-midi); if(d<bd){ bd=d; src=+k; } }
@@ -40,7 +56,10 @@ function playPiano(midi, t, dur, vol){
   const s=AC.createBufferSource(), g=AC.createGain();
   s.buffer=pianoBuf[src];
   if(src!==midi) s.playbackRate.value=Math.pow(2,(midi-src)/12);
-  s.connect(g); g.connect(songGain||AC.destination);
+  s.connect(g);
+  let out=g;
+  if(pan && AC.createStereoPanner){ const p=AC.createStereoPanner(); p.pan.value=pan; g.connect(p); out=p; } // tách stereo nhẹ: đệm trái, melody phải
+  out.connect(songGain||AC.destination);
   // humanize: lệch ±10ms + lực gõ dao động nhẹ — bớt cảm giác máy đánh đàn
   const st=AC.currentTime+t+Math.random()*.012;
   g.gain.setValueAtTime(vol*(.92+Math.random()*.16),st);
@@ -50,7 +69,7 @@ function playPiano(midi, t, dur, vol){
   return true;
 }
 function playNote(midi, t, dur){
-  if(playPiano(midi, t, dur, .5)) return;
+  if(playPiano(midi, t, dur, .55, .15)) return;
   const f = 440*Math.pow(2,(midi-69)/12);
   const o=AC.createOscillator(), g=AC.createGain();
   o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(songGain||AC.destination);
@@ -136,72 +155,73 @@ function highlightLine(li){
 function singSong(){
   if(!curSong) return;
   stopSong(); ensureAC(); singing=true;
-  songGain=AC.createGain(); songGain.gain.value=.9; songGain.connect(AC.destination);
+  songGain=AC.createGain(); songGain.gain.value=.95; songGain.connect(songFx()); // qua compressor+reverb: to, dày, không vỡ
   const beat=60/curSong.bpm;
   const fast = curSong.bpm>=100; // bài nhanh: oom-pah + trống; bài ru: arpeggio êm, không trống
   // chủ âm = nốt kết bài (đồng dao/dân ca PD kết ở chủ âm) → hợp âm I–IV–V của giọng đó
   const lastLn = curSong.lines[curSong.lines.length-1];
   const tonic = lastLn.n[lastLn.n.length-1][0]%12;
   const CHORDS = [[0,4,7],[5,9,0],[7,11,2]].map(c=>c.map(x=>(x+tonic)%12)); // I, IV, V
-  const pickChord = (pcs, isLast)=>{
-    if(isLast) return CHORDS[0]; // ô cuối luôn về hợp âm chủ
-    let best=CHORDS[0], bs=-1;
-    for(const ci of [0,2,1]){ // hoà điểm thì ưu tiên I, rồi V, rồi IV
-      const sc = pcs.reduce((s,[pc,w])=>s+(CHORDS[ci].includes(pc)?w:0),0);
-      if(sc>bs){ bs=sc; best=CHORDS[ci]; }
-    }
-    return best;
-  };
   const bassOf = pc => 41+((pc-41)%12+12)%12; // đưa pitch-class về quãng F2..E3
   const midOf  = pc => 55+((pc-55)%12+12)%12; // quãng giữa G3..F#4, dưới melody
-  let t=0.2;
-  const measures=[]; // ô nhịp 2 phách: {t0, beats, pcs:[[pitchClass, trọng số]]}
+  /* ===== timeline LIỀN MẠCH trên lưới ô nhịp 2 phách: intro 1 ô bắt nhịp, mỗi câu chiếm TRÒN ô
+     (câu lẻ phách thì đệm lấp tới hết ô) — không còn nghỉ cứng nửa phách làm groove khựng giữa câu */
+  const t0=0.15;
+  let mt=t0 + 2*beat; // melody vào sau intro
+  const melody=[];
   curSong.lines.forEach((ln,li)=>{
-    // nhạc không lời: highlight lời theo nhịp cho bé tự hát — không còn giọng TTS đọc đè nhạc
-    songTimers.push(setTimeout(()=>highlightLine(li), t*1000));
-    const lineDur = ln.n.reduce((s,[,b])=>s+b,0)*beat;
-    let mt=0;
-    const evts = ln.n.map(([m,b])=>{ const e={m, at:mt}; mt+=b*beat; return e; });
-    const fullBeats = Math.floor(lineDur/beat+.001);
-    for(let bt=0; bt<fullBeats; bt+=2){
-      const beats = Math.min(2, fullBeats-bt);
-      const pcs = evts.filter(e=>e.at >= bt*beat-1e-3 && e.at < (bt+beats)*beat-1e-3)
-                      .map(e=>[e.m%12, e.at < bt*beat+1e-3 ? 2 : 1]); // nốt đầu ô nặng gấp đôi
-      measures.push({t0:t+bt*beat, beats, pcs});
-    }
-    ln.n.forEach(([m,b])=>{ playNote(m,t,b*beat); t+=b*beat; });
-    t+=beat*0.5; // nghỉ giữa các câu
+    songTimers.push(setTimeout(()=>highlightLine(li), mt*1000)); // highlight cho bé tự hát — không còn giọng TTS
+    let at=mt;
+    ln.n.forEach(([m,b])=>{ melody.push({m, at, dur:b*beat}); at+=b*beat; });
+    const beats = ln.n.reduce((s,[,b])=>s+b,0);
+    mt += Math.ceil(beats/2 - 1e-3)*2*beat;
   });
-  // đệm theo hợp âm từng ô nhịp
-  measures.forEach((ms,i)=>{
-    const [r,th,fi] = pickChord(ms.pcs, i===measures.length-1);
-    for(let b=0;b<ms.beats;b++){
-      const bt=ms.t0+b*beat;
-      if(fast){
-        playPiano(bassOf(r), bt, beat*.9, b%2 ? .2 : .28);   // oom: gốc đậm/nhẹ luân phiên
-        playPiano(midOf(th), bt+beat/2, beat*.4, .12);       // pah: 2 nốt hợp âm ở phách lệch
-        playPiano(midOf(fi), bt+beat/2, beat*.4, .1);
-        if(b%2===0) playKick(bt);
-        playHat(bt+beat/2);
-      }else{
-        playPiano(bassOf(r), bt, beat*.95, .24);             // arpeggio ru êm, không trống
-        playPiano(midOf(fi), bt+beat/2, beat*.45, .12);
-        if(b%2===1) playPiano(midOf(th), bt, beat*.45, .11);
+  const endT=mt;
+  // hợp âm từng ô: khớp nốt melody trong ô (nốt đầu ô nặng đôi); ô trống giữ hợp âm trước; ô cuối về I
+  const nMs=Math.round((endT-t0)/(2*beat));
+  let prev=CHORDS[0];
+  for(let i=0;i<nMs;i++){
+    const s=t0+i*2*beat;
+    const pcs=melody.filter(n=>n.at>=s-1e-3 && n.at<s+2*beat-1e-3).map(n=>[n.m%12, Math.abs(n.at-s)<1e-3?2:1]);
+    let ch=prev;
+    if(i===nMs-1) ch=CHORDS[0];
+    else if(pcs.length){
+      let bs=-1;
+      for(const ci of [0,2,1]){ // hoà điểm thì ưu tiên I, rồi V, rồi IV
+        const sc=pcs.reduce((sm,[pc,w])=>sm+(CHORDS[ci].includes(pc)?w:0),0);
+        if(sc>bs){ bs=sc; ch=CHORDS[ci]; }
       }
     }
-  });
+    prev=ch;
+    const [r,th,fi]=ch;
+    for(let b=0;b<2;b++){
+      const bt=s+b*beat;
+      if(fast){
+        playPiano(bassOf(b ? fi : r), bt, beat*.9, .38, -.15); // bass luân phiên gốc/quãng-5 (oom)
+        playPiano(midOf(th), bt+beat/2, beat*.42, .2, -.15);   // pah: 2 nốt hợp âm ở phách lệch
+        playPiano(midOf(fi), bt+beat/2, beat*.42, .17, -.15);
+        if(b===0) playKick(bt);
+        playHat(bt+beat/2);
+      }else{
+        playPiano(bassOf(r), bt, beat, .32, -.15);             // arpeggio ru êm, không trống
+        playPiano(midOf(fi), bt+beat/2, beat*.5, .18, -.15);
+        if(b===1) playPiano(midOf(th), bt, beat*.5, .16, -.15);
+      }
+    }
+  }
+  melody.forEach(n=>playNote(n.m, n.at, n.dur)); // melody đè lên nền, lệch phải nhẹ cho tách tiếng
   // kết bài ĐÚNG NHẠC: hợp âm chủ ngân dài, để vang tự tắt rồi mới dọn — không chặt cụt giữa tiếng đàn
-  playPiano(bassOf(tonic), t, beat*2, .28);
-  playPiano(bassOf(tonic)+12, t, beat*2, .18);
-  playPiano(midOf((tonic+4)%12), t, beat*2, .15);
-  playPiano(midOf((tonic+7)%12), t, beat*2, .13);
+  playPiano(bassOf(tonic), endT, beat*2, .36);
+  playPiano(bassOf(tonic)+12, endT, beat*2, .22);
+  playPiano(midOf((tonic+4)%12), endT, beat*2, .18);
+  playPiano(midOf((tonic+7)%12), endT, beat*2, .16);
   songTimers.push(setTimeout(()=>{
     if(!singing) return;
     singing=false; // chốt 1 lần — không double sao
     confetti(); sndWin(); addStars(1);
     speak('Bé hát hay quá!');
-  }, (t+beat)*1000));
-  songTimers.push(setTimeout(()=>stopSong(), (t+2*beat)*1000+1200)); // dọn node sau khi hợp âm vang hết
+  }, (endT+beat)*1000));
+  songTimers.push(setTimeout(()=>stopSong(), (endT+2*beat)*1000+1200)); // dọn node sau khi hợp âm vang hết
 }
 function readSong(){
   if(!curSong) return;
