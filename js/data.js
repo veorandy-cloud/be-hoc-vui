@@ -871,9 +871,37 @@ const PIC_META=[
   {em:'🌙',nm:'Đêm trăng',key:'night sky',en:'moon'},{em:'🦄',nm:'Kỳ lân',key:null,en:'unicorn'}
 ];
 
+/* vẽ theo mẫu — polylines [x,y] trong 400×300 (cùng PICS SVG). Scale ×3 khi vẽ lên canvas 1200×900. */
+const DRAW_GUIDES = (()=>{
+  const circ=(cx,cy,r,n)=>{
+    const p=[];
+    for(let i=0;i<=n;i++){ const a=i/n*Math.PI*2; p.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]); }
+    return p;
+  };
+  const ray=(cx,cy,deg,r0,r1)=>{
+    const a=deg*Math.PI/180, c=Math.cos(a), s=Math.sin(a);
+    return [[cx+r0*c, cy+r0*s],[cx+r1*c, cy+r1*s]];
+  };
+  return [
+    { id:'sun', em:'☀️', nm:'Mặt trời', strokes:[
+      circ(200,120,50,32),
+      ...[0,45,90,135,180,225,270,315].map(d=>ray(200,120,d,65,95))
+    ]},
+    { id:'house', em:'🏠', nm:'Nhà', strokes:[
+      [[80,140],[320,140],[320,270],[80,270],[80,140]],
+      [[80,140],[200,50],[320,140]],
+      [[170,200],[230,200],[230,270],[170,270]]
+    ]},
+    { id:'tree', em:'🌳', nm:'Cây', strokes:[
+      [[180,180],[220,180],[220,280],[180,280],[180,180]],
+      circ(200,130,70,32)
+    ]}
+  ];
+})();
+
 /* export cho node (scripts/list-phrases.cjs); browser bỏ qua */
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, SYL_EX, WORD_EX, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS, STORIES, spellTieng };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, DRAW_GUIDES, VAN2, DIGRAPHS, STORIES, spellTieng };
 }

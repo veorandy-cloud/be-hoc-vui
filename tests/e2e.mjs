@@ -451,6 +451,31 @@ await page.click('#pr-close', { force: true });
 await page.waitForTimeout(250);
 await goHome();
 
+// 5d. vẽ D1: theo mẫu — ≥3 bài (Mặt trời, Nhà, Cây), nét mẫu đứt đã vẽ
+await page.click('[data-go="scr-draw"]');
+await page.waitForTimeout(300);
+const guideTab = await page.$('#tab-guide');
+ok(!!guideTab, 'vẽ: có tab theo mẫu');
+if (!guideTab) throw new Error('thiếu #tab-guide');
+await guideTab.click({ force: true });
+await page.waitForTimeout(700);
+const gd = await page.evaluate(() => {
+  const n = typeof DRAW_GUIDES !== 'undefined' ? DRAW_GUIDES.length : 0;
+  const names = n ? DRAW_GUIDES.map(x => x.nm) : [];
+  const cv = document.querySelector('#guide-line');
+  let px = 0;
+  if (cv && cv.width && cv.getContext) {
+    const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+    for (let i = 3; i < d.length; i += 4) if (d[i] > 40) px++;
+  }
+  return { n, names, px };
+});
+ok(gd.n >= 3, `vẽ theo mẫu: ${gd.n} bài (≥3)`);
+ok(gd.names.includes('Mặt trời') && gd.names.includes('Nhà') && gd.names.includes('Cây'),
+   `vẽ theo mẫu: có Mặt trời/Nhà/Cây (${gd.names.join(',')})`);
+ok(gd.px > 400, `vẽ theo mẫu: nét mẫu đã vẽ (${gd.px} px)`);
+await goHome();
+
 // 5b. bài hát có nhạc đệm: bấm Hát → melody + bass/hat/kick được lên lịch
 await page.click('[data-go="scr-music"]');
 await page.waitForTimeout(400);

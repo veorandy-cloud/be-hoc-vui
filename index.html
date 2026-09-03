@@ -142,6 +142,7 @@
       <div class="tabs">
         <button class="btn tab on" id="tab-free">🖌️ Vẽ tự do</button>
         <button class="btn tab" id="tab-color">🖼️ Tô màu</button>
+        <button class="btn tab" id="tab-guide">✏️ Theo mẫu</button>
       </div>
       <div id="draw-free" style="flex:1;min-height:0;display:flex;flex-direction:column;gap:9px">
         <div id="draw-canvas-wrap"><canvas id="draw-canvas"></canvas></div>
@@ -178,6 +179,15 @@
           <button class="size-btn" data-csize="30"><span class="size-dot" style="width:26px;height:26px"></span></button>
           <button class="tool-btn" id="c-undo" title="Hoàn tác">↩️</button>
           <button class="tool-btn" id="c-save" title="Lưu tranh">💾</button>
+        </div>
+      </div>
+      <div id="draw-guide" style="flex:1;min-height:0;display:none;flex-direction:column;gap:9px">
+        <div id="guide-pics"></div>
+        <div id="guide-stage"><div id="guide-wrap"><canvas id="guide-paint"></canvas><canvas id="guide-line"></canvas></div></div>
+        <div class="palette" id="guide-palette"></div>
+        <div class="toolbar">
+          <button class="tool-btn" id="g-undo" title="Hoàn tác">↩️</button>
+          <button class="tool-btn" id="g-save" title="Lưu tranh">💾</button>
         </div>
       </div>
     </section>

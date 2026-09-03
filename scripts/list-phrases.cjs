@@ -164,6 +164,10 @@ D.PIC_META.forEach(p => {
   if (p.en) en(p.en);
 });
 
+// vẽ theo mẫu (drawing.js loadGuide / g-save)
+(D.DRAW_GUIDES||[]).forEach(g => vi(`Bé hãy vẽ ${g.nm} theo mẫu nhé!`));
+vi('Bé vẽ theo mẫu trước rồi lưu nhé!');
+
 // đảo sticker 3D (island.js)
 vi('Đây là Đảo Sticker của bé! Chạm vào sticker để nghe tên nhé!');
 vi('Đảo còn trống! Bé kiếm sao đổi sticker để đảo đông vui nhé!');

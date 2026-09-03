@@ -3,10 +3,12 @@
 const PAL = ['#FF5C5C','#FB923C','#FACC15','#84CC16','#22C55E','#38BDF8',
              '#2563EB','#8B5CF6','#EC4899','#92400E','#27272A','#9CA3AF'];
 const STAMPS = ['⭐','❤️','🌈','🦄','⚽','🌸','🚀','🐱'];
-let dReady=false, dColor=PAL[0], dSize=6, dMode='pen', dBrush='pen', dStamp=STAMPS[0], cColor=PAL[0], cSize=16;
+let dReady=false, dColor=PAL[0], dSize=6, dMode='pen', dBrush='pen', dStamp=STAMPS[0], cColor=PAL[0], cSize=16, gColor=PAL[0];
 const freeHist = makeHistory(()=>$('#draw-canvas'), ()=>{ const c=$('#draw-canvas'); return c&&c.getContext('2d'); },
   (cv,c)=>{ c.save(); c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,cv.width,cv.height); c.restore(); });
 const colorHist = makeHistory(()=>$('#color-paint'), ()=>{ const c=$('#color-paint'); return c&&c.getContext('2d'); },
+  (cv,c)=>{ c.fillStyle='#fff'; c.fillRect(0,0,CW,CH); });
+const guideHist = makeHistory(()=>$('#guide-paint'), ()=>{ const c=$('#guide-paint'); return c&&c.getContext('2d'); },
   (cv,c)=>{ c.fillStyle='#fff'; c.fillRect(0,0,CW,CH); });
 function initDraw(){
   if(!dReady){
@@ -30,6 +32,14 @@ function initDraw(){
       s.onclick=()=>{ cColor=c;
         $$('#color-palette .swatch').forEach(x=>x.classList.remove('on')); s.classList.add('on'); };
       cPalEl.appendChild(s);
+    });
+    const gPalEl = $('#guide-palette');
+    PAL.forEach((c,i)=>{
+      const s=document.createElement('button');
+      s.className='swatch'+(i===0?' on':''); s.style.background=c;
+      s.onclick=()=>{ gColor=c;
+        $$('#guide-palette .swatch').forEach(x=>x.classList.remove('on')); s.classList.add('on'); };
+      gPalEl.appendChild(s);
     });
     const stampRow=$('#stamp-row');
     STAMPS.forEach((st,i)=>{
@@ -63,8 +73,9 @@ function initDraw(){
     bindDraw(cv, cv.getContext('2d'),
       ()=>({mode:dMode, brush:dBrush, color:dColor, size:dMode==='eraser'?dSize*2.5:dSize, stamp:dStamp}),
       ()=>{}, undefined, freeHist);
-    $('#tab-free').onclick=()=>switchDrawTab(true);
-    $('#tab-color').onclick=()=>switchDrawTab(false);
+    $('#tab-free').onclick=()=>switchDrawTab('free');
+    $('#tab-color').onclick=()=>switchDrawTab('color');
+    $('#tab-guide').onclick=()=>switchDrawTab('guide');
     const picsEl=$('#color-pics');
     PIC_META.forEach((p,i)=>{
       const b=document.createElement('button');
@@ -74,6 +85,16 @@ function initDraw(){
         $$('#color-pics .btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
       };
       picsEl.appendChild(b);
+    });
+    const gPicsEl=$('#guide-pics');
+    DRAW_GUIDES.forEach((p,i)=>{
+      const b=document.createElement('button');
+      b.className='btn'+(i===0?' on':''); b.textContent=`${p.em} ${p.nm}`;
+      b.onclick=()=>{
+        loadGuide(i);
+        $$('#guide-pics .btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      };
+      gPicsEl.appendChild(b);
     });
     dReady=true;
   }
@@ -102,13 +123,16 @@ function syncTools(){
   $('#d-stamp').classList.toggle('on', dMode==='stamp');
   $('#stamp-row').classList.toggle('show', dMode==='stamp');
 }
-function switchDrawTab(free){
-  $('#tab-free').classList.toggle('on',free);
-  $('#tab-color').classList.toggle('on',!free);
-  $('#draw-free').style.display = free?'flex':'none';
-  $('#draw-color').style.display = free?'none':'flex';
-  if(free) requestAnimationFrame(rescaleFreeDraw);
-  else initColor();
+function switchDrawTab(tab){
+  $('#tab-free').classList.toggle('on',tab==='free');
+  $('#tab-color').classList.toggle('on',tab==='color');
+  $('#tab-guide').classList.toggle('on',tab==='guide');
+  $('#draw-free').style.display = tab==='free'?'flex':'none';
+  $('#draw-color').style.display = tab==='color'?'flex':'none';
+  $('#draw-guide').style.display = tab==='guide'?'flex':'none';
+  if(tab==='free') requestAnimationFrame(rescaleFreeDraw);
+  else if(tab==='color') initColor();
+  else initGuide();
 }
 function saveToGallery(canvas, withWhiteBg, onSaved){
   const out=document.createElement('canvas');
@@ -177,6 +201,7 @@ function openGallery(){
 /* ==== coloring: canvas 2 lớp — bé tô bằng bút (Pencil/tay), màu nằm DƯỚI nét tranh ==== */
 const CW=1200, CH=900; // độ phân giải cố định → xoay màn hình không mất tranh
 let colorInit=false, colorTool='brush';
+let guideInit=false;
 let lineMask=null; // alpha nét tranh, tính 1 lần mỗi bức — flood fill khỏi getImageData lớp line mỗi lần bấm
 function fitColorWrap(){
   const stage=$('#color-stage'), wrap=$('#color-wrap');
@@ -307,4 +332,58 @@ function floodFill(paint, line, x, y, hex){
   if(!floodFillData(bd, x, y, hex)) return false;
   pctx.putImageData(bd,0,0);
   return true;
+}
+
+/* ==== vẽ theo mẫu: canvas 2 lớp — nét đứt mẫu TRÊN, mực bé DƯỚI; không chấm điểm ==== */
+function fitGuideWrap(){
+  const stage=$('#guide-stage'), wrap=$('#guide-wrap');
+  const w=stage.clientWidth-24, h=stage.clientHeight-24;
+  const k=Math.max(1, Math.min(w/4, h/3));
+  wrap.style.width=(k*4)+'px'; wrap.style.height=(k*3)+'px';
+}
+function initGuide(){
+  requestAnimationFrame(fitGuideWrap);
+  if(guideInit){ return; }
+  guideInit=true;
+  const paint=$('#guide-paint'), line=$('#guide-line');
+  paint.width=CW; paint.height=CH; line.width=CW; line.height=CH;
+  const pctx=paint.getContext('2d');
+  bindDraw(paint, pctx,
+    ()=>({mode:'pen', brush:'pen', color:gColor, size:12}),
+    ()=>{},
+    ()=>CW/paint.getBoundingClientRect().width,
+    guideHist);
+  $('#g-undo').onclick=()=>{ guideHist.undo(); };
+  $('#g-save').onclick=()=>{
+    if(!guideHist.len()){ sndBad(); speak('Bé vẽ theo mẫu trước rồi lưu nhé!'); return; }
+    const out=document.createElement('canvas');
+    out.width=CW; out.height=CH;
+    const octx=out.getContext('2d');
+    octx.drawImage(paint,0,0); octx.drawImage(line,0,0);
+    saveToGallery(out, false);
+  };
+  loadGuide(0);
+}
+function loadGuide(i){
+  const m=DRAW_GUIDES[i]; if(!m) return;
+  const paint=$('#guide-paint'), line=$('#guide-line');
+  const pctx=paint.getContext('2d'), lctx=line.getContext('2d');
+  pctx.fillStyle='#fff'; pctx.fillRect(0,0,CW,CH);
+  lctx.clearRect(0,0,CW,CH);
+  lctx.save();
+  lctx.setLineDash([14,12]);
+  lctx.strokeStyle='#9CA3AF';
+  lctx.lineWidth=8;
+  lctx.lineCap='round';
+  lctx.lineJoin='round';
+  m.strokes.forEach(pts=>{
+    if(!pts.length) return;
+    lctx.beginPath();
+    lctx.moveTo(pts[0][0]*3, pts[0][1]*3);
+    for(let k=1;k<pts.length;k++) lctx.lineTo(pts[k][0]*3, pts[k][1]*3);
+    lctx.stroke();
+  });
+  lctx.restore();
+  guideHist.reset();
+  speak(`Bé hãy vẽ ${m.nm} theo mẫu nhé!`);
 }

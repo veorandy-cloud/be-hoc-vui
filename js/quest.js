@@ -230,6 +230,7 @@ window.addEventListener('resize', ()=>{
     if($('#scr-draw').classList.contains('active')){
       rescaleFreeDraw(); // chụp tranh cũ → scale → rebase history (không mất tranh, không mất undo)
       if(colorInit) fitColorWrap(); // tranh tô không mất khi xoay màn hình (canvas độ phân giải cố định)
+      if(guideInit) fitGuideWrap();
     }
   }, 150);
 });

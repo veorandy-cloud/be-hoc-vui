@@ -251,6 +251,15 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
   padding:4px 2px;-webkit-overflow-scrolling:touch}
 #color-pics .btn{font-size:15px;padding:7px 12px;white-space:nowrap;flex:0 0 auto}
 #color-pics .btn.on{background:var(--sun)}
+#guide-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:4px solid var(--ink);border-radius:24px;box-shadow:var(--shadow);padding:10px}
+#guide-wrap{position:relative;margin:auto}
+#guide-wrap canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#guide-line{pointer-events:none}
+#guide-pics{display:flex;gap:8px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;
+  padding:4px 2px;-webkit-overflow-scrolling:touch}
+#guide-pics .btn{font-size:15px;padding:7px 12px;white-space:nowrap;flex:0 0 auto}
+#guide-pics .btn.on{background:var(--sun)}
 
 /* ===== english ===== */
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
@@ -346,7 +355,7 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
 .armed{background:var(--coral)!important;color:#fff!important}
 .choice.ctrl{background:#FFF3D6;font-size:min(5vw,24px);min-height:70px}
 .chip{min-height:44px;padding:10px 16px}
-#color-pics .btn{min-height:44px}
+#color-pics .btn,#guide-pics .btn{min-height:44px}
 .swatch{width:46px;height:46px}
 .gal-del{width:44px;height:44px;font-size:18px;top:-12px;right:-12px}
 .tab{opacity:.7}
