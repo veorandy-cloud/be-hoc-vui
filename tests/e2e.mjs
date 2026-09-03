@@ -450,6 +450,27 @@ ok(d2.b0 === 'Cá', `tô màu tuần 4: không âm ghép tuần 4, đầu vẫn 
 ok(d2.weekN >= 1, `tô màu: nút tuần này có class week (thấy ${d2.weekN})`);
 ok(/Nhà/.test(d2.btns0), `tô màu UI: tuần 6 nút đầu là Nhà (${d2.btns0})`);
 
+// 5f. D3: tô trong đường — góc ngoài, có vùng trong, chưa tô ratio=1, có chip; không phạt
+ok(!!(await page.$('#color-in')), 'tô màu: có chỉ số trong đường');
+if (!(await page.$('#color-in'))) throw new Error('thiếu #color-in');
+const d3 = await page.evaluate(() => {
+  if (typeof isColorInside !== 'function' || typeof colorInsideRatio !== 'function') return { exists: false };
+  if (!lineMask) return { exists: true, mask: false };
+  const out = isColorInside(2, 2) === false;
+  let inn = false;
+  for (let y = 20; y < 880 && !inn; y += 30)
+    for (let x = 20; x < 1180; x += 30)
+      if (isColorInside(x, y)) { inn = true; break; }
+  const blank = colorInsideRatio();
+  return { exists: true, mask: true, out, inn, blank };
+});
+ok(d3.exists, 'tô màu: có isColorInside + colorInsideRatio');
+if (!d3.exists) throw new Error('thiếu isColorInside');
+ok(d3.mask, 'tô trong đường: lineMask sẵn sàng');
+ok(d3.out, 'tô trong đường: góc canvas là ngoài');
+ok(d3.inn, 'tô trong đường: tranh có vùng trong nét');
+ok(d3.blank === 1, `tô trong đường: chưa tô ratio=1 không phạt (thấy ${d3.blank})`);
+
 // 5c-guard. chưa tô gì mà bấm 💾 → bị chặn, KHÔNG reveal, không chiếm slot album
 await page.click('#c-save', { force: true });
 await page.waitForTimeout(400);
@@ -509,6 +530,31 @@ ok(oscN > 30, `bài hát lên lịch ${oscN} nguồn âm (melody + nhạc đệm
 const pianoN = await page.evaluate(() => Object.keys(pianoBuf).length);
 ok(pianoN >= 17, `piano thật: ${pianoN}/17 sample đã decode (không còn nhạc bíp)`);
 await page.evaluate(() => stopSong());
+await goHome();
+
+// 5g. Mu1: đàn 8 phím đồ giai điệu Twinkle (C4–C5)
+await page.click('[data-go="scr-music"]');
+await page.waitForTimeout(400);
+await page.click('#song-list .menu-card:nth-child(2)', { force: true });
+await page.waitForTimeout(400);
+ok(!!(await page.$('#song-play')), 'nhạc: có nút đàn theo');
+if (!(await page.$('#song-play'))) throw new Error('thiếu #song-play');
+await page.click('#song-play', { force: true });
+await page.waitForTimeout(400);
+const kn = await page.$$eval('#piano-keys [data-midi]', els => els.map(e => +e.dataset.midi));
+ok(kn.length === 8 && kn[0] === 60 && kn[7] === 72, `đàn: 8 phím C–C (${kn.join(',')})`);
+ok(await page.evaluate(() => pianoExpect) === 60, 'đàn theo: nốt đầu Twinkle là Đô 60');
+ok(await page.$eval('#piano-keys [data-midi="60"]', el => el.classList.contains('lit')),
+   'đàn theo: phím Đô đang sáng');
+await page.click('#piano-keys [data-midi="64"]', { force: true });
+await page.waitForTimeout(150);
+ok(await page.evaluate(() => pianoExpect) === 60, 'đàn theo: nốt sai không nhảy');
+await page.click('#piano-keys [data-midi="60"]', { force: true });
+await page.waitForTimeout(150);
+ok(await page.evaluate(() => pianoExpect) === 60, 'đàn theo: nốt 2 Twinkle vẫn Đô');
+await page.click('#piano-keys [data-midi="60"]', { force: true });
+await page.waitForTimeout(150);
+ok(await page.evaluate(() => pianoExpect) === 67, 'đàn theo: nốt 3 Twinkle là Sol 67');
 await goHome();
 
 // 6. audio manifest khớp số câu trong phrases.json và mp3 tải được

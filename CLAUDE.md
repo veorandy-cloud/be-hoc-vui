@@ -29,4 +29,4 @@ data → strokes → core → paint → writing → reading → math → drawing
 - `confirmTap` must clearTimeout on re-arm/confirm. Stale 3s timers from a prior goHome wipe `dataset.armed` of the next one → e2e `không về được home` after toán hình.
 
 ## Content sizes (update when they change)
-1712 audio clips · 151 vocab photos · 32 coloring pics (reorder by current DIGRAPHS week) · 3 vẽ theo mẫu · 76 stroke glyphs · 30 quest stations · 20 songs (8 lang:'vi-VN') · 22 EN themes / 196 words · 16 stories · math: khung mười + mix20 + có nhớ + lời văn + thành phần + hình.
+1715 audio clips · 151 vocab photos · 32 coloring pics (reorder by current DIGRAPHS week) · 3 vẽ theo mẫu · 76 stroke glyphs · 30 quest stations · 20 songs (8 lang:'vi-VN') · 22 EN themes / 196 words · 16 stories · math: khung mười + mix20 + có nhớ + lời văn + thành phần + hình.

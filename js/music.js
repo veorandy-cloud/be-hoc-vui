@@ -6,6 +6,15 @@
 
 let songTimers=[], singing=false, curSong=null, musicReady=false;
 let songGain=null, songOscs=[], songSession=0; // session token: chuỗi async của lượt cũ tự chết khi dừng/đổi bài
+const PIANO_KEYS = [60,62,64,65,67,69,71,72]; // C4–C5 white keys
+const PIANO_LABELS = ['Đô','Rê','Mi','Fa','Sol','La','Si','Đô'];
+let pianoNotes=[], pianoIdx=0, pianoExpect=null;
+function lightPiano(){
+  $$('#piano-keys .pkey').forEach(b=>b.classList.remove('lit'));
+  if(pianoExpect==null) return;
+  const el=$(`#piano-keys [data-midi="${pianoExpect}"]`);
+  if(el) el.classList.add('lit');
+}
 function stopSong(){
   songSession++;
   songTimers.forEach(clearTimeout); songTimers=[];
@@ -15,6 +24,8 @@ function stopSong(){
   if(songGain){ try{songGain.disconnect();}catch(e){} songGain=null; }
   stopSpeak();
   $$('.lyric-line').forEach(l=>l.classList.remove('now'));
+  pianoExpect=null;
+  lightPiano();
 }
 // khoá máy/chuyển app giữa bài: timer nền bị throttle, mở lại sẽ bắn dồn 1 lượt (bài nhảy thẳng
 // tới kết thúc + sao oan). Dừng sạch khi page ẩn — bé quay lại tự bấm Hát.
@@ -124,8 +135,16 @@ function initMusic(){
     });
     $('#song-sing').onclick=()=>singSong();
     $('#song-read').onclick=()=>readSong();
+    $('#song-play').onclick=startPlayAlong;
     $('#song-stop').onclick=stopSong;
     $('#song-back').onclick=()=>{ stopSong(); $('#song-view').style.display='none'; $('#song-list').style.display='grid'; };
+    const box=$('#piano-keys');
+    PIANO_KEYS.forEach((m,i)=>{
+      const b=document.createElement('button');
+      b.className='pkey'; b.dataset.midi=m; b.textContent=PIANO_LABELS[i];
+      b.onclick=()=>tapPiano(m);
+      box.appendChild(b);
+    });
     musicReady=true;
   }
   loadPiano(); // tải sample sớm — bấm Hát là có piano thật ngay
@@ -133,10 +152,42 @@ function initMusic(){
   $('#song-view').style.display='none';
   $('#song-list').style.display='grid';
 }
+function startPlayAlong(){
+  if(!curSong) return;
+  stopSong();
+  pianoNotes = curSong.lines.flatMap(ln=>ln.n.map(([m])=>m));
+  if(pianoNotes.some(m=>!PIANO_KEYS.includes(m))){
+    speak('Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!');
+    return;
+  }
+  pianoIdx=0; pianoExpect=pianoNotes[0];
+  $('#piano-keys').style.display='flex';
+  lightPiano();
+  speak('Bé bấm phím đang sáng nhé!');
+  ensureAC(); loadPiano();
+}
+function tapPiano(midi){
+  ensureAC();
+  playPiano(midi, 0, 0.45, .55);
+  if(pianoExpect==null) return;
+  if(midi!==pianoExpect) return; // nốt sai vẫn kêu, không nhảy, không phạt
+  pianoIdx++;
+  if(pianoIdx>=pianoNotes.length){
+    pianoExpect=null;
+    lightPiano();
+    sndWin();
+    speak(rand(PRAISE));
+    return;
+  }
+  pianoExpect=pianoNotes[pianoIdx];
+  lightPiano();
+  sndPop();
+}
 function openSong(i){
   curSong=SONGS[i];
   $('#song-list').style.display='none';
   $('#song-view').style.display='flex';
+  $('#piano-keys').style.display='none';
   $('#hdr-title').textContent = curSong.em+' '+curSong.title;
   const ly=$('#song-lyrics'); ly.innerHTML='';
   curSong.lines.forEach((ln,li)=>{

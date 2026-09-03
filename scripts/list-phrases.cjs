@@ -40,7 +40,10 @@ const en = t => add(t, 'en');
   'Bé đặt bút ở chấm vàng nhé!',
   'Bấm lần nữa để nhập dữ liệu và ghi đè nhé!',
   'Bé tô màu trước rồi lưu nhé!',
-  'Mình chơi lâu rồi, nghỉ mắt chút nhé!'
+  'Bé tô trong đường nét nhé!',
+  'Mình chơi lâu rồi, nghỉ mắt chút nhé!',
+  'Bé bấm phím đang sáng nhé!',
+  'Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!'
 ].forEach(vi);
 // tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
 ['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));

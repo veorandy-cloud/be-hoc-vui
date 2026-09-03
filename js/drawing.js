@@ -220,6 +220,9 @@ const CW=1200, CH=900; // độ phân giải cố định → xoay màn hình kh
 let colorInit=false, colorTool='brush';
 let guideInit=false;
 let lineMask=null; // alpha nét tranh, tính 1 lần mỗi bức — flood fill khỏi getImageData lớp line mỗi lần bấm
+let outMask=null;  // 1 = lề trắng thông ra mép khung — không phải vùng tô
+let insideHinted=false;
+let omStack=null;  // stack tái dùng cho flood mép → outMask (CW*CH)
 function fitColorWrap(){
   const stage=$('#color-stage'), wrap=$('#color-wrap');
   const w=stage.clientWidth-24, h=stage.clientHeight-24;
@@ -240,12 +243,14 @@ function initColor(){
       color: colorTool==='eraser' ? '#FFFFFF' : cColor,
       size: colorTool==='eraser' ? cSize*2 : cSize,
       bucket: p=>{
-        if(floodFill(paint, line, p[0], p[1], cColor))
+        if(floodFill(paint, line, p[0], p[1], cColor)){
           colorHist.push({t:'f', x:p[0], y:p[1], color:cColor});
+          updateColorInside();
+        }
         sndPop();
       }
     }),
-    ()=>{},
+    ()=>updateColorInside(),
     ()=>CW/paint.getBoundingClientRect().width,
     colorHist);
   const setTool=t=>{
@@ -290,6 +295,8 @@ function loadPic(i){
     .replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" ')
     .replaceAll('fill="#fff"','fill="none"');
   lineMask=null;
+  outMask=null;
+  insideHinted=false;
   colorHist.reset();
   const g = ++picGen;
   const img = new Image();
@@ -301,6 +308,8 @@ function loadPic(i){
     const ld = lctx.getImageData(0,0,CW,CH).data;
     lineMask = new Uint8Array(CW*CH);
     for(let i=0;i<CW*CH;i++) lineMask[i] = ld[i*4+3]>60 ? 1 : 0;
+    buildOutMask();
+    updateColorInside();
   };
   img.onerror = ()=>{ // không được fail im lặng: lineMask=null làm xô màu chết câm
     URL.revokeObjectURL(url);
@@ -343,6 +352,62 @@ function floodFillData(bd, x, y, hex){
     if(pi>=CW  && !seen[pi-CW]){ seen[pi-CW]=1; stack[sp++]=pi-CW; }
   }
   return true;
+}
+function buildOutMask(){
+  // flood từ mọi pixel mép không phải nét → lề trắng thông ra khung
+  const N=CW*CH;
+  outMask=new Uint8Array(N);
+  if(!omStack) omStack=new Int32Array(N);
+  const stack=omStack;
+  let sp=0;
+  const push=pi=>{
+    if(lineMask[pi]||outMask[pi]) return;
+    outMask[pi]=1; stack[sp++]=pi;
+  };
+  for(let x=0;x<CW;x++){ push(x); push((CH-1)*CW+x); }
+  for(let y=1;y<CH-1;y++){ push(y*CW); push(y*CW+CW-1); }
+  while(sp){
+    const pi=stack[--sp];
+    const px=pi%CW;
+    if(px<CW-1) push(pi+1);
+    if(px>0)    push(pi-1);
+    if(pi+CW<N) push(pi+CW);
+    if(pi>=CW)  push(pi-CW);
+  }
+}
+function isColorInside(x, y){
+  x=Math.round(x); y=Math.round(y);
+  if(!lineMask || !outMask) return false;
+  if(x<0||y<0||x>=CW||y>=CH) return false;
+  const i=y*CW+x;
+  if(lineMask[i]) return false; // on the outline itself is not “inside a region”
+  return !outMask[i];
+}
+function colorInsideRatio(){
+  // among non-white paint pixels that are not on the line, fraction that are inside.
+  // if painted count < 20 → return 1 (blank / tiny dot: no nag).
+  const cv=$('#color-paint'); if(!cv||!outMask||!lineMask) return 1;
+  const d=cv.getContext('2d').getImageData(0,0,CW,CH).data;
+  let tot=0, inn=0;
+  for(let i=0;i<CW*CH;i++){
+    if(lineMask[i]) continue;
+    const o=i*4;
+    if(d[o]>245 && d[o+1]>245 && d[o+2]>245) continue; // still white
+    tot++;
+    if(!outMask[i]) inn++;
+  }
+  if(tot<20) return 1;
+  return inn/tot;
+}
+function updateColorInside(){
+  const el=$('#color-in');
+  if(!el) return;
+  const r=colorInsideRatio();
+  el.textContent='Trong đường '+Math.round(r*100)+'%';
+  if(r<0.5 && !insideHinted){
+    insideHinted=true;
+    speak('Bé tô trong đường nét nhé!');
+  }
 }
 function floodFill(paint, line, x, y, hex){
   const pctx=paint.getContext('2d');
