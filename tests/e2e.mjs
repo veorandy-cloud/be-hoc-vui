@@ -429,6 +429,27 @@ ok(linePixels > 5000, `tô màu: nét tranh đã render (${linePixels} px)`);
 const picsN = await page.evaluate(() => PICS.length);
 ok(picsN >= 32, `kho tranh tô: ${picsN} tranh`);
 
+// 5e. D2: tô màu theo tuần — âm ghép tuần hiện tại lên đầu, vẫn đủ 32 tranh
+const d2 = await page.evaluate(() => {
+  if (typeof colorPicOrder !== 'function') return { exists: false };
+  const keep = Object.assign({}, learnWeek);
+  learnWeek = { v: 11, d: 6 };
+  const a = colorPicOrder().map(i => PIC_META[i].nm);
+  learnWeek = { v: 11, d: 4 };
+  const b = colorPicOrder().map(i => PIC_META[i].nm);
+  learnWeek = keep;
+  const btns = [...document.querySelectorAll('#color-pics .btn')].map(el => el.textContent.trim());
+  const weekN = document.querySelectorAll('#color-pics .btn.week').length;
+  return { exists: true, n: a.length, a0: a[0], b0: b[0], btns0: btns[0] || '', weekN, btnN: btns.length };
+});
+ok(d2.exists, 'tô màu: có colorPicOrder');
+if (!d2.exists) throw new Error('thiếu colorPicOrder');
+ok(d2.n === picsN, `tô màu tuần: đủ ${picsN} tranh (thấy ${d2.n})`);
+ok(d2.a0 === 'Nhà', `tô màu tuần 6: Nhà (nh) lên đầu (thấy '${d2.a0}')`);
+ok(d2.b0 === 'Cá', `tô màu tuần 4: không âm ghép tuần 4, đầu vẫn Cá (thấy '${d2.b0}')`);
+ok(d2.weekN >= 1, `tô màu: nút tuần này có class week (thấy ${d2.weekN})`);
+ok(/Nhà/.test(d2.btns0), `tô màu UI: tuần 6 nút đầu là Nhà (${d2.btns0})`);
+
 // 5c-guard. chưa tô gì mà bấm 💾 → bị chặn, KHÔNG reveal, không chiếm slot album
 await page.click('#c-save', { force: true });
 await page.waitForTimeout(400);

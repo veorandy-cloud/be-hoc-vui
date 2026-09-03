@@ -76,16 +76,7 @@ function initDraw(){
     $('#tab-free').onclick=()=>switchDrawTab('free');
     $('#tab-color').onclick=()=>switchDrawTab('color');
     $('#tab-guide').onclick=()=>switchDrawTab('guide');
-    const picsEl=$('#color-pics');
-    PIC_META.forEach((p,i)=>{
-      const b=document.createElement('button');
-      b.className='btn'+(i===0?' on':''); b.textContent=`${p.em} ${p.nm}`;
-      b.onclick=()=>{
-        loadPic(i);
-        $$('#color-pics .btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
-      };
-      picsEl.appendChild(b);
-    });
+    renderColorPics();
     const gPicsEl=$('#guide-pics');
     DRAW_GUIDES.forEach((p,i)=>{
       const b=document.createElement('button');
@@ -131,7 +122,7 @@ function switchDrawTab(tab){
   $('#draw-color').style.display = tab==='color'?'flex':'none';
   $('#draw-guide').style.display = tab==='guide'?'flex':'none';
   if(tab==='free') requestAnimationFrame(rescaleFreeDraw);
-  else if(tab==='color') initColor();
+  else if(tab==='color'){ initColor(); renderColorPics(); }
   else initGuide();
 }
 function saveToGallery(canvas, withWhiteBg, onSaved){
@@ -199,6 +190,32 @@ function openGallery(){
 }
 
 /* ==== coloring: canvas 2 lớp — bé tô bằng bút (Pencil/tay), màu nằm DƯỚI nét tranh ==== */
+function picIsThisWeek(p){
+  const t = (p.nm||'').toLowerCase();
+  return DIGRAPHS.some(dg => dg.week === learnWeek.d && t.includes(dg.d));
+}
+function colorPicOrder(){
+  const idx = PIC_META.map((_,i)=>i);
+  idx.sort((a,b)=> (picIsThisWeek(PIC_META[b])-picIsThisWeek(PIC_META[a])) || (a-b));
+  return idx;
+}
+function renderColorPics(){
+  const picsEl=$('#color-pics');
+  if(!picsEl) return;
+  picsEl.innerHTML='';
+  colorPicOrder().forEach(i=>{
+    const p=PIC_META[i];
+    const b=document.createElement('button');
+    b.className='btn'+(i===curPic?' on':'')+(picIsThisWeek(p)?' week':'');
+    b.textContent=`${p.em} ${p.nm}`;
+    b.dataset.i=i;
+    b.onclick=()=>{
+      loadPic(+b.dataset.i);
+      $$('#color-pics .btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    };
+    picsEl.appendChild(b);
+  });
+}
 const CW=1200, CH=900; // độ phân giải cố định → xoay màn hình không mất tranh
 let colorInit=false, colorTool='brush';
 let guideInit=false;
@@ -257,7 +274,8 @@ function initColor(){
   const closeReveal=()=>{ $('#pic-reveal').classList.remove('show'); stopSpeak(); };
   $('#pr-close').onclick=closeReveal;
   $('#pic-reveal').onclick=e=>{ if(e.target.id==='pic-reveal') closeReveal(); };
-  loadPic(0);
+  loadPic(colorPicOrder()[0]);
+  renderColorPics();
 }
 let picGen=0; // token chống race: onload của tranh cũ (decode chậm) không được vẽ đè tranh mới
 let curPic=0; // tranh đang tô — dùng cho reveal ảnh thật khi lưu
