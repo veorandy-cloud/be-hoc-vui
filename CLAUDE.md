@@ -6,7 +6,7 @@ Live: https://veorandy-cloud.github.io/be-hoc-vui/ · repo veorandy-cloud/be-hoc
 - Serve: `python -m http.server 8080`
 - Tests: `node tests/e2e.mjs` (smoke) + `node tests/user-sim.mjs` (plays like a child; SHOT_DIR=<dir> for screenshots). Both need the server on :8080.
 - Audio: `node scripts/list-phrases.cjs && PYTHONIOENCODING=utf-8 python scripts/gen_audio.py` — RERUN until N/N (edge-tts flakes ~1 clip/run).
-- Strokes: `node scripts/gen_strokes.cjs` (merges scripts/vn_lowercase.cjs VN letterforms over Hershey).
+- Strokes: `node scripts/gen_strokes.cjs` (merges scripts/vn_lowercase.cjs + vn_uppercase.cjs VN letterforms over Hershey; digits stay Hershey).
 - Deploy: git push → poll `curl -s .../sw.js | grep -o "bhv-v[0-9]*"` until new version (~30-60s).
 
 ## Load order (index.html, global scope, no modules)
@@ -26,6 +26,7 @@ data → strokes → core → paint → writing → reading → math → drawing
 - css/style.css must stay BOM-free (a mid-file BOM once killed :root and turned the UI white). Always screenshot-verify UI-affecting changes.
 - playwright-core: channel msedge (tests) / chrome (one-off gen scripts); temp scripts live in repo root as *.tmp.mjs, delete after use.
 - WindowsApps Python `http.server` accepts then immediately closes the socket (RemoteDisconnected). Serve with a Node static server. Playwright `localhost` on this PC is IPv6 (`::1`); bind/listen on `127.0.0.1` and point tests at `http://127.0.0.1:8080` (see tests/e2e.mjs BASE).
+- `confirmTap` must clearTimeout on re-arm/confirm. Stale 3s timers from a prior goHome wipe `dataset.armed` of the next one → e2e `không về được home` after toán hình.
 
 ## Content sizes (update when they change)
-1528 audio clips · 151 vocab photos · 32 coloring pics · 76 stroke glyphs · 30 quest stations · 20 songs (8 lang:'vi-VN') · 22 EN themes / 196 words · 8 stories · math: khung mười + mix20 + lời văn + thành phần + hình.
+1708 audio clips · 151 vocab photos · 32 coloring pics · 76 stroke glyphs · 30 quest stations · 20 songs (8 lang:'vi-VN') · 22 EN themes / 196 words · 16 stories · math: khung mười + mix20 + có nhớ + lời văn + thành phần + hình.

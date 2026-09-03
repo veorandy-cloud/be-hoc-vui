@@ -19,6 +19,14 @@ function nextWeakIdx(){
 }
 function charKey(){ return curChar(); }
 function charInfo(){
+  if(wSet==='syl'){
+    const ch = curChar();
+    return { name: ch, ex: (typeof SYL_EX!=='undefined' && SYL_EX[ch]) || EXAMPLES[ch[0]] };
+  }
+  if(wSet==='word'){
+    const ch = curChar();
+    return { name: ch, ex: WORD_EX[ch] };
+  }
   const lc = curChar().toLowerCase();
   return {name:LETTER_NAMES[lc]||lc, ex:EXAMPLES[lc]};
 }
@@ -59,11 +67,18 @@ function initWrite(){
     });
     wReady=true;
   }
+  // từ home luôn mở tab mặc định (low). quest đã gán wSet/wIdx trước showScreen.
+  if(questActive===null){
+    wSet='low'; wIdx=0;
+    $$('#scr-write [data-set]').forEach(x=>x.classList.toggle('on', x.dataset.set==='low'));
+  }
   // chạy MỖI lần vào màn (không chỉ lần đầu): quest ép wMode='guide' thì nút ✅ phải ẩn theo
   $('#w-grade').style.display = wMode==='free' ? '' : 'none';
   requestAnimationFrame(()=>{ sizeCanvas(wCanvas); resetWrite(); });
 }
 function speakChar(){
+  if(wSet==='syl'){ speak(curChar()); return; }
+  if(wSet==='word'){ speak(charInfo().ex.w); return; }
   const {name}=charInfo();
   const suffix = wSet==='up' ? ' hoa' : wSet==='num' ? '' : '';
   speak((wSet==='num'?'Số ':'Chữ ')+name+suffix);
@@ -96,6 +111,21 @@ function drawGrid(r){
 }
 /* nét chữ (STROKES khung cao 100, x giữa 0) → toạ độ canvas, cùng cỡ với template font */
 function glyphStrokes(){
+  const chars = [...curChar()];
+  if(chars.length > 1){
+    if(typeof STROKES==='undefined') return null;
+    const r = wCanvas.parentElement.getBoundingClientRect();
+    const k = (r.height*0.62)/100;
+    const yTop = (r.height - 100*k)/2;
+    const n = chars.length, slot = n>=3 ? 24 : 32, strokes = [];
+    for(let i=0;i<n;i++){
+      const g = STROKES[chars[i]];
+      if(!g) return null;
+      const dx = (i - (n-1)/2) * slot;
+      g.forEach(s=>strokes.push(s.map(([x,y])=>[r.width/2 + (x+dx)*k, yTop + y*k])));
+    }
+    return { k, strokes };
+  }
   const g = typeof STROKES!=='undefined' && STROKES[curChar()];
   if(!g) return null;
   const r = wCanvas.parentElement.getBoundingClientRect();
@@ -135,7 +165,10 @@ function drawSkeleton(done, cur){
 }
 function drawTemplate(){
   const {ex}=charInfo();
+  const nLet = [...curChar()].length;
   $('#write-letter').textContent = curChar();
+  $('#write-letter').classList.toggle('wide', nLet>=3);
+  $('#write-letter').style.fontSize = nLet>=3 ? '' : nLet>1 ? '40px' : '';
   $('#write-word').innerHTML = `<div class="em">${ex.em}</div><div class="wd">${ex.w}</div>`;
   const best = writeBest[charKey()]||0;
   $('#write-best').textContent = best?`Tốt nhất: ${'⭐'.repeat(best)}`:'Tốt nhất: —';
@@ -183,6 +216,8 @@ function resetWrite(){
       speakThenDemo(()=>{ redrawWrite(); speak('Bé vẽ nét số một nhé!'); });
     } else speak('Bé vẽ nét số một nhé!');
   }
+  else if(wSet==='syl') speak(`Bé hãy viết tiếng ${curChar()} nhé!`);
+  else if(wSet==='word') speak(`Bé hãy viết từ ${curChar()} nhé!`);
   else speak(`Bé hãy viết ${full} nhé!`);
 }
 /* 👀 demo: nét chạy tuần tự như cô viết mẫu */

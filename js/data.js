@@ -48,7 +48,17 @@ const VN_LETTERS = ['a','ă','â','b','c','d','đ','e','ê','g','h','i','k','l',
 const WRITE_SETS = {
   low: [...VN_LETTERS,'f','j','w','z'],
   up:  [...VN_LETTERS,'f','j','w','z'].map(c=>c.toUpperCase()),
-  num: ['0','1','2','3','4','5','6','7','8','9']
+  num: ['0','1','2','3','4','5','6','7','8','9'],
+  syl: ['ba','bo','be','ma','me','la'],
+  word: ['ong','hoa','cua','voi','sao']
+};
+const SYL_EX = { ba:{w:'ba',em:'3️⃣'}, bo:{w:'bo',em:'🐄'}, be:{w:'be',em:'🐐'}, ma:{w:'ma',em:'👻'}, me:{w:'me',em:'👩'}, la:{w:'la',em:'🌿'} };
+const WORD_EX = {
+  ong:{w:'con ong',em:'🐝'},
+  hoa:{w:'bông hoa',em:'🌸'},
+  cua:{w:'con cua',em:'🦀'},
+  voi:{w:'con voi',em:'🐘'},
+  sao:{w:'ngôi sao',em:'⭐'}
 };
 const VOWELS = ['a','e','i','o','u','ơ','ô','ê'];
 const VAN_ITEMS = [
@@ -430,6 +440,7 @@ const SONGS = [
 const STORIES = [
   {
     em:'🐰', title:'Thỏ trắng và củ cà rốt',
+    pics:['🐰','🥕','🌱','💪','🐿️','🍽️'],
     lines:[
       'Sáng nay, thỏ trắng ra vườn tìm ăn.',
       'Bạn thỏ thấy ngay một củ cà rốt to.',
@@ -446,6 +457,7 @@ const STORIES = [
   },
   {
     em:'🐤', title:'Gà con tìm mồi',
+    pics:['🐤','🪱','🏃','🍴','🐔'],
     lines:[
       'Gà con theo mẹ ra sân tìm mồi.',
       'Bạn gà thấy một con sâu béo tròn.',
@@ -461,6 +473,7 @@ const STORIES = [
   },
   {
     em:'🪴', title:'Bé Na tưới cây',
+    pics:['🪴','☀️','💧','🌸','👩','🤗'],
     lines:[
       'Chiều nay, bé Na ra vườn cùng mẹ.',
       'Hôm nay trời nắng, cây hoa khát nước.',
@@ -477,6 +490,7 @@ const STORIES = [
   },
   {
     em:'⚽', title:'Bạn Bo đá bóng',
+    pics:['⚽','🌳','😓','🪵','🙏','😄'],
     lines:[
       'Buổi chiều, bạn Bo ra sân đá bóng.',
       'Bo sút mạnh, bóng bay lên cành cây.',
@@ -493,6 +507,7 @@ const STORIES = [
   },
   {
     em:'☂️', title:'Mưa lúc tan học',
+    pics:['🌧️','☂️','🏫','👫','🚶','😊'],
     lines:[
       'Tan học, trời bỗng đổ cơn mưa to.',
       'Bé Na quên mang theo chiếc ô.',
@@ -509,6 +524,7 @@ const STORIES = [
   },
   {
     em:'🥭', title:'Quà của bà ngoại',
+    pics:['👵','🥭','🍽️','🎁','😋','😊'],
     lines:[
       'Hôm nay, bà ngoại đến nhà chơi.',
       'Bà mang theo một giỏ xoài chín vàng.',
@@ -525,6 +541,7 @@ const STORIES = [
   },
   {
     em:'🐠', title:'Chú cá vàng của Na',
+    pics:['🐠','💧','🍚','🏊','👦','💪'],
     lines:[
       'Bé Na nuôi một chú cá vàng đẹp.',
       'Mỗi sáng, Na thay nước cho cá.',
@@ -541,6 +558,7 @@ const STORIES = [
   },
   {
     em:'🪁', title:'Ngày thả diều',
+    pics:['🚗','🌾','🪁','🏃','🌬️','👏'],
     lines:[
       'Chủ nhật, bố chở Na và Bo đi thả diều.',
       'Ra cánh đồng, gió thổi rất mát.',
@@ -553,6 +571,142 @@ const STORIES = [
       { q:'Chủ nhật, bố đưa Na đi làm gì?', c:['đi câu cá','đi thăm vườn','đi thả diều'], a:2 },
       { q:'Chiếc diều của Na có hình dáng thế nào?', c:['hình bươm bướm, đuôi dài','hình con cá, vây đỏ','hình ngôi sao, năm cánh'], a:0 },
       { q:'Vì sao diều bay lên được cao?', c:['vì Na kéo dây thật chặt','vì trên đồng gió thổi mạnh','vì bố đỡ diều lên cao'], a:1 },
+    ],
+  },
+  {
+    em:'⛵', title:'Thuyền giấy của Na',
+    pics:['📄','⛵','💧','🌬️','👏','😊'],
+    lines:[
+      'Na gấp một chiếc thuyền giấy.',
+      'Thuyền nhỏ, có màu trắng tinh.',
+      'Na thả thuyền xuống chậu nước.',
+      'Gió thổi, thuyền giấy trôi đi.',
+      'Bo vỗ tay, khen thuyền đẹp quá.',
+      'Na vui lắm, gấp thêm một chiếc.',
+    ],
+    qs:[
+      { q:'Na gấp được thứ gì?', c:['một cái mũ','một chiếc thuyền giấy','một con chim'], a:1 },
+      { q:'Na thả thuyền xuống đâu?', c:['xuống chậu nước','ra ngoài sân','lên bàn học'], a:0 },
+      { q:'Ai khen thuyền của Na đẹp?', c:['mẹ Na','cô giáo','bạn Bo'], a:2 },
+    ],
+  },
+  {
+    em:'🐔', title:'Bo cho gà ăn',
+    pics:['🌾','🐔','🍚','🍽️','👩','😄'],
+    lines:[
+      'Sáng nay, Bo ra vườn cho gà ăn.',
+      'Đàn gà chạy tới, kêu ó o o.',
+      'Bo rắc thóc đều xuống sân.',
+      'Gà mổ thóc, ăn rất là ngon.',
+      'Mẹ khen Bo biết giúp việc nhà.',
+      'Bo cười tươi, hứa ngày mai làm tiếp.',
+    ],
+    qs:[
+      { q:'Bo ra vườn để làm gì?', c:['tưới cây','cho gà ăn','quét sân'], a:1 },
+      { q:'Bo rắc gì cho gà ăn?', c:['thóc','cơm','rau'], a:0 },
+      { q:'Mẹ khen Bo vì điều gì?', c:['vì Bo đá bóng giỏi','vì Bo viết chữ đẹp','vì Bo biết giúp việc nhà'], a:2 },
+    ],
+  },
+  {
+    em:'🧹', title:'Na quét nhà',
+    pics:['🧹','🏠','💨','🧺','👩','🤗'],
+    lines:[
+      'Chiều nay, nhà có nhiều bụi.',
+      'Na lấy chổi, quét từng góc nhà.',
+      'Bụi bay lên, Na ho một cái.',
+      'Na đổ rác vào thùng cho sạch.',
+      'Mẹ về, thấy nhà sạch sẽ.',
+      'Mẹ ôm Na, khen bé ngoan.',
+    ],
+    qs:[
+      { q:'Na lấy gì để quét nhà?', c:['cái chổi','cái khăn','cái xô'], a:0 },
+      { q:'Na đổ rác vào đâu?', c:['ra sân','vào thùng','xuống ao'], a:1 },
+      { q:'Mẹ làm gì khi thấy nhà sạch?', c:['mắng Na','bảo Na quét lại','ôm Na, khen bé ngoan'], a:2 },
+    ],
+  },
+  {
+    em:'🍂', title:'Bo nhặt lá',
+    pics:['🍂','🌳','🧺','🤝','🏠','😊'],
+    lines:[
+      'Gió thu thổi, lá vàng rơi đầy sân.',
+      'Bo ra sân, nhặt lá bỏ vào rổ.',
+      'Na cũng ra, cùng Bo nhặt lá.',
+      'Hai bạn nhặt xong, sân lại sạch.',
+      'Bố khen hai bạn thật chăm chỉ.',
+      'Bo và Na nắm tay, chạy vào nhà.',
+    ],
+    qs:[
+      { q:'Lá vàng rơi đầy sân vì sao?', c:['vì trời mưa','vì gió thu thổi','vì có người hái'], a:1 },
+      { q:'Ai ra cùng Bo nhặt lá?', c:['mẹ','bố','Na'], a:2 },
+      { q:'Sau khi nhặt lá, sân thế nào?', c:['sân lại sạch','sân ngập nước','sân đầy cát'], a:0 },
+    ],
+  },
+  {
+    em:'👴', title:'Na thăm ông',
+    pics:['🚶','👴','🍊','📖','🤗','🏠'],
+    lines:[
+      'Chủ nhật, Na theo mẹ đi thăm ông.',
+      'Ông ở nhà nhỏ cuối làng.',
+      'Na ôm ông, đưa ông mấy quả cam.',
+      'Ông kể chuyện xưa cho Na nghe.',
+      'Na ngồi bên ông, nghe rất chăm.',
+      'Tan buổi, Na hôn ông rồi về.',
+    ],
+    qs:[
+      { q:'Na đi thăm ai vào chủ nhật?', c:['bà ngoại','ông','cô giáo'], a:1 },
+      { q:'Na đưa ông món gì?', c:['mấy quả cam','một hộp bánh','một bó hoa'], a:0 },
+      { q:'Ông làm gì với Na?', c:['dạy Na đá bóng','kể chuyện xưa cho Na nghe','đưa Na đi chợ'], a:1 },
+    ],
+  },
+  {
+    em:'⭐', title:'Bo đếm sao',
+    pics:['🌙','⭐','🔢','🐰','😴','🛏️'],
+    lines:[
+      'Đêm nay trời quang, nhiều ngôi sao.',
+      'Bo ngồi ban công, ngẩng đầu đếm sao.',
+      'Một, hai, ba, sao sáng lấp lánh.',
+      'Bo đếm đến mười thì thấy thỏ trên trời.',
+      'Mẹ gọi Bo vào nhà đi ngủ.',
+      'Bo vào giường, vẫn nhớ các vì sao.',
+    ],
+    qs:[
+      { q:'Bo ngồi đâu để đếm sao?', c:['trên sân','ở ban công','trong lớp'], a:1 },
+      { q:'Bo đếm đến mấy thì thấy thỏ trên trời?', c:['năm','bảy','mười'], a:2 },
+      { q:'Mẹ gọi Bo vào nhà để làm gì?', c:['đi ngủ','ăn cơm','học bài'], a:0 },
+    ],
+  },
+  {
+    em:'🎨', title:'Na vẽ tranh',
+    pics:['🎨','🏠','🌸','🐦','👩','🖼️'],
+    lines:[
+      'Na lấy giấy và bút màu ra vẽ.',
+      'Na vẽ ngôi nhà nhỏ màu đỏ.',
+      'Bên nhà có một cây hoa hồng.',
+      'Na vẽ thêm con chim đang bay.',
+      'Mẹ xem tranh, khen Na vẽ đẹp.',
+      'Na dán tranh lên tường cho cả nhà xem.',
+    ],
+    qs:[
+      { q:'Na vẽ ngôi nhà màu gì?', c:['màu xanh','màu đỏ','màu vàng'], a:1 },
+      { q:'Bên nhà Na vẽ thêm cây gì?', c:['cây hoa hồng','cây chuối','cây dừa'], a:0 },
+      { q:'Na làm gì với bức tranh khi vẽ xong?', c:['cất vào tủ','xé bỏ','dán lên tường'], a:2 },
+    ],
+  },
+  {
+    em:'🐱', title:'Mèo con của Bo',
+    pics:['🐱','🥛','🧶','😺','👦','💤'],
+    lines:[
+      'Bo nuôi một chú mèo con trắng.',
+      'Mỗi sáng, Bo đổ sữa cho mèo uống.',
+      'Mèo thích chơi với cuộn len đỏ.',
+      'Mèo kêu meo meo, cọ vào chân Bo.',
+      'Bo vuốt ve, mèo kêu rất êm.',
+      'Tối đến, mèo nằm ngủ cạnh Bo.',
+    ],
+    qs:[
+      { q:'Bo nuôi con vật gì?', c:['chú chó con','chú mèo con trắng','chú gà con'], a:1 },
+      { q:'Mỗi sáng Bo cho mèo uống gì?', c:['sữa','nước cam','canh'], a:0 },
+      { q:'Mèo thích chơi với gì?', c:['quả bóng','cuộn len đỏ','chiếc ô'], a:1 },
     ],
   },
 ];
@@ -720,6 +874,6 @@ const PIC_META=[
 /* export cho node (scripts/list-phrases.cjs); browser bỏ qua */
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
-    LETTER_NAMES, EXAMPLES, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
+    LETTER_NAMES, EXAMPLES, SYL_EX, WORD_EX, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
     TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS, STORIES, spellTieng };
 }

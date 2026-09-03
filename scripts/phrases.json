@@ -1128,6 +1128,50 @@
   "lang": "vi"
  },
  {
+  "t": "Bé hãy viết tiếng ba nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết tiếng bo nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết tiếng be nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết tiếng ma nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết tiếng me nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết tiếng la nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết từ ong nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết từ hoa nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết từ cua nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết từ voi nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé hãy viết từ sao nhé!",
+  "lang": "vi"
+ },
+ {
   "t": "Đâu là chữ a?",
   "lang": "vi"
  },
@@ -5649,6 +5693,330 @@
   "lang": "vi"
  },
  {
+  "t": "2 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "3 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "4 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "5 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "6 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "7 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "8 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "9 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
   "t": "Cô kể cho bé nghe truyện: Thỏ trắng và củ cà rốt. Bé nghe kỹ nhé!",
   "lang": "vi"
  },
@@ -5994,6 +6362,358 @@
  },
  {
   "t": "Vì sao diều bay lên được cao?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Thuyền giấy của Na. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Thuyền giấy của Na",
+  "lang": "vi"
+ },
+ {
+  "t": "Na gấp một chiếc thuyền giấy.",
+  "lang": "vi"
+ },
+ {
+  "t": "Thuyền nhỏ, có màu trắng tinh.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na thả thuyền xuống chậu nước.",
+  "lang": "vi"
+ },
+ {
+  "t": "Gió thổi, thuyền giấy trôi đi.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo vỗ tay, khen thuyền đẹp quá.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vui lắm, gấp thêm một chiếc.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na gấp được thứ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na thả thuyền xuống đâu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ai khen thuyền của Na đẹp?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Bo cho gà ăn. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo cho gà ăn",
+  "lang": "vi"
+ },
+ {
+  "t": "Sáng nay, Bo ra vườn cho gà ăn.",
+  "lang": "vi"
+ },
+ {
+  "t": "Đàn gà chạy tới, kêu ó o o.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo rắc thóc đều xuống sân.",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà mổ thóc, ăn rất là ngon.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ khen Bo biết giúp việc nhà.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo cười tươi, hứa ngày mai làm tiếp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo ra vườn để làm gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo rắc gì cho gà ăn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ khen Bo vì điều gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Na quét nhà. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Na quét nhà",
+  "lang": "vi"
+ },
+ {
+  "t": "Chiều nay, nhà có nhiều bụi.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na lấy chổi, quét từng góc nhà.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bụi bay lên, Na ho một cái.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đổ rác vào thùng cho sạch.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ về, thấy nhà sạch sẽ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ ôm Na, khen bé ngoan.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na lấy gì để quét nhà?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đổ rác vào đâu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ làm gì khi thấy nhà sạch?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Bo nhặt lá. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo nhặt lá",
+  "lang": "vi"
+ },
+ {
+  "t": "Gió thu thổi, lá vàng rơi đầy sân.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo ra sân, nhặt lá bỏ vào rổ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na cũng ra, cùng Bo nhặt lá.",
+  "lang": "vi"
+ },
+ {
+  "t": "Hai bạn nhặt xong, sân lại sạch.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bố khen hai bạn thật chăm chỉ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo và Na nắm tay, chạy vào nhà.",
+  "lang": "vi"
+ },
+ {
+  "t": "Lá vàng rơi đầy sân vì sao?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ai ra cùng Bo nhặt lá?",
+  "lang": "vi"
+ },
+ {
+  "t": "Sau khi nhặt lá, sân thế nào?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Na thăm ông. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Na thăm ông",
+  "lang": "vi"
+ },
+ {
+  "t": "Chủ nhật, Na theo mẹ đi thăm ông.",
+  "lang": "vi"
+ },
+ {
+  "t": "Ông ở nhà nhỏ cuối làng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na ôm ông, đưa ông mấy quả cam.",
+  "lang": "vi"
+ },
+ {
+  "t": "Ông kể chuyện xưa cho Na nghe.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na ngồi bên ông, nghe rất chăm.",
+  "lang": "vi"
+ },
+ {
+  "t": "Tan buổi, Na hôn ông rồi về.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đi thăm ai vào chủ nhật?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đưa ông món gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ông làm gì với Na?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Bo đếm sao. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo đếm sao",
+  "lang": "vi"
+ },
+ {
+  "t": "Đêm nay trời quang, nhiều ngôi sao.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo ngồi ban công, ngẩng đầu đếm sao.",
+  "lang": "vi"
+ },
+ {
+  "t": "Một, hai, ba, sao sáng lấp lánh.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo đếm đến mười thì thấy thỏ trên trời.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ gọi Bo vào nhà đi ngủ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo vào giường, vẫn nhớ các vì sao.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo ngồi đâu để đếm sao?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo đếm đến mấy thì thấy thỏ trên trời?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ gọi Bo vào nhà để làm gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Na vẽ tranh. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vẽ tranh",
+  "lang": "vi"
+ },
+ {
+  "t": "Na lấy giấy và bút màu ra vẽ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vẽ ngôi nhà nhỏ màu đỏ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bên nhà có một cây hoa hồng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vẽ thêm con chim đang bay.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ xem tranh, khen Na vẽ đẹp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na dán tranh lên tường cho cả nhà xem.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vẽ ngôi nhà màu gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bên nhà Na vẽ thêm cây gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na làm gì với bức tranh khi vẽ xong?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Mèo con của Bo. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Mèo con của Bo",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo nuôi một chú mèo con trắng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mỗi sáng, Bo đổ sữa cho mèo uống.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mèo thích chơi với cuộn len đỏ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mèo kêu meo meo, cọ vào chân Bo.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo vuốt ve, mèo kêu rất êm.",
+  "lang": "vi"
+ },
+ {
+  "t": "Tối đến, mèo nằm ngủ cạnh Bo.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo nuôi con vật gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mỗi sáng Bo cho mèo uống gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mèo thích chơi với gì?",
   "lang": "vi"
  },
  {

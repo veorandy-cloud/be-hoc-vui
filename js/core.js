@@ -128,6 +128,7 @@ function speak(text, lang='vi-VN'){ speakAsync(text, lang); }
 
 /* hành động phá hoại (xoá tranh, xoá bài viết, thoát giữa lượt) phải chạm 2 lần trong 3s */
 function confirmTap(btn, msg, fn){
+  if(btn._armTimer){ clearTimeout(btn._armTimer); btn._armTimer=null; }
   if(btn.dataset.armed){
     delete btn.dataset.armed; btn.classList.remove('armed');
     fn();
@@ -135,7 +136,7 @@ function confirmTap(btn, msg, fn){
   }
   btn.dataset.armed='1'; btn.classList.add('armed');
   sndPop(); speak(msg);
-  setTimeout(()=>{ delete btn.dataset.armed; btn.classList.remove('armed'); }, 3000);
+  btn._armTimer=setTimeout(()=>{ delete btn.dataset.armed; btn.classList.remove('armed'); btn._armTimer=null; }, 3000);
 }
 
 

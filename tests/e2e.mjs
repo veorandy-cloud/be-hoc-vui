@@ -88,6 +88,38 @@ await page.waitForTimeout(600);
 const storyOpen = await page.$eval('#read-progress', el => el.textContent.includes('📖'));
 const storyLines = await page.$$eval('#read-prompt .story-line', els => els.length);
 ok(storyOpen && storyLines >= 5, `đọc truyện: mở được, ${storyLines} câu truyện hiển thị`);
+const storyBank = await page.evaluate(() => ({
+  n: STORIES.length,
+  ok: STORIES.every(s => s.lines.length >= 5 && s.qs.length === 3 && Array.isArray(s.pics) && s.pics.length === s.lines.length)
+}));
+ok(storyBank.n >= 16, `đọc truyện: ≥16 truyện (thấy ${storyBank.n})`);
+ok(storyBank.ok, 'đọc truyện: mỗi truyện có pics khớp số câu');
+ok(!!(await page.$('#read-prompt .story-pic')), 'đọc truyện: hiện tranh câu đang kể');
+await goHome();
+
+// 3b-r4. từ/câu bám tuần bhv_learn (tuần 4: chưa chữ ghép ch/nh)
+await page.click('[data-go="scr-read"]');
+await page.waitForTimeout(300);
+const r4 = await page.evaluate(() => {
+  if (typeof wordUnlocked !== 'function') return { exists: false };
+  const keep = Object.assign({}, learnWeek);
+  learnWeek = { v: 9, d: 4 };
+  const ca = wordUnlocked('con cá');
+  const cho = wordUnlocked('con chó');
+  const nha = wordUnlocked('cái nhà');
+  const samples = Array.from({ length: 20 }, () => {
+    const q = qWord();
+    return (q.choices.find(c => c.correct) || {}).html;
+  });
+  learnWeek = keep;
+  return { exists: true, ca, cho, nha, samples };
+});
+ok(r4.exists, 'đọc R4: có wordUnlocked');
+if (!r4.exists) throw new Error('thiếu wordUnlocked');
+ok(r4.ca === true && r4.cho === false && r4.nha === false,
+  `đọc R4: tuần 4 mở cá, khóa chó/nhà (cá=${r4.ca} chó=${r4.cho} nhà=${r4.nha})`);
+ok(!r4.samples.includes('con chó') && !r4.samples.includes('cái nhà'),
+  `đọc R4: qWord không ra từ khóa (${r4.samples.slice(0,5).join(', ')})`);
 await goHome();
 
 // 3b. toán 0-10: menu → đếm số → chọn đáp án có phản hồi
@@ -200,6 +232,39 @@ ok(shp.svg, 'toán hình: hiện 1 hình SVG');
 ok(shp.n === 3, `toán hình: 3 tên hình (thấy ${shp.n})`);
 await goHome();
 
+// 3n. toán M5 cộng/trừ có nhớ phạm vi 20
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+const carryBtn = await page.$('#math-menu [data-level="carry"]');
+ok(!!carryBtn, 'toán: có mục có nhớ');
+if (!carryBtn) throw new Error('thiếu #math-menu [data-level="carry"]');
+await carryBtn.click({ force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const car = await page.$eval('#math-quiz', el => ({
+  progress: (el.querySelector('#math-progress')||{}).textContent||'',
+  frames: el.querySelectorAll('.ten-frame').length
+}));
+ok(/Câu 1 \/ 6/.test(car.progress), `toán có nhớ: lượt 6 câu (${car.progress.trim()})`);
+ok(car.frames >= 1, `toán có nhớ: có khung mười (thấy ${car.frames})`);
+const carQs = await page.evaluate(() => {
+  if (typeof MATH_BUILDERS==='undefined' || !MATH_BUILDERS.carry) return { ok:false };
+  const qs = MATH_BUILDERS.carry();
+  const parse = q => {
+    const m = (q.say||'').match(/(\d+)\s+(cộng|trừ)\s+(\d+)/);
+    if (!m) return null;
+    return { a:+m[1], op:m[2], b:+m[3] };
+  };
+  const rows = qs.map(parse);
+  if (rows.some(r => !r)) return { ok:false, why:'say' };
+  const good = rows.every(r => {
+    if (r.op === 'cộng') return (r.a % 10) + (r.b % 10) >= 10 && r.a + r.b <= 20;
+    return r.a % 10 < r.b && r.a - r.b >= 0 && r.a <= 20;
+  });
+  return { ok: good, n: rows.length };
+});
+ok(carQs.ok && carQs.n === 6, `toán có nhớ: 6 câu đều nhớ/mượn (ok=${carQs.ok} n=${carQs.n})`);
+await goHome();
+
 // 3i. tập viết: hàng đợi chữ yếu (chữ đạt 3 sao bị bỏ qua)
 await page.click('[data-go="scr-write"]');
 await page.waitForTimeout(400);
@@ -213,6 +278,74 @@ const weakQ = await page.evaluate(() => {
   return { ok: typeof nextWeakIdx === 'function' && ch !== 'a' && ch !== 'ă', ch };
 });
 ok(weakQ.ok, `tập viết: nextWeakIdx bỏ chữ đã 3 sao (ra '${weakQ.ch}')`);
+await goHome();
+
+// 3k. tập viết W2: tab tiếng — ghép ≥2 chữ, ≥2 nét mẫu
+await page.click('[data-go="scr-write"]');
+await page.waitForTimeout(400);
+const sylTab = await page.$('#scr-write [data-set="syl"]');
+ok(!!sylTab, 'tập viết: có tab tiếng');
+if (!sylTab) throw new Error('thiếu #scr-write [data-set="syl"]');
+await sylTab.click({ force: true });
+await page.waitForTimeout(500);
+const syl = await page.evaluate(() => {
+  const t = ($('#write-letter')||{}).textContent || '';
+  const g = typeof glyphStrokes === 'function' ? glyphStrokes() : null;
+  return {
+    t: t.trim(),
+    nLetters: [...t.trim()].length,
+    nStrokes: g && g.strokes ? g.strokes.length : 0,
+    wSet
+  };
+});
+ok(syl.wSet === 'syl' && syl.nLetters >= 2, `tập viết tiếng: hiện tiếng ≥2 chữ ('${syl.t}')`);
+ok(syl.nStrokes >= 2, `tập viết tiếng: ghép nét từ 2 chữ (thấy ${syl.nStrokes} nét)`);
+await goHome();
+
+// 3L. tập viết W3: chữ HOA mẫu VN (không còn Hershey in)
+await page.click('[data-go="scr-write"]');
+await page.waitForTimeout(400);
+await page.click('#scr-write [data-set="up"]', { force: true });
+await page.waitForTimeout(400);
+const hoa = await page.evaluate(() => {
+  const A = STROKES.A, I = STROKES.I, D = STROKES.Đ;
+  const hersheyA0 = JSON.stringify([0, 14.3]);
+  return {
+    wSet, ch: curChar(),
+    nA: A && A.length, nI: I && I.length, nD: D && D.length,
+    a0: A && A[0] && A[0][0],
+    notHersheyA: JSON.stringify(A && A[0] && A[0][0]) !== hersheyA0
+  };
+});
+ok(hoa.wSet === 'up', `tập viết HOA: tab up (chữ '${hoa.ch}')`);
+ok(hoa.notHersheyA, `tập viết HOA: A không còn điểm đầu Hershey ${JSON.stringify(hoa.a0)}`);
+ok(hoa.nI >= 3, `tập viết HOA: I ≥3 nét mẫu VN (Hershey=1, thấy ${hoa.nI})`);
+ok(hoa.nA >= 3, `tập viết HOA: A ≥3 nét (thấy ${hoa.nA})`);
+ok(hoa.nD >= 3, `tập viết HOA: Đ có nét gạch (thấy ${hoa.nD})`);
+await goHome();
+
+// 3m. tập viết W4: chép từ minh họa (≥3 chữ, ghép nét)
+await page.click('[data-go="scr-write"]');
+await page.waitForTimeout(400);
+const wordTab = await page.$('#scr-write [data-set="word"]');
+ok(!!wordTab, 'tập viết: có tab chép từ');
+if (!wordTab) throw new Error('thiếu #scr-write [data-set="word"]');
+await wordTab.click({ force: true });
+await page.waitForTimeout(500);
+const wrd = await page.evaluate(() => {
+  const t = ($('#write-letter')||{}).textContent || '';
+  const g = typeof glyphStrokes === 'function' ? glyphStrokes() : null;
+  const pic = ($('#write-word .em')||{}).textContent || '';
+  return {
+    t: t.trim(),
+    nLetters: [...t.trim()].length,
+    nStrokes: g && g.strokes ? g.strokes.length : 0,
+    pic, wSet
+  };
+});
+ok(wrd.wSet === 'word' && wrd.nLetters >= 3, `tập viết từ: hiện từ ≥3 chữ ('${wrd.t}')`);
+ok(wrd.nStrokes >= 4, `tập viết từ: ghép nét cả từ (thấy ${wrd.nStrokes} nét)`);
+ok(wrd.pic.length >= 1, `tập viết từ: có hình minh họa ('${wrd.pic}')`);
 await goHome();
 
 // 3j. tiếng Anh: nút nghe câu + ôn từ yếu có mặt

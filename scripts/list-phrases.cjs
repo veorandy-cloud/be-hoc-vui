@@ -66,6 +66,8 @@ for (const [ch, name] of Object.entries(D.LETTER_NAMES)) {
     vi(`Bé hãy viết chữ ${name} hoa nhé!`);
   }
 }
+(D.WRITE_SETS.syl||[]).forEach(s => vi(`Bé hãy viết tiếng ${s} nhé!`));
+(D.WRITE_SETS.word||[]).forEach(s => vi(`Bé hãy viết từ ${s} nhé!`));
 D.VN_LETTERS.forEach(ch => vi(`Đâu là chữ ${D.LETTER_NAMES[ch]}?`));
 
 // vần có âm cuối + âm ghép (reading.js qVan2/qDigraph)
@@ -136,6 +138,17 @@ for (let a = 11; a <= 19; a++) {
   vi(`${a} trừ 10 bằng mấy?`);
   for (let b = 1; b <= a % 10; b++) vi(`${a} trừ ${b} bằng mấy?`);
 }
+
+// toán M5 cộng/trừ CÓ NHỚ phạm vi 20 — mirror qAddCarry/qSubBorrow
+for (let a = 2; a <= 9; a++)
+  for (let b = 10 - a; b <= 9; b++)
+    vi(`${a} cộng ${b} bằng mấy?`);
+for (let a = 11; a <= 19; a++)
+  for (let b = 1; b <= 9; b++)
+    if ((a % 10) + b >= 10 && a + b <= 20) vi(`${a} cộng ${b} bằng mấy?`);
+for (let a = 11; a <= 19; a++)
+  for (let b = 1; b <= 9; b++)
+    if (b > a % 10) vi(`${a} trừ ${b} bằng mấy?`);
 
 // đọc truyện (reading.js startStory): lời dẫn + tựa + từng câu + từng câu hỏi hiểu
 D.STORIES.forEach(st => {

@@ -48,10 +48,12 @@ function dBar(base, upper) { // gạch ngang chữ đ/Đ
 
 const out = {};
 for (const ch of 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') out[ch] = glyph(ch);
-// chữ THƯỜNG thay bằng mẫu tập viết tiếng Việt (nét cong kín + móc, khuyết, thắt — đúng thứ tự nét
-// Bộ GD-ĐT); HOA in + số giữ Hershey (chữ in hoa & chữ số viết giống quốc tế)
+// chữ THƯỜNG + HOA thay bằng mẫu tập viết tiếng Việt (Bộ GD-ĐT chữ viết đứng);
+// số 0-9 giữ Hershey (chữ số viết giống quốc tế)
 const { VN_LOW } = require('./vn_lowercase.cjs');
 for (const ch in VN_LOW) out[ch] = VN_LOW[ch];
+const { VN_UP } = require('./vn_uppercase.cjs');
+for (const ch in VN_UP) out[ch] = VN_UP[ch];
 for (const [vn, base, mark] of [
   ['ă','a','breve'],['â','a','hat'],['ê','e','hat'],['ô','o','hat'],
   ['Ă','A','breve'],['Â','A','hat'],['Ê','E','hat'],['Ô','O','hat']
@@ -74,7 +76,7 @@ for (const ch in out) {
 }
 
 const js = '"use strict";\n/* SINH TU DONG boi scripts/gen_strokes.cjs - dung sua tay. ' +
-  'Thu tu net theo font Hershey futural (public domain). Khung: cao 100, x canh giua 0. */\n' +
+  'Thu tu net: tap viet VN (thuong+hoa), so Hershey. Khung: cao 100, x canh giua 0. */\n' +
   'const STROKES = ' + JSON.stringify(final) + ';\n' +
   "if (typeof module !== 'undefined') module.exports = { STROKES };\n";
 fs.writeFileSync(path.join(__dirname, '..', 'js', 'strokes.js'), js, 'utf8');

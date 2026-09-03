@@ -33,16 +33,21 @@ function qTone(){
   };
 }
 function qWord(){
-  const t = rand(WORD_ITEMS);
+  const pool = unlockedWords();
+  const t = rand(pool);
   // distractor không được trùng tiếng-bỏ-dấu với đáp án (quả DỨA vs quả DƯA hấu — bé chưa đọc thạo dấu)
   // tiếng gây nhầm có thể đứng GIỮA từ ('dưa' trong 'quả dưa hấu') → so tiếng-cuối mỗi bên với MỌI tiếng bên kia
   const syls = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').split(' ');
   const ts = syls(t.w), tl = ts[ts.length-1];
-  const [d1, d2] = pick(WORD_ITEMS.filter(x => {
+  let dist = pool.filter(x => {
     if(x===t) return false;
     const xs = syls(x.w);
     return !xs.includes(tl) && !ts.includes(xs[xs.length-1]);
-  }), 2);
+  });
+  // pool tuần nhỏ: bỏ ràng buộc syls, rồi mới về cả WORD_ITEMS — pick(...,2) không được thiếu
+  if(dist.length < 3) dist = pool.filter(x=>x!==t);
+  if(dist.length < 3) dist = WORD_ITEMS.filter(x=>x!==t);
+  const [d1, d2] = pick(dist, 2);
   const man = (typeof window!=='undefined' && window.IMG_MAN) || null;
   const pic = (t.en && man && man[t.en])
     ? `<img class="ph" src="assets/images/en/${man[t.en]}" alt="${t.w}" style="max-height:110px;border-radius:14px;border:3px solid var(--ink)">`
@@ -53,7 +58,7 @@ function qWord(){
   };
 }
 function qSentence(){
-  const s = rand(SENTENCES);
+  const s = rand(unlockedSentences());
   return {
     say:s.say, html:`<div class="sentence">${s.html.replace('___','<b style="color:var(--coral)">___</b>')}</div>`,
     choices:[{html:s.a,correct:true,cls:'word'},{html:s.d[0],cls:'word'},{html:s.d[1],cls:'word'}]
@@ -61,6 +66,23 @@ function qSentence(){
 }
 /* ==== lộ trình tuần SGK: vần đóng/âm ghép mở dần theo tiến độ, tránh dội cả 32 vần vào bé ngày đầu ==== */
 let learnWeek = safeParse('bhv_learn', {v:11, d:6}, isObj); // bắt đầu có sẵn 2 tuần đầu để chơi
+// từ/câu R4: khóa khi chứa âm ghép chưa dạy (longest-first: ngh trước ng/gh). Không cổng VAN2.
+function wordUnlocked(text){
+  const t = (text||'').toLowerCase();
+  const ds = [...DIGRAPHS].sort((a,b)=>b.d.length-a.d.length);
+  for(const dg of ds){
+    if(t.includes(dg.d) && dg.week > learnWeek.d) return false;
+  }
+  return true;
+}
+function unlockedWords(){
+  const p = WORD_ITEMS.filter(x=>wordUnlocked(x.w));
+  return p.length>=3 ? p : WORD_ITEMS; // never empty
+}
+function unlockedSentences(){
+  const p = SENTENCES.filter(s=>wordUnlocked(s.html+' '+s.a+' '+s.d.join(' ')));
+  return p.length>=2 ? p : SENTENCES;
+}
 function learnAdvance(kind, right, total){
   if(right < Math.ceil(total*0.7)) return; // đúng ≥70% lượt mới mở tuần kế
   const max = kind==='v' ? 17 : 9;
@@ -98,7 +120,7 @@ const READ_BUILDERS = {
   van2: ()=>Array.from({length:6}, qVan2),
   digraph: ()=>Array.from({length:6}, qDigraph),
   words: ()=>Array.from({length:8}, qWord),
-  sentences: ()=>pick(SENTENCES,6).map(s=>({
+  sentences: ()=>pick(unlockedSentences(),6).map(s=>({
     say:s.say, html:`<div class="sentence">${s.html.replace('___','<b style="color:var(--coral)">___</b>')}</div>`,
     choices:[{html:s.a,correct:true,cls:'word'},{html:s.d[0],cls:'word'},{html:s.d[1],cls:'word'}]
   })),
@@ -113,7 +135,7 @@ function startStory(){
   $('#read-choices').innerHTML='';
   const st = rand(STORIES);
   $('#read-progress').textContent = `📖 ${st.title}`;
-  $('#read-prompt').innerHTML = `<div style="font-size:44px">${st.em}</div>` +
+  $('#read-prompt').innerHTML = `<div class="story-pic">${(st.pics&&st.pics[0])||st.em}</div>` +
     st.lines.map(l=>`<div class="sentence story-line" style="text-align:left">${l}</div>`).join('');
   $('#read-speak').onclick = ()=>speak(st.title);
   speak(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`);
@@ -123,6 +145,8 @@ function startStory(){
   const nextLine = ()=>{
     if(gen !== uiGen) return;
     if(i >= st.lines.length){ ask(); return; }
+    const picEl = $('#read-prompt .story-pic');
+    if(picEl) picEl.textContent = (st.pics&&st.pics[i])||st.em;
     els.forEach((el,k)=>{
       el.style.background = k===i ? '#FEF3C7' : '';
       if(k===i){

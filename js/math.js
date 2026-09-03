@@ -115,6 +115,32 @@ function qCompare20(){
 MATH_BUILDERS.mix20 = ()=>shuffle([qCount20(), qAdd20(), qSub20(), qCompare20(),
   rand([qCount20,qAdd20,qSub20,qCompare20])(), rand([qCount20,qAdd20,qSub20,qCompare20])()]);
 
+/* ==== cộng/trừ CÓ NHỚ phạm vi 20 (SGK HK2) — không vào mix/mix20 ==== */
+function qAddCarry(){
+  const pairs = [];
+  for(let a=2; a<=9; a++) for(let b=10-a; b<=9; b++) pairs.push([a,b]);
+  for(let a=11; a<=19; a++) for(let b=1; b<=9; b++)
+    if((a%10)+b>=10 && a+b<=20) pairs.push([a,b]);
+  const [a,b] = rand(pairs);
+  return {
+    say:`${a} cộng ${b} bằng mấy?`,
+    html:`<div class="math-frames">${tenFrame(a)}<span class="math-op">+</span>${tenFrame(b)}</div><div class="math-eq">${a} + ${b} = ?</div>${numLine(20,[a,a+b])}`,
+    choices:numChoices(a+b, 20)
+  };
+}
+function qSubBorrow(){
+  const pairs = [];
+  for(let a=11; a<=19; a++) for(let b=1; b<=9; b++)
+    if(b>a%10 && a-b>=1) pairs.push([a,b]);
+  const [a,b] = rand(pairs);
+  return {
+    say:`${a} trừ ${b} bằng mấy?`,
+    html:`<div class="math-frames">${tenFrame(a, b)}</div><div class="math-eq">${a} − ${b} = ?</div>${numLine(20,[a-b,a])}`,
+    choices:numChoices(a-b, 20)
+  };
+}
+MATH_BUILDERS.carry = ()=>shuffle([qAddCarry(),qAddCarry(),qAddCarry(), qSubBorrow(),qSubBorrow(),qSubBorrow()]);
+
 /* ==== lời văn 1 bước (SGK lớp 1) — phạm vi 1–10, không hai bước, không vào mix/mix20 ==== */
 const MATH_STORY_BANK = [
   {say:'Na có 3 quả táo. Mẹ cho thêm 2 quả. Na có tất cả mấy quả táo?', a:3, b:2, ans:5, add:1},
