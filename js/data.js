@@ -126,18 +126,18 @@ const DIGRAPHS = [
 ];
 
 const WORD_ITEMS = [
-  {em:'🐱', w:'con mèo'},{em:'🐶', w:'con chó'},{em:'🐟', w:'con cá'},
-  {em:'🐔', w:'con gà'},{em:'🐘', w:'con voi'},{em:'🍎', w:'quả táo'},
-  {em:'🍌', w:'quả chuối'},{em:'🏠', w:'cái nhà'},{em:'🚗', w:'ô tô'},{em:'🌸', w:'bông hoa'},
-  {em:'🦆', w:'con vịt'},{em:'🐰', w:'con thỏ'},{em:'🐵', w:'con khỉ'},{em:'🍊', w:'quả cam'},
-  {em:'🚌', w:'xe buýt'},{em:'✈️', w:'máy bay'},{em:'🦋', w:'con bướm'},{em:'⭐', w:'ngôi sao'},
-  {em:'☀️', w:'mặt trời'},{em:'🌙', w:'mặt trăng'},
-  {em:'🐄', w:'con bò'},{em:'🐷', w:'con heo'},{em:'🐴', w:'con ngựa'},{em:'🐑', w:'con cừu'},
-  {em:'🐐', w:'con dê'},{em:'🐸', w:'con ếch'},{em:'🐯', w:'con hổ'},{em:'🐭', w:'con chuột'},
-  {em:'🐝', w:'con ong'},{em:'🐢', w:'con rùa'},
-  {em:'🦀', w:'con cua'},{em:'🐌', w:'con ốc'},{em:'🐦', w:'con chim'},{em:'🐻', w:'con gấu'},
-  {em:'🍍', w:'quả dứa'},{em:'🥭', w:'quả xoài'},{em:'🍉', w:'quả dưa hấu'},{em:'🚲', w:'xe đạp'},
-  {em:'🪑', w:'cái ghế'},{em:'👒', w:'cái mũ'},{em:'👟', w:'đôi giày'},{em:'🌈', w:'cầu vồng'}
+  {em:'🐱', w:'con mèo', en:'cat'},{em:'🐶', w:'con chó', en:'dog'},{em:'🐟', w:'con cá', en:'fish'},
+  {em:'🐔', w:'con gà', en:'chicken'},{em:'🐘', w:'con voi', en:'elephant'},{em:'🍎', w:'quả táo', en:'apple'},
+  {em:'🍌', w:'quả chuối', en:'banana'},{em:'🏠', w:'cái nhà', en:'house'},{em:'🚗', w:'ô tô', en:'car'},{em:'🌸', w:'bông hoa', en:'flower'},
+  {em:'🦆', w:'con vịt', en:'duck'},{em:'🐰', w:'con thỏ', en:'rabbit'},{em:'🐵', w:'con khỉ', en:'monkey'},{em:'🍊', w:'quả cam', en:'orange'},
+  {em:'🚌', w:'xe buýt', en:'bus'},{em:'✈️', w:'máy bay', en:'plane'},{em:'🦋', w:'con bướm', en:'butterfly'},{em:'⭐', w:'ngôi sao', en:'star'},
+  {em:'☀️', w:'mặt trời', en:'sun'},{em:'🌙', w:'mặt trăng', en:'moon'},
+  {em:'🐄', w:'con bò', en:'cow'},{em:'🐷', w:'con heo', en:'pig'},{em:'🐴', w:'con ngựa', en:'horse'},{em:'🐑', w:'con cừu', en:'sheep'},
+  {em:'🐐', w:'con dê', en:'goat'},{em:'🐸', w:'con ếch', en:'frog'},{em:'🐯', w:'con hổ', en:'tiger'},{em:'🐭', w:'con chuột', en:'mouse'},
+  {em:'🐝', w:'con ong', en:'bee'},{em:'🐢', w:'con rùa', en:'turtle'},
+  {em:'🦀', w:'con cua', en:'crab'},{em:'🐌', w:'con ốc', en:'snail'},{em:'🐦', w:'con chim', en:'bird'},{em:'🐻', w:'con gấu', en:'bear'},
+  {em:'🍍', w:'quả dứa', en:'pineapple'},{em:'🥭', w:'quả xoài', en:'mango'},{em:'🍉', w:'quả dưa hấu', en:'watermelon'},{em:'🚲', w:'xe đạp', en:'bike'},
+  {em:'🪑', w:'cái ghế', en:'chair'},{em:'👒', w:'cái mũ', en:'hat'},{em:'👟', w:'đôi giày', en:'shoes'},{em:'🌈', w:'cầu vồng', en:'rainbow'}
 ];
 const SENTENCES = [
   {say:'Con gì kêu meo meo?', html:'Con ___ kêu meo meo 🐱', a:'mèo', d:['chó','gà']},
@@ -248,6 +248,43 @@ const EN_THEMES = {
     {em:'🌳',w:'tree',vi:'cái cây'},{em:'🌼',w:'flower',vi:'bông hoa'},{em:'🌊',w:'sea',vi:'biển'},
     {em:'🏖️',w:'beach',vi:'bãi biển'},{em:'🐚',w:'shell',vi:'vỏ sò'},{em:'⛰️',w:'mountain',vi:'ngọn núi'},
     {em:'🍃',w:'leaf',vi:'chiếc lá'},{em:'🌷',w:'garden',vi:'khu vườn'}
+  ],
+  /* 6 chủ đề Starters mở rộng — wiki = trang Wikipedia lấy ảnh thật sau (gen_images.cjs); chưa có ảnh thì fallback emoji */
+  '🍓 Fruit':[
+    {em:'🍇',w:'grape',vi:'quả nho',wiki:'Grape'},{em:'🍐',w:'pear',vi:'quả lê',wiki:'Pear'},
+    {em:'🍑',w:'peach',vi:'quả đào',wiki:'Flat peach'},{em:'🍋',w:'lemon',vi:'quả chanh',wiki:'Lemon'},
+    {em:'🍒',w:'cherry',vi:'quả anh đào',wiki:'Cherry'},{em:'🍓',w:'strawberry',vi:'quả dâu tây',wiki:'Strawberry'},
+    {em:'🥥',w:'coconut',vi:'quả dừa',wiki:'Coconut oil'},{em:'🍈',w:'melon',vi:'dưa lưới',wiki:'Melon'}
+  ],
+  '🥕 Veggies':[
+    {em:'🥕',w:'carrot',vi:'củ cà rốt',wiki:'Carrot'},{em:'🥔',w:'potato',vi:'củ khoai tây',wiki:'Potato'},
+    {em:'🌽',w:'corn',vi:'bắp ngô',wiki:'Sweet corn'},{em:'🍄',w:'mushroom',vi:'cây nấm',wiki:'Mushroom'},
+    {em:'🧅',w:'onion',vi:'củ hành',wiki:'Onion'},{em:'🧄',w:'garlic',vi:'củ tỏi',wiki:'Garlic press'},
+    {em:'🥬',w:'cabbage',vi:'bắp cải',wiki:'Cabbage'},{em:'🫑',w:'pepper',vi:'ớt chuông',wiki:'Bell pepper'}
+  ],
+  '🐛 Tiny Animals':[
+    {em:'🐜',w:'ant',vi:'con kiến',wiki:'Ant'},{em:'🐝',w:'bee',vi:'con ong',wiki:'Bee'},
+    {em:'🦋',w:'butterfly',vi:'con bướm',wiki:'Butterfly'},{em:'🕷️',w:'spider',vi:'con nhện',wiki:'Spider'},
+    {em:'🐌',w:'snail',vi:'con ốc sên',wiki:'Snail'},{em:'🐭',w:'mouse',vi:'con chuột',wiki:'Mouse'},
+    {em:'🐍',w:'snake',vi:'con rắn',wiki:'Snake'},{em:'🦇',w:'bat',vi:'con dơi',wiki:'Bat'}
+  ],
+  '🕐 My Day':[
+    {em:'🕐',w:'clock',vi:'đồng hồ',wiki:'Alarm clock'},{em:'⌚',w:'watch',vi:'đồng hồ đeo tay',wiki:'Watch'},
+    {em:'🌅',w:'morning',vi:'buổi sáng'},{em:'🌃',w:'night',vi:'ban đêm'},
+    {em:'🥣',w:'breakfast',vi:'bữa sáng'},{em:'🍱',w:'lunch',vi:'bữa trưa'},
+    {em:'🍲',w:'dinner',vi:'bữa tối'},{em:'🎂',w:'birthday',vi:'sinh nhật',wiki:'Birthday cake'}
+  ],
+  '🏘️ Places':[
+    {em:'🏞️',w:'park',vi:'công viên',wiki:'Park'},{em:'🏫',w:'school',vi:'trường học',wiki:'Secondary school'},
+    {em:'🏠',w:'home',vi:'ngôi nhà',wiki:'Single-family detached home'},{em:'🏪',w:'shop',vi:'cửa hàng',wiki:'Retail'},
+    {em:'🛣️',w:'street',vi:'con đường',wiki:'Street'},{em:'🌉',w:'bridge',vi:'cây cầu',wiki:'Bridge'},
+    {em:'🏥',w:'hospital',vi:'bệnh viện',wiki:'Hospital'},{em:'🏙️',w:'city',vi:'thành phố',wiki:'City'}
+  ],
+  '🎬 Action Verbs':[
+    {em:'🥤',w:'drink',vi:'uống'},{em:'✍️',w:'write',vi:'viết'},
+    {em:'🖌️',w:'draw',vi:'vẽ'},{em:'🚶',w:'walk',vi:'đi bộ'},
+    {em:'🧼',w:'wash',vi:'rửa'},{em:'👏',w:'clap',vi:'vỗ tay'},
+    {em:'😭',w:'cry',vi:'khóc'},{em:'😆',w:'laugh',vi:'cười'}
   ]
 };
 
@@ -359,7 +396,165 @@ const SONGS = [
     {t:"Ố mấy lội, lội, lội sông", n:[[60,0.5],[62,0.5],[64,1],[64,1],[62,1],[60,2]]},
     {t:"Ố mấy đi tìm, em nhớ thương ai", n:[[64,0.5],[64,0.5],[67,1],[69,1],[67,0.5],[64,0.5],[62,1],[60,2]]},
     {t:"Con mắt ố mấy lim dim", n:[[62,1],[64,1],[62,0.5],[62,0.5],[60,1],[57,2]]}
+  ]},
+  /* 4 bài đồng dao/dân ca mới — melody soạn theo lối hát truyền miệng (tin cậy: Bướm Vàng CAO, còn lại TRUNG BÌNH, cần tai kiểm trên iPad) */
+  {em:"🦋", title:"Kìa Con Bướm Vàng", vi:"Bướm vàng xòe cánh bay vào vườn hoa", bpm:108, lang:'vi-VN', lines:[
+    {t:"Kìa con bướm vàng, kìa con bướm vàng", n:[[60,1],[62,1],[64,1],[60,1],[60,1],[62,1],[64,1],[60,1]]},
+    {t:"Xòe đôi cánh bay, xòe đôi cánh bay", n:[[64,0.5],[65,0.5],[67,1],[67,1],[64,0.5],[65,0.5],[67,1],[67,1]]},
+    {t:"Bay đến vườn hoa, hoa thắm tươi màu", n:[[69,1],[67,1],[65,1],[64,1],[67,1],[69,1],[65,1],[60,1]]},
+    {t:"Bay đến vườn hoa, hoa thắm tươi màu", n:[[69,1],[67,1],[65,1],[64,1],[67,0.5],[65,0.5],[62,1],[60,2]]}
+  ]},
+  {em:"🦆", title:"Một Con Vịt", vi:"Vịt con xòe cánh kêu bíp bíp", bpm:108, lang:'vi-VN', lines:[
+    {t:"Một con vịt xòe ra hai cánh cái", n:[[60,1],[60,1],[60,1],[62,1],[64,1],[64,1],[65,1],[67,1]]},
+    {t:"Bíp bíp bíp bíp bíp bíp bíp", n:[[67,0.5],[67,0.5],[64,0.5],[64,0.5],[62,0.5],[62,0.5],[60,1]]},
+    {t:"Gọi rằng: Cánh cụt ơi, ra đi lượn một vòng", n:[[67,1],[67,1],[64,1],[67,1],[69,1],[67,1],[65,1],[64,1],[62,1],[64,1]]},
+    {t:"Bíp bíp bíp bíp bíp bíp", n:[[67,0.5],[67,0.5],[64,1],[64,1],[62,1],[60,2]]}
+  ]},
+  {em:"🧒", title:"Dung Dăng Dung Dẻ", vi:"Đưa trẻ đi chơi, đồng dao dây chuyền", bpm:106, lang:'vi-VN', lines:[
+    {t:"Dung dăng dung dẻ, đưa trẻ đi chơi", n:[[64,0.5],[64,0.5],[67,0.5],[67,0.5],[69,1],[67,1],[64,1],[60,1]]},
+    {t:"Đến cửa nhà trời, lật củ khoai rừng", n:[[64,0.5],[64,0.5],[67,.5],[67,.5],[69,1],[67,1],[64,1],[60,1]]},
+    {t:"Rừng có con sóc, sóc chạy vào lồng", n:[[64,.5],[64,.5],[67,.5],[67,.5],[69,1],[67,1],[64,1],[60,1]]},
+    {t:"Lồng có cái bẫy, bẫy đuổi chân trời", n:[[64,.5],[64,.5],[67,.5],[67,.5],[69,1],[67,1],[64,1],[60,1]]}
+  ]},
+  {em:"🌾", title:"Thằng Bờm", vi:"Dân ca Bắc Bộ, chuyện Bờm và quạt mo", bpm:92, lang:'vi-VN', lines:[
+    {t:"Thằng Bờm có cái quạt mo", n:[[67,1],[67,1],[69,1],[72,1],[69,1],[67,1]]},
+    {t:"Phú ông xin đổi ba bò chín trâu", n:[[64,1],[67,1],[69,1],[72,1],[69,1],[67,1],[64,1],[62,1]]},
+    {t:"Bờm rằng: Bờm chẳng lấy trâu", n:[[67,1],[67,1],[64,1],[62,1],[60,1],[60,1]]},
+    {t:"Phú ông xin đổi ao sâu cá mè", n:[[64,1],[67,1],[69,1],[72,1],[69,1],[67,1],[64,1],[67,1]]},
+    {t:"Bờm rằng: Bờm chẳng lấy mè", n:[[67,0.5],[67,0.5],[64,1],[62,1],[64,1],[60,2]]}
   ]}
+];
+
+/* ==== ĐỌC TRUYỆN (reading.js startStory): cô kể từng câu → hỏi hiểu 3 câu/truyện ====
+   Câu ngắn 6-11 tiếng, vần đơn; qs.a = index đáp án đúng, phân bố đều A/B/C */
+const STORIES = [
+  {
+    em:'🐰', title:'Thỏ trắng và củ cà rốt',
+    lines:[
+      'Sáng nay, thỏ trắng ra vườn tìm ăn.',
+      'Bạn thỏ thấy ngay một củ cà rốt to.',
+      'Củ cà rốt nằm sâu dưới đất.',
+      'Bạn thỏ kéo thật mạnh mà không ra.',
+      'Bạn gọi bạn sóc đến cùng kéo giúp.',
+      'Hai bạn kéo lên, cùng nhau ăn ngon lành.',
+    ],
+    qs:[
+      { q:'Thỏ trắng đi đâu để tìm ăn?', c:['ra bờ ao','ra vườn','lên núi cao'], a:1 },
+      { q:'Ai đến giúp thỏ kéo cà rốt?', c:['bạn gà con','bạn sóc','bạn cá vàng'], a:2 },
+      { q:'Vì sao lúc đầu củ cà rốt không ra?', c:['vì củ còn xanh chưa chín','vì trời đang mưa to','vì củ nằm sâu dưới đất'], a:0 },
+    ],
+  },
+  {
+    em:'🐤', title:'Gà con tìm mồi',
+    lines:[
+      'Gà con theo mẹ ra sân tìm mồi.',
+      'Bạn gà thấy một con sâu béo tròn.',
+      'Con sâu chạy nhanh, gà con đuổi theo.',
+      'Gà con mổ đúng một cái, bắt được sâu.',
+      'Mẹ gà khen gà con khéo tìm mồi.',
+    ],
+    qs:[
+      { q:'Gà con ra sân để làm gì?', c:['đi tắm nắng','đi đón bạn vịt','đi tìm mồi'], a:2 },
+      { q:'Gà con đã bắt được con gì?', c:['con sâu','con cá','con ốc'], a:0 },
+      { q:'Ai khen gà con khéo tìm mồi?', c:['bố gà','mẹ gà','bạn vịt'], a:1 },
+    ],
+  },
+  {
+    em:'🪴', title:'Bé Na tưới cây',
+    lines:[
+      'Chiều nay, bé Na ra vườn cùng mẹ.',
+      'Hôm nay trời nắng, cây hoa khát nước.',
+      'Na lấy bình nước tưới đều từng chậu.',
+      'Ít lâu sau, cây nở những bông hoa đẹp.',
+      'Mẹ khen Na là bé ngoan chăm chỉ.',
+      'Na vui lắm, ôm hôn mẹ thật chặt.',
+    ],
+    qs:[
+      { q:'Bé Na ra vườn làm gì?', c:['tưới cây hoa','hái quả','bắt bướm'], a:0 },
+      { q:'Tại sao cây hoa khát nước?', c:['vì vừa bị gió lay','vì hôm nay trời nắng to','vì đất quá nhiều phân'], a:1 },
+      { q:'Sau khi được tưới nước, cây hoa thế nào?', c:['cây héo dần','hoa rụng hết lá','cây nở hoa đẹp'], a:2 },
+    ],
+  },
+  {
+    em:'⚽', title:'Bạn Bo đá bóng',
+    lines:[
+      'Buổi chiều, bạn Bo ra sân đá bóng.',
+      'Bo sút mạnh, bóng bay lên cành cây.',
+      'Các bạn nhảy mãi không với tới bóng.',
+      'Anh của Bo dùng gậy lấy bóng xuống.',
+      'Bo cảm ơn anh rồi lại đá tiếp.',
+      'Các bạn cùng nhau chơi thật là vui.',
+    ],
+    qs:[
+      { q:'Khi Bo sút mạnh, bóng bay lên đâu?', c:['lên nóc nhà','lên cành cây','ra ngoài cổng'], a:1 },
+      { q:'Ai đã lấy bóng xuống cho các bạn?', c:['bạn Mai','cô giáo','anh của Bo'], a:2 },
+      { q:'Câu nào đúng theo truyện?', c:['Bóng ban đầu bị kẹt trên cây.','Bóng lăn xuống mương nước.','Bóng bị thủng, xẹp lép.'], a:0 },
+    ],
+  },
+  {
+    em:'☂️', title:'Mưa lúc tan học',
+    lines:[
+      'Tan học, trời bỗng đổ cơn mưa to.',
+      'Bé Na quên mang theo chiếc ô.',
+      'Na đứng đợi trước cổng trường học.',
+      'Bạn Bo mời Na cùng che chung ô.',
+      'Hai bạn đi sát nhau trên đường về.',
+      'Trời mưa to thế mà hai bạn vẫn vui.',
+    ],
+    qs:[
+      { q:'Lúc tan học, trời có chuyện gì?', c:['trời nắng lên đẹp','trời nổi cơn gió','trời đổ cơn mưa to'], a:2 },
+      { q:'Bé Na quên mang theo thứ gì?', c:['chiếc ô','quyển vở','chiếc cặp'], a:0 },
+      { q:'Bạn Bo giúp Na bằng cách nào?', c:['cho Na mượn tiền','mời Na che chung ô','chạy gọi bố Na đến'], a:1 },
+    ],
+  },
+  {
+    em:'🥭', title:'Quà của bà ngoại',
+    lines:[
+      'Hôm nay, bà ngoại đến nhà chơi.',
+      'Bà mang theo một giỏ xoài chín vàng.',
+      'Na rửa sạch xoài, mời cả nhà ăn.',
+      'Na còn đem mấy quả sang tặng bạn Bo.',
+      'Xoài chín ngọt, hai bạn ăn rất thích.',
+      'Bà cười tươi, xoa đầu khen Na ngoan.',
+    ],
+    qs:[
+      { q:'Bà ngoại mang đến món quà gì?', c:['một giỏ xoài chín','một hộp bánh quy','một cân cam tươi'], a:0 },
+      { q:'Na đem xoài sang tặng cho ai?', c:['bạn Mai','bạn Bo','cô giáo'], a:1 },
+      { q:'Vì sao bà khen Na ngoan?', c:['vì Na viết chữ đẹp','vì Na quét nhà sạch','vì Na biết tặng xoài cho bạn'], a:2 },
+    ],
+  },
+  {
+    em:'🐠', title:'Chú cá vàng của Na',
+    lines:[
+      'Bé Na nuôi một chú cá vàng đẹp.',
+      'Mỗi sáng, Na thay nước cho cá.',
+      'Na còn rắc ít thức ăn vào bể.',
+      'Cá bơi lội vui vẻ trong bể nước.',
+      'Bạn Bo đến chơi, khen cá thật xinh.',
+      'Nhờ Na chăm sóc, cá luôn khỏe mạnh.',
+    ],
+    qs:[
+      { q:'Bé Na nuôi con vật gì?', c:['chú thỏ trắng','chú cá vàng','chú gà con'], a:1 },
+      { q:'Mỗi sáng Na làm gì cho cá?', c:['cho cá nghe nhạc','dắt cá đi dạo','thay nước và cho ăn'], a:2 },
+      { q:'Vì sao chú cá luôn khỏe mạnh?', c:['vì Na chăm sóc đều đặn','vì bể nước to đẹp','vì Bo cho ăn thêm'], a:0 },
+    ],
+  },
+  {
+    em:'🪁', title:'Ngày thả diều',
+    lines:[
+      'Chủ nhật, bố chở Na và Bo đi thả diều.',
+      'Ra cánh đồng, gió thổi rất mát.',
+      'Con diều bươm bướm có đuôi dài.',
+      'Bố chạy nhanh rồi buông dây cho diều bay.',
+      'Diều bay lên cao, vượt cả ngọn cây.',
+      'Na vỗ tay reo to vì diều bay cao.',
+    ],
+    qs:[
+      { q:'Chủ nhật, bố đưa Na đi làm gì?', c:['đi câu cá','đi thăm vườn','đi thả diều'], a:2 },
+      { q:'Chiếc diều của Na có hình dáng thế nào?', c:['hình bươm bướm, đuôi dài','hình con cá, vây đỏ','hình ngôi sao, năm cánh'], a:0 },
+      { q:'Vì sao diều bay lên được cao?', c:['vì Na kéo dây thật chặt','vì trên đồng gió thổi mạnh','vì bố đỡ diều lên cao'], a:1 },
+    ],
+  },
 ];
 
 const PICS = [
@@ -526,5 +721,5 @@ const PIC_META=[
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS, spellTieng };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, VAN2, DIGRAPHS, STORIES, spellTieng };
 }

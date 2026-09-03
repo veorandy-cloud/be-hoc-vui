@@ -124,6 +124,10 @@
   "lang": "vi"
  },
  {
+  "t": "Chưa đúng chiều nét, bé xem cô vẽ nhé!",
+  "lang": "vi"
+ },
+ {
   "t": "Gần đúng rồi! Bé vẽ cả nét một hơi nhé!",
   "lang": "vi"
  },
@@ -3400,6 +3404,390 @@
   "lang": "vi"
  },
  {
+  "t": "grape",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả nho?",
+  "lang": "vi"
+ },
+ {
+  "t": "pear",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả lê?",
+  "lang": "vi"
+ },
+ {
+  "t": "peach",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả đào?",
+  "lang": "vi"
+ },
+ {
+  "t": "lemon",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả chanh?",
+  "lang": "vi"
+ },
+ {
+  "t": "cherry",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả anh đào?",
+  "lang": "vi"
+ },
+ {
+  "t": "strawberry",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả dâu tây?",
+  "lang": "vi"
+ },
+ {
+  "t": "coconut",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là quả dừa?",
+  "lang": "vi"
+ },
+ {
+  "t": "melon",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là dưa lưới?",
+  "lang": "vi"
+ },
+ {
+  "t": "carrot",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là củ cà rốt?",
+  "lang": "vi"
+ },
+ {
+  "t": "potato",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là củ khoai tây?",
+  "lang": "vi"
+ },
+ {
+  "t": "corn",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bắp ngô?",
+  "lang": "vi"
+ },
+ {
+  "t": "mushroom",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cây nấm?",
+  "lang": "vi"
+ },
+ {
+  "t": "onion",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là củ hành?",
+  "lang": "vi"
+ },
+ {
+  "t": "garlic",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là củ tỏi?",
+  "lang": "vi"
+ },
+ {
+  "t": "cabbage",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bắp cải?",
+  "lang": "vi"
+ },
+ {
+  "t": "pepper",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là ớt chuông?",
+  "lang": "vi"
+ },
+ {
+  "t": "ant",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con kiến?",
+  "lang": "vi"
+ },
+ {
+  "t": "bee",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con ong?",
+  "lang": "vi"
+ },
+ {
+  "t": "butterfly",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con bướm?",
+  "lang": "vi"
+ },
+ {
+  "t": "spider",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con nhện?",
+  "lang": "vi"
+ },
+ {
+  "t": "snail",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con ốc sên?",
+  "lang": "vi"
+ },
+ {
+  "t": "mouse",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con chuột?",
+  "lang": "vi"
+ },
+ {
+  "t": "snake",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con rắn?",
+  "lang": "vi"
+ },
+ {
+  "t": "bat",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con dơi?",
+  "lang": "vi"
+ },
+ {
+  "t": "clock",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là đồng hồ?",
+  "lang": "vi"
+ },
+ {
+  "t": "watch",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là đồng hồ đeo tay?",
+  "lang": "vi"
+ },
+ {
+  "t": "morning",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là buổi sáng?",
+  "lang": "vi"
+ },
+ {
+  "t": "night",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là ban đêm?",
+  "lang": "vi"
+ },
+ {
+  "t": "breakfast",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bữa sáng?",
+  "lang": "vi"
+ },
+ {
+  "t": "lunch",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bữa trưa?",
+  "lang": "vi"
+ },
+ {
+  "t": "dinner",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bữa tối?",
+  "lang": "vi"
+ },
+ {
+  "t": "birthday",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là sinh nhật?",
+  "lang": "vi"
+ },
+ {
+  "t": "park",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là công viên?",
+  "lang": "vi"
+ },
+ {
+  "t": "school",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là trường học?",
+  "lang": "vi"
+ },
+ {
+  "t": "home",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là ngôi nhà?",
+  "lang": "vi"
+ },
+ {
+  "t": "shop",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cửa hàng?",
+  "lang": "vi"
+ },
+ {
+  "t": "street",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là con đường?",
+  "lang": "vi"
+ },
+ {
+  "t": "bridge",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cây cầu?",
+  "lang": "vi"
+ },
+ {
+  "t": "hospital",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là bệnh viện?",
+  "lang": "vi"
+ },
+ {
+  "t": "city",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là thành phố?",
+  "lang": "vi"
+ },
+ {
+  "t": "drink",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là uống?",
+  "lang": "vi"
+ },
+ {
+  "t": "write",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là viết?",
+  "lang": "vi"
+ },
+ {
+  "t": "draw",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là vẽ?",
+  "lang": "vi"
+ },
+ {
+  "t": "walk",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là đi bộ?",
+  "lang": "vi"
+ },
+ {
+  "t": "wash",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là rửa?",
+  "lang": "vi"
+ },
+ {
+  "t": "clap",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là vỗ tay?",
+  "lang": "vi"
+ },
+ {
+  "t": "cry",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là khóc?",
+  "lang": "vi"
+ },
+ {
+  "t": "laugh",
+  "lang": "en"
+ },
+ {
+  "t": "Từ nào là cười?",
+  "lang": "vi"
+ },
+ {
   "t": "Great job!",
   "lang": "en"
  },
@@ -3773,6 +4161,102 @@
  },
  {
   "t": "Con mắt ố mấy lim dim",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Kìa Con Bướm Vàng",
+  "lang": "vi"
+ },
+ {
+  "t": "Kìa con bướm vàng, kìa con bướm vàng",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Xòe đôi cánh bay, xòe đôi cánh bay",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Bay đến vườn hoa, hoa thắm tươi màu",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Một Con Vịt",
+  "lang": "vi"
+ },
+ {
+  "t": "Một con vịt xòe ra hai cánh cái",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Bíp bíp bíp bíp bíp bíp bíp",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Gọi rằng: Cánh cụt ơi, ra đi lượn một vòng",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Bíp bíp bíp bíp bíp bíp",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Dung Dăng Dung Dẻ",
+  "lang": "vi"
+ },
+ {
+  "t": "Dung dăng dung dẻ, đưa trẻ đi chơi",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Đến cửa nhà trời, lật củ khoai rừng",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Rừng có con sóc, sóc chạy vào lồng",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Lồng có cái bẫy, bẫy đuổi chân trời",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Thằng Bờm",
+  "lang": "vi"
+ },
+ {
+  "t": "Thằng Bờm có cái quạt mo",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Phú ông xin đổi ba bò chín trâu",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Bờm rằng: Bờm chẳng lấy trâu",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Phú ông xin đổi ao sâu cá mè",
+  "lang": "vi",
+  "kind": "song"
+ },
+ {
+  "t": "Bờm rằng: Bờm chẳng lấy mè",
   "lang": "vi",
   "kind": "song"
  },
@@ -4665,6 +5149,854 @@
   "lang": "vi"
  },
  {
+  "t": "Na có 3 quả táo. Mẹ cho thêm 2 quả. Na có tất cả mấy quả táo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo có 4 viên kẹo. Bạn cho thêm 3 viên. Bo có tất cả mấy viên kẹo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Có 5 con gà. Thêm 2 con gà. Tất cả mấy con gà?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na hái được 6 bông hoa. Hái thêm 1 bông. Na có mấy bông hoa?",
+  "lang": "vi"
+ },
+ {
+  "t": "Có 2 cái bánh. Mẹ làm thêm 5 cái bánh. Tất cả mấy cái bánh?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo có 7 viên bi. Cho bạn 3 viên. Bo còn mấy viên bi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Có 8 quả cam. Ăn mất 2 quả. Còn lại mấy quả cam?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na có 6 cái kẹo. Cho em 4 cái. Na còn mấy cái kẹo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Có 9 con cá. Bơi đi 5 con. Còn lại mấy con cá?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo có 5 quả táo. Ăn 1 quả. Bo còn mấy quả táo?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 2 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 3 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 4 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 5 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 6 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 7 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 8 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 9 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Số 10 gồm mấy và mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Đây là hình gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "It's a cat.",
+  "lang": "en"
+ },
+ {
+  "t": "It's a dog.",
+  "lang": "en"
+ },
+ {
+  "t": "It's an apple.",
+  "lang": "en"
+ },
+ {
+  "t": "It's a bus.",
+  "lang": "en"
+ },
+ {
+  "t": "I can run.",
+  "lang": "en"
+ },
+ {
+  "t": "I can jump.",
+  "lang": "en"
+ },
+ {
+  "t": "The sun is hot.",
+  "lang": "en"
+ },
+ {
+  "t": "I see a bird.",
+  "lang": "en"
+ },
+ {
+  "t": "10 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "10 cộng 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 cộng 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 cộng 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 cộng 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 cộng 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 cộng 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 cộng 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 cộng 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 cộng 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "11 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "12 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "13 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "14 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "15 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "16 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "17 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "18 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 10 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 1 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 2 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 3 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 4 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 5 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 6 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 7 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 8 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "19 trừ 9 bằng mấy?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Thỏ trắng và củ cà rốt. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Thỏ trắng và củ cà rốt",
+  "lang": "vi"
+ },
+ {
+  "t": "Sáng nay, thỏ trắng ra vườn tìm ăn.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn thỏ thấy ngay một củ cà rốt to.",
+  "lang": "vi"
+ },
+ {
+  "t": "Củ cà rốt nằm sâu dưới đất.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn thỏ kéo thật mạnh mà không ra.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn gọi bạn sóc đến cùng kéo giúp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Hai bạn kéo lên, cùng nhau ăn ngon lành.",
+  "lang": "vi"
+ },
+ {
+  "t": "Thỏ trắng đi đâu để tìm ăn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ai đến giúp thỏ kéo cà rốt?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vì sao lúc đầu củ cà rốt không ra?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Gà con tìm mồi. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà con tìm mồi",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà con theo mẹ ra sân tìm mồi.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn gà thấy một con sâu béo tròn.",
+  "lang": "vi"
+ },
+ {
+  "t": "Con sâu chạy nhanh, gà con đuổi theo.",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà con mổ đúng một cái, bắt được sâu.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ gà khen gà con khéo tìm mồi.",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà con ra sân để làm gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Gà con đã bắt được con gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ai khen gà con khéo tìm mồi?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Bé Na tưới cây. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na tưới cây",
+  "lang": "vi"
+ },
+ {
+  "t": "Chiều nay, bé Na ra vườn cùng mẹ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Hôm nay trời nắng, cây hoa khát nước.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na lấy bình nước tưới đều từng chậu.",
+  "lang": "vi"
+ },
+ {
+  "t": "Ít lâu sau, cây nở những bông hoa đẹp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mẹ khen Na là bé ngoan chăm chỉ.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vui lắm, ôm hôn mẹ thật chặt.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na ra vườn làm gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Tại sao cây hoa khát nước?",
+  "lang": "vi"
+ },
+ {
+  "t": "Sau khi được tưới nước, cây hoa thế nào?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Bạn Bo đá bóng. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn Bo đá bóng",
+  "lang": "vi"
+ },
+ {
+  "t": "Buổi chiều, bạn Bo ra sân đá bóng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo sút mạnh, bóng bay lên cành cây.",
+  "lang": "vi"
+ },
+ {
+  "t": "Các bạn nhảy mãi không với tới bóng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Anh của Bo dùng gậy lấy bóng xuống.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bo cảm ơn anh rồi lại đá tiếp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Các bạn cùng nhau chơi thật là vui.",
+  "lang": "vi"
+ },
+ {
+  "t": "Khi Bo sút mạnh, bóng bay lên đâu?",
+  "lang": "vi"
+ },
+ {
+  "t": "Ai đã lấy bóng xuống cho các bạn?",
+  "lang": "vi"
+ },
+ {
+  "t": "Câu nào đúng theo truyện?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Mưa lúc tan học. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Mưa lúc tan học",
+  "lang": "vi"
+ },
+ {
+  "t": "Tan học, trời bỗng đổ cơn mưa to.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na quên mang theo chiếc ô.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đứng đợi trước cổng trường học.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn Bo mời Na cùng che chung ô.",
+  "lang": "vi"
+ },
+ {
+  "t": "Hai bạn đi sát nhau trên đường về.",
+  "lang": "vi"
+ },
+ {
+  "t": "Trời mưa to thế mà hai bạn vẫn vui.",
+  "lang": "vi"
+ },
+ {
+  "t": "Lúc tan học, trời có chuyện gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na quên mang theo thứ gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn Bo giúp Na bằng cách nào?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Quà của bà ngoại. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Quà của bà ngoại",
+  "lang": "vi"
+ },
+ {
+  "t": "Hôm nay, bà ngoại đến nhà chơi.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bà mang theo một giỏ xoài chín vàng.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na rửa sạch xoài, mời cả nhà ăn.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na còn đem mấy quả sang tặng bạn Bo.",
+  "lang": "vi"
+ },
+ {
+  "t": "Xoài chín ngọt, hai bạn ăn rất thích.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bà cười tươi, xoa đầu khen Na ngoan.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bà ngoại mang đến món quà gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Na đem xoài sang tặng cho ai?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vì sao bà khen Na ngoan?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Chú cá vàng của Na. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Chú cá vàng của Na",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na nuôi một chú cá vàng đẹp.",
+  "lang": "vi"
+ },
+ {
+  "t": "Mỗi sáng, Na thay nước cho cá.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na còn rắc ít thức ăn vào bể.",
+  "lang": "vi"
+ },
+ {
+  "t": "Cá bơi lội vui vẻ trong bể nước.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bạn Bo đến chơi, khen cá thật xinh.",
+  "lang": "vi"
+ },
+ {
+  "t": "Nhờ Na chăm sóc, cá luôn khỏe mạnh.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bé Na nuôi con vật gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Mỗi sáng Na làm gì cho cá?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vì sao chú cá luôn khỏe mạnh?",
+  "lang": "vi"
+ },
+ {
+  "t": "Cô kể cho bé nghe truyện: Ngày thả diều. Bé nghe kỹ nhé!",
+  "lang": "vi"
+ },
+ {
+  "t": "Ngày thả diều",
+  "lang": "vi"
+ },
+ {
+  "t": "Chủ nhật, bố chở Na và Bo đi thả diều.",
+  "lang": "vi"
+ },
+ {
+  "t": "Ra cánh đồng, gió thổi rất mát.",
+  "lang": "vi"
+ },
+ {
+  "t": "Con diều bươm bướm có đuôi dài.",
+  "lang": "vi"
+ },
+ {
+  "t": "Bố chạy nhanh rồi buông dây cho diều bay.",
+  "lang": "vi"
+ },
+ {
+  "t": "Diều bay lên cao, vượt cả ngọn cây.",
+  "lang": "vi"
+ },
+ {
+  "t": "Na vỗ tay reo to vì diều bay cao.",
+  "lang": "vi"
+ },
+ {
+  "t": "Chủ nhật, bố đưa Na đi làm gì?",
+  "lang": "vi"
+ },
+ {
+  "t": "Chiếc diều của Na có hình dáng thế nào?",
+  "lang": "vi"
+ },
+ {
+  "t": "Vì sao diều bay lên được cao?",
+  "lang": "vi"
+ },
+ {
   "t": "Bé tô xong bức tranh Cá rồi! Đẹp tuyệt vời!",
   "lang": "vi"
  },
@@ -4679,10 +6011,6 @@
  {
   "t": "Bé tô xong bức tranh Bướm rồi! Đẹp tuyệt vời!",
   "lang": "vi"
- },
- {
-  "t": "butterfly",
-  "lang": "en"
  },
  {
   "t": "Bé tô xong bức tranh Hoa rồi! Đẹp tuyệt vời!",
@@ -4825,16 +6153,8 @@
   "lang": "vi"
  },
  {
-  "t": "bee",
-  "lang": "en"
- },
- {
   "t": "Bé tô xong bức tranh Nhà nấm rồi! Đẹp tuyệt vời!",
   "lang": "vi"
- },
- {
-  "t": "mushroom",
-  "lang": "en"
  },
  {
   "t": "Bé tô xong bức tranh Bánh kem rồi! Đẹp tuyệt vời!",

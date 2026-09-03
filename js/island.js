@@ -131,11 +131,37 @@ function islBindInput(cv){
   cv.addEventListener('pointercancel',()=>{ down=null; });
   cv.addEventListener('pointerleave',e=>{ if(down && e.pointerId===down.id) down=null; });
 }
+/* Three.js 603KB chỉ phục vụ màn thưởng — tải LƯỜI khi bé lần đầu bấm 🏝️.
+   Trước đây parse thẳng lúc mở app: ~60% chi phí JS boot vô ích. SW vẫn precache sẵn
+   three.min.js trong CORE nên offline không đổi gì. */
+let islLoading=null;
+function ensureThree(){
+  if(window.THREE) return Promise.resolve();
+  if(!islLoading){
+    islLoading = new Promise((res, rej)=>{
+      const s=document.createElement('script');
+      s.src='assets/vendor/three.min.js';
+      s.onload=res;
+      s.onerror=()=>rej(new Error('three load failed'));
+      document.head.appendChild(s);
+    }).catch(err=>{ islLoading=null; throw err; }); // fail → cho thử lại lần bấm sau
+  }
+  return islLoading;
+}
 function enterIsland(){
   if(islFail) return;
+  if(!window.THREE){
+    // đang tải lần đầu: vào thẳng màn (bấm nút phải có phản hồi ngay), sẵn sàng thì dựng đảo
+    ensureThree().then(()=>{
+      if($('#scr-island').classList.contains('active')) enterIsland(); // rời màn rồi thì thôi
+    }).catch(()=>{
+      islFail=true;
+      $('#island-wrap').innerHTML='<div class="island-fallback">😢 Máy này chưa xem được 3D.<br>Bé xem bộ sưu tập ở kệ sticker nhé!</div>';
+    });
+    return;
+  }
   if(!islReady){
     try{
-      if(typeof THREE==='undefined') throw new Error('three missing');
       const cv=$('#island-canvas');
       islRenderer=new THREE.WebGLRenderer({canvas:cv,antialias:true}); // không preserveDrawingBuffer — đỡ tốn pin iPad; e2e render đồng bộ trước khi đọc pixel
       islRenderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));

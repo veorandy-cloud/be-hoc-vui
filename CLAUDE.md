@@ -10,7 +10,8 @@ Live: https://veorandy-cloud.github.io/be-hoc-vui/ · repo veorandy-cloud/be-hoc
 - Deploy: git push → poll `curl -s .../sw.js | grep -o "bhv-v[0-9]*"` until new version (~30-60s).
 
 ## Load order (index.html, global scope, no modules)
-data → strokes → core → paint → writing → reading → math → drawing → english → music → quest → three.min → island
+data → strokes → core → paint → writing → reading → math → drawing → english → music → quest → island
+(three.min.js KHÔNG nằm trong index.html nữa — island.js `ensureThree()` inject khi lần đầu bấm 🏝️; SW vẫn precache trong CORE)
 
 ## Invariants (break these = subtle bugs)
 - Every spoken string MUST be enumerated in scripts/list-phrases.cjs with 100% identical text (djb2-xor phraseId → mp3 filename). New speak() call = add phrase + regen audio.
@@ -24,6 +25,7 @@ data → strokes → core → paint → writing → reading → math → drawing
 - Foreground shell spawns fail (EPERM uv_spawn) — run EVERY Bash/PowerShell command with run_in_background:true and read the output file.
 - css/style.css must stay BOM-free (a mid-file BOM once killed :root and turned the UI white). Always screenshot-verify UI-affecting changes.
 - playwright-core: channel msedge (tests) / chrome (one-off gen scripts); temp scripts live in repo root as *.tmp.mjs, delete after use.
+- WindowsApps Python `http.server` accepts then immediately closes the socket (RemoteDisconnected). Serve with a Node static server. Playwright `localhost` on this PC is IPv6 (`::1`); bind/listen on `127.0.0.1` and point tests at `http://127.0.0.1:8080` (see tests/e2e.mjs BASE).
 
 ## Content sizes (update when they change)
-1202 audio clips · 119 vocab photos · 32 coloring pics · 76 stroke glyphs · 25 quest stations · 16 songs (last 4 lang:'vi-VN').
+1528 audio clips · 151 vocab photos · 32 coloring pics · 76 stroke glyphs · 30 quest stations · 20 songs (8 lang:'vi-VN') · 22 EN themes / 196 words · 8 stories · math: khung mười + mix20 + lời văn + thành phần + hình.

@@ -43,8 +43,12 @@ function qWord(){
     const xs = syls(x.w);
     return !xs.includes(tl) && !ts.includes(xs[xs.length-1]);
   }), 2);
+  const man = (typeof window!=='undefined' && window.IMG_MAN) || null;
+  const pic = (t.en && man && man[t.en])
+    ? `<img class="ph" src="assets/images/en/${man[t.en]}" alt="${t.w}" style="max-height:110px;border-radius:14px;border:3px solid var(--ink)">`
+    : `<div style="font-size:52px">${t.em}</div>`;
   return {
-    say:`Tìm từ: ${t.w}`, html:t.em,
+    say:`Tìm từ: ${t.w}`, html:pic,
     choices:[{html:t.w,correct:true,cls:'word'},{html:d1.w,cls:'word'},{html:d2.w,cls:'word'}]
   };
 }
@@ -100,6 +104,66 @@ const READ_BUILDERS = {
   })),
   mix: ()=>shuffle([qLetter(),qVan(),qTone(),qVan2(),qDigraph(),qWord(),qSentence(),qSentence()])
 };
+/* ==== Đọc truyện: cô kể truyện ngắn từng câu (highlight theo câu), xong hỏi hiểu 3 câu ==== */
+function startStory(){
+  const gen = ++uiGen;
+  roundActive=true;
+  $('#read-menu').style.display='none';
+  $('#read-quiz').style.display='flex';
+  $('#read-choices').innerHTML='';
+  const st = rand(STORIES);
+  $('#read-progress').textContent = `📖 ${st.title}`;
+  $('#read-prompt').innerHTML = `<div style="font-size:44px">${st.em}</div>` +
+    st.lines.map(l=>`<div class="sentence story-line" style="text-align:left">${l}</div>`).join('');
+  $('#read-speak').onclick = ()=>speak(st.title);
+  speak(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`);
+  // kể lần lượt từng câu — highlight câu đang đọc; uiGen check: rời màn giữa chừng thì chuỗi tự chết
+  const els = $$('#read-prompt .story-line');
+  let i = 0;
+  const nextLine = ()=>{
+    if(gen !== uiGen) return;
+    if(i >= st.lines.length){ ask(); return; }
+    els.forEach((el,k)=>{
+      el.style.background = k===i ? '#FEF3C7' : '';
+      if(k===i){
+        const parts = el.textContent.trim().split(/(\s+)/);
+        el.innerHTML = parts.map(w=>/\s/.test(w)?w:`<span class="hw">${w}</span>`).join('');
+        const spans = [...el.querySelectorAll('.hw')];
+        const dt = Math.max(220, (el.textContent.length*90)/Math.max(1,spans.length));
+        spans.forEach((s,si)=>setTimeout(()=>{
+          if(gen!==uiGen) return;
+          spans.forEach(x=>x.classList.remove('on'));
+          s.classList.add('on');
+        }, si*dt));
+      }
+    });
+    speakAsync(st.lines[i]).then(()=>{
+      if(gen !== uiGen) return;
+      i++; setTimeout(nextLine, 350);
+    });
+  };
+  function ask(){
+    if(gen !== uiGen) return;
+    els.forEach(el=>el.style.background='');
+    runQuiz({
+      promptEl:$('#read-prompt'), speakBtn:$('#read-speak'),
+      choicesEl:$('#read-choices'), progressEl:$('#read-progress'),
+      questions: st.qs.map(q=>({
+        say:q.q,
+        html:`<div style="font-size:44px">${st.em}</div><div class="sentence">${q.q}</div>`,
+        choices:[{html:q.c[0],correct:q.a===0,cls:'word'},
+                 {html:q.c[1],correct:q.a===1,cls:'word'},
+                 {html:q.c[2],correct:q.a===2,cls:'word'}]
+      })),
+      onDone(right,total){
+        ovCallback = readShowMenu;
+        showResult(quizStars(right,total), `Bé hiểu truyện tốt lắm! Đúng ${right}/${total}!`);
+      }
+    });
+  }
+  nextLine();
+}
+
 function readShowMenu(){
   $('#read-menu').style.display='grid';
   $('#read-quiz').style.display='none';
@@ -110,6 +174,7 @@ $$('#read-menu .menu-card').forEach(c=>c.addEventListener('click', ()=>{
 function startReadRound(level){
   if(level==='repeat') return startRepeat();
   if(level==='ghep') return startGhep();
+  if(level==='story') return startStory();
   $('#read-menu').style.display='none';
   $('#read-quiz').style.display='flex';
   runQuiz({

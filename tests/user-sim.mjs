@@ -238,7 +238,7 @@ ok(await goHome(), 'về home sau Thám hiểm');
 // ===== 8. STICKER + ĐẢO 3D =====
 await page.click('#sticker-shelf'); await page.waitForTimeout(400);
 ok(await active('scr-stickers'), 'mở kệ sticker');
-await page.click('#btn-island', { force: true }); await page.waitForTimeout(1600);
+await page.click('#btn-island', { force: true }); await page.waitForTimeout(3000); // lần đầu chờ inject three.min.js (lazy-load)
 const isl = await page.evaluate(() => {
   let px = 0;
   const c = document.querySelector('#island-canvas');

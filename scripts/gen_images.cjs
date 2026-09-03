@@ -9,7 +9,8 @@ const path = require('path');
 const OUT = path.join(__dirname, '..', 'assets', 'images', 'en');
 fs.mkdirSync(OUT, { recursive: true });
 
-const PHOTO_THEMES = ['🐾 Animals', '🍔 Food', '🧸 Toys', '👕 Clothes', '🚌 Transport', '🏠 House', '🎒 School', '☀️ Weather', '⚽ Sports', '🌿 Nature'];
+const PHOTO_THEMES = ['🐾 Animals', '🍔 Food', '🧸 Toys', '👕 Clothes', '🚌 Transport', '🏠 House', '🎒 School', '☀️ Weather', '⚽ Sports', '🌿 Nature',
+  '🍓 Fruit', '🥕 Veggies', '🐛 Tiny Animals', '🕐 My Day', '🏘️ Places']; // Action Verbs + Colors/Numbers/Feelings/Actions/Body/Family giữ emoji
 // từ → tên trang Wikipedia khi khác tên mặc định (viết hoa chữ đầu)
 const WIKI = {
   cow: 'Cattle', bike: 'Bicycle', plane: 'Airplane', motorbike: 'Motorcycle',
@@ -24,7 +25,10 @@ const WIKI = {
   peacock: 'Peafowl', 'fire truck': 'Fire engine', 'night sky': 'Night sky',
   'apple tree': 'Fruit tree', sunflower: 'Common sunflower',
   // soi mắt: House→vườn Nhật, Dinosaur→phiến hoá thạch, Turtle→ảnh ghép — đổi trang cụ thể hơn
-  house: 'Single-family detached home', dinosaur: 'Tyrannosaurus', turtle: 'Green sea turtle'
+  house: 'Single-family detached home', dinosaur: 'Tyrannosaurus', turtle: 'Green sea turtle',
+  // theme mới: Peach/Coconut/Maize/Garlic = bản vẽ; Clock = đồng hồ cổ mạ vàng; School = nhà tôn; House/home = vườn Nhật
+  peach: 'Flat peach', coconut: 'Coconut oil', corn: 'Sweet corn', garlic: 'Garlic press',
+  clock: 'Alarm clock', home: 'Single-family detached home', school: 'Secondary school'
 };
 // ảnh thật cho tranh tô màu (PIC_META.key) — hiện khi bé lưu tranh
 const PIC_EXTRA = ['house','butterfly','rocket','dinosaur','apple tree','robot','castle','peacock',
@@ -47,15 +51,19 @@ async function fetchRetry(url, asJson) {
 
 (async () => {
   const words = [];
-  for (const th of PHOTO_THEMES) (D.EN_THEMES[th] || []).forEach(it => words.push(it.w));
-  PIC_EXTRA.forEach(w => words.push(w));
+  for (const th of PHOTO_THEMES) (D.EN_THEMES[th] || []).forEach(it => {
+    if (th === '🕐 My Day' && !it.wiki) return; // morning/night/meals — trừu tượng, giữ emoji
+    words.push(it);
+  });
+  PIC_EXTRA.forEach(w => words.push({ w }));
   const manifest = {};
   let okCount = 0, fail = [];
-  for (const w of words) {
+  for (const it of words) {
+    const w = it.w;
     const file = slug(w) + '.jpg';
     const dest = path.join(OUT, file);
     if (fs.existsSync(dest) && fs.statSync(dest).size > 1000) { manifest[w] = file; okCount++; continue; }
-    const title = WIKI[w] || (w[0].toUpperCase() + w.slice(1));
+    const title = it.wiki || WIKI[w] || (w[0].toUpperCase() + w.slice(1));
     try {
       const j = await fetchRetry('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title), true);
       const orig = j.thumbnail && j.thumbnail.source;

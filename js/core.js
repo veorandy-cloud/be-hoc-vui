@@ -308,6 +308,7 @@ function runQuiz(cfg){
           setTimeout(()=>{ if(gen===uiGen) next(); }, 800);
         }else{
           b.classList.add('bad'); sndBad(); firstTry=false;
+          if(cfg.onMiss) cfg.onMiss(q);
           wrongs++;
           if(wrongs>=2 && correctBtn) correctBtn.classList.add('hint');
           setTimeout(()=>b.classList.remove('bad'), 500);

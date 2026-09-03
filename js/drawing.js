@@ -119,8 +119,8 @@ function saveToGallery(canvas, withWhiteBg, onSaved){
   let gal = safeParse('bhv_gallery', [], Array.isArray);
   const data = out.toDataURL('image/jpeg',0.7);
   gal.push(data);
-  const overwrote = gal.length>6;
-  while(gal.length>6) gal.shift(); // ponytail: cap 6 tranh tránh vượt quota localStorage
+  const overwrote = gal.length>12;
+  while(gal.length>12) gal.shift(); // cap 12 jpeg 0.7 — vẫn dưới quota iOS
   // quota vẫn đầy sau 1 lần shift (key khác chiếm chỗ) không được ném lỗi im lặng — bé bấm 💾 phải luôn có phản hồi
   let saved=false;
   while(true){

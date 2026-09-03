@@ -7,6 +7,16 @@ const NUMVI=['một','hai','ba','bốn','năm'];
 const wHist = makeHistory(()=>wCanvas, ()=>wCtx, ()=>drawTemplate());
 let writeBest = safeParse('bhv_write', {}, isObj);
 function curChar(){ return WRITE_SETS[wSet][wIdx]; }
+function nextWeakIdx(){
+  const set = WRITE_SETS[wSet];
+  let bestI = (wIdx+1)%set.length, bestScore = 99;
+  set.forEach((ch,i)=>{
+    if(i===wIdx) return;
+    const s = writeBest[ch]||0;
+    if(s<3 && s<bestScore){ bestScore=s; bestI=i; }
+  });
+  return bestI;
+}
 function charKey(){ return curChar(); }
 function charInfo(){
   const lc = curChar().toLowerCase();
@@ -32,7 +42,7 @@ function initWrite(){
       $$('#scr-write [data-nib]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
     });
     $('#w-prev').onclick = ()=>{ wIdx=(wIdx-1+WRITE_SETS[wSet].length)%WRITE_SETS[wSet].length; resetWrite(); };
-    $('#w-next').onclick = ()=>{ wIdx=(wIdx+1)%WRITE_SETS[wSet].length; resetWrite(); };
+    $('#w-next').onclick = ()=>{ wIdx=nextWeakIdx(); resetWrite(); };
     $('#w-speak').onclick = speakChar;
     $('#w-clear').onclick = function(){ confirmTap(this, 'Bấm lần nữa để xoá nhé!', resetWrite); };
     $('#w-grade').onclick = gradeWrite;
@@ -235,6 +245,21 @@ function polyLen(pts){
   for(let i=1;i<pts.length;i++) l+=Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
   return l;
 }
+/* hướng đầu nét: vector đơn vị từ điểm bút đặt tới điểm ở 25% chiều dài (trung hoà rung tay vài điểm đầu) */
+function headVec(p){
+  const total = polyLen(p);
+  if(!p || p.length < 2 || total < 1e-3) return null;
+  let acc = 0;
+  for(let i=1;i<p.length;i++){
+    acc += Math.hypot(p[i][0]-p[i-1][0], p[i][1]-p[i-1][1]);
+    if(acc >= total*0.25 || i === p.length-1){
+      const dx=p[i][0]-p[0][0], dy=p[i][1]-p[0][1], l=Math.hypot(dx,dy);
+      return l>1e-3 ? [dx/l, dy/l] : null;
+    }
+  }
+  return null;
+}
+const cosOf = (u,v) => (u && v) ? u[0]*v[0]+u[1]*v[1] : 0;
 function guideCheck(pts){
   const g = glyphStrokes(); if(!g || gStroke>=g.strokes.length) return;
   if(wResized){ wResized=false; if(wHist.undo()) wStrokes.pop(); return; } // nét vẽ xuyên lúc xoay màn: bỏ qua, không phạt
@@ -251,9 +276,20 @@ function guideCheck(pts){
   const thr = Math.max(14, Math.min(g.k*11, tlen*0.8 + g.k*2));
   const fwd = strokeDist(pts, target);
   const rev = strokeDist(pts, [...target].reverse());
+  // chấm hướng nét (nợ audit lần 3): nét vừa trở lên phải ĐẶT BÚT đúng chỗ (chấm vàng) và đi
+  // đúng TRỤC của mẫu — trước đây nét ngang chữ t vẽ DỌC vẫn đậu vì chỉ so khoảng cách từng cặp điểm.
+  // Nét ngắn hơn k*8 (chấm chữ i, dấu) miễn — cử chỉ chấm không có chiều.
+  let startBad=false, dirBad=false;
+  if(tlen > g.k*8){
+    const uv = headVec(pts), fv = headVec(target);
+    const bv = fv ? [-fv[0], -fv[1]] : null;
+    // nét dài (>k*20) ép chiều fwd qua dist bên dưới; nét ngắn-vừa cho 2 chiều nhưng vẫn phải đúng trục
+    dirBad = Math.max(cosOf(uv,fv), cosOf(uv,bv)) < 0.5;
+    startBad = Math.hypot(pts[0][0]-target[0][0], pts[0][1]-target[0][1]) > thr*1.5;
+  }
   // nét dài phải viết ĐÚNG CHIỀU (trọng tâm của dạy thứ tự nét); nét ngắn (chấm, ngang bé) miễn
   const dist = tlen > g.k*20 ? fwd : Math.min(fwd, rev);
-  if(dist < thr){
+  if(dist < thr && !dirBad && !startBad){
     gStroke++;
     wStrokes=[]; wHist.reset(); drawTemplate(); // "snap": thay nét run tay bằng nét chuẩn màu xanh
     if(gStroke >= g.strokes.length){
@@ -264,7 +300,7 @@ function guideCheck(pts){
         writeBest[charKey()]=earned;
         localStorage.setItem('bhv_write', JSON.stringify(writeBest));
       }
-      ovCallback = ()=>{ wIdx=(wIdx+1)%WRITE_SETS[wSet].length; resetWrite(); };
+      ovCallback = ()=>{ wIdx=nextWeakIdx(); resetWrite(); };
       if(questActive!==null) ovCallback = (curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;
       showResult(award, 'Bé viết đúng thứ tự nét!');
     }else{
@@ -276,6 +312,20 @@ function guideCheck(pts){
     if(tlen > g.k*20 && rev < thr){
       if(wHist.undo()) wStrokes.pop();
       speak('Bé đặt bút ở chấm vàng nhé!');
+      return;
+    }
+    // đặt bút lệch khỏi chấm vàng (đầu nét không khớp mẫu): nhắc riêng, không phạt chung
+    if(startBad){
+      if(wHist.undo()) wStrokes.pop();
+      speak('Bé đặt bút ở chấm vàng nhé!');
+      return;
+    }
+    // SAI TRỤC/hướng (vd nét ngang vẽ dọc, nét móc vẽ thẳng): xem cô vẽ lại ngay, không đợi sai lần 2
+    if(dirBad){
+      if(wHist.undo()) wStrokes.pop();
+      gFailsTotal++; strokeFails=0; sndBad();
+      speak('Chưa đúng chiều nét, bé xem cô vẽ nhé!');
+      playDemo(gStroke);
       return;
     }
     // nét DÀI (khuyết trên ~400px) mà bé vẽ đúng hướng nhưng nhấc tay giữa chừng: không phạt, nhắc vẽ một hơi
@@ -350,7 +400,7 @@ function gradeWrite(){
     writeBest[charKey()]=earned;
     localStorage.setItem('bhv_write', JSON.stringify(writeBest));
   }
-  ovCallback = ()=>{ wIdx=(wIdx+1)%WRITE_SETS[wSet].length; resetWrite(); };
+  ovCallback = ()=>{ wIdx=nextWeakIdx(); resetWrite(); };
   if(earned===0) ovCallback = resetWrite;
   // quest: phải viết ĐÚNG chữ của trạm — đổi sang chữ/số dễ hơn không được tính qua trạm
   if(questActive!==null) ovCallback = (earned>=1 && curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;

@@ -35,6 +35,13 @@ const QUEST_LANDS = [
     {em:'🔗', t:'quiz', q:()=>Array.from({length:5}, qDigraph)},
     {em:'🔢', t:'quiz', q:()=>MATH_BUILDERS.mix().slice(0,5)},
     {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qVan2(),qDigraph(),qCount(),qAdd(),qWord(),qSentence()])}
+  ]},
+  {nm:'📐 Thung Lũng Toán Chữ', color:'#7C3AED', stations:[
+    {em:'📖', t:'quiz', q:()=>MATH_BUILDERS.story()},
+    {em:'🧩', t:'quiz', q:()=>MATH_BUILDERS.bond()},
+    {em:'⬜', t:'quiz', q:()=>MATH_BUILDERS.shape()},
+    {em:'🐣', t:'en', theme:'🍓 Fruit', kind:'listen'},
+    {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qCount(),qAdd(),qWord(),qVan2(),qDigraph(),qSentence()])}
   ]}
 ];
 const STATIONS = QUEST_LANDS.flatMap(l=>l.stations);
@@ -193,9 +200,16 @@ function showParentStats(){
     ['🔥 Chuỗi ngày học', streak+' ngày'],
     ['🗺️ Thám hiểm', `${questDone}/${STATIONS.length} trạm`],
     ['✏️ Chữ đã luyện', `${wrote} chữ (đạt 3 sao: ${w3})`],
+    ['✏️ Chữ cần ôn', Object.entries(writeBest).filter(([,v])=>v<2).map(([k])=>k).slice(0,10).join(' ')||'—'],
     ['🎁 Sticker', `${unlockedCount()+goldCount()}/${STICKERS.length*2}`],
     ['🖼️ Tranh đã lưu', gal.length]
   ];
+  // nhắc sao lưu định kỳ — iOS purge localStorage khi thiếu bộ nhớ nếu CHƯA Add to Home Screen;
+  // export/import là lớp cứu duy nhất (persist() trên Safari vô tác dụng)
+  const hasData = stars>0 || wrote>0 || questDone>0 || gal.length>0;
+  const lastBk = Number(localStorage.getItem('bhv_last_backup'))||0;
+  if(hasData && Date.now()-lastBk > 14*864e5)
+    rows.splice(1, 0, ['⚠️ Chưa sao lưu hơn 14 ngày', 'Bấm 📤 Sao lưu để giữ tiến độ!']);
   $('#ps-grid').innerHTML = rows.map(([k,v])=>`<div class="ps-row"><span>${k}</span><b>${v}</b></div>`).join('')
     + '<div style="text-align:center;font-size:13px;color:#71717A;padding:6px">Ảnh minh hoạ từ vựng: Wikipedia / Wikimedia Commons (giấy phép CC) · Giọng đọc: Microsoft Edge TTS</div>';
 }
@@ -230,6 +244,7 @@ if(newDay && streak>1){ addStars(2); confetti(); }
 
 /* ============ BACKUP / RESTORE (phụ huynh) — thêm cuối js/quest.js ============ */
 $('#ps-export').addEventListener('click', ()=>{
+  localStorage.setItem('bhv_last_backup', String(Date.now())); // mốc cho banner nhắc 14 ngày
   const data = {};
   for(let i=0;i<localStorage.length;i++){
     const k = localStorage.key(i);

@@ -3,7 +3,7 @@
 let enReady=false, enTheme=Object.keys(EN_THEMES)[0];
 /* ảnh THẬT cho từ vựng (Wikipedia, tải sẵn bằng scripts/gen_images.cjs) — không có ảnh thì fallback emoji */
 let IMG_MAN=null;
-fetch('assets/images/manifest.json').then(r=>r.json()).then(j=>{ IMG_MAN=j; }).catch(()=>{});
+fetch('assets/images/manifest.json').then(r=>r.json()).then(j=>{ IMG_MAN=j; window.IMG_MAN=j; }).catch(()=>{});
 function phFor(it, cls){
   const f = IMG_MAN && IMG_MAN[it.w];
   return f ? `<img class="${cls}" src="assets/images/en/${f}" loading="lazy" alt="${it.w}"
@@ -27,6 +27,8 @@ function initEnglish(){
     $('#en-g1').onclick = ()=>startEnQuiz('listen');
     $('#en-g2').onclick = ()=>startEnQuiz('read');
     $('#en-g3').onclick = startMemory;
+    $('#en-g4').onclick = startEnSentences;
+    $('#en-weak').onclick = startEnWeak;
     if(SRCls){
       const mb=$('#en-mic');
       mb.style.display='';
@@ -98,26 +100,46 @@ function listenFor(word, card){
     setTimeout(()=>{ try{r.stop();}catch(e){} }, 4000);
   }catch(e){ recBusy=false; }
 }
-function startEnQuiz(kind){
+/* E1: từ sai (listen/read) — max 20, unique, newest first */
+function saveWeak(w){
+  const arr = safeParse('bhv_en_weak', [], Array.isArray);
+  if(!arr.includes(w)) arr.unshift(w);
+  localStorage.setItem('bhv_en_weak', JSON.stringify(arr.slice(0,20)));
+}
+function findEn(w){
+  for(const items of Object.values(EN_THEMES)){
+    const it = items.find(x=>x.w===w);
+    if(it) return {it, items};
+  }
+  return null;
+}
+function enDistractors(it, themeItems){
+  const same = themeItems.filter(x=>x!==it && x.w!==it.w);
+  if(same.length>=2) return pick(same, 2);
+  const seen = new Set([it.w]);
+  const pool = [];
+  for(const x of shuffle(Object.values(EN_THEMES).flat())){
+    if(seen.has(x.w)) continue;
+    seen.add(x.w); pool.push(x);
+    if(pool.length>=2) break;
+  }
+  return pool.length>=2 ? pool : null;
+}
+function enPhotoQ(t, others, say){
+  return {
+    say:say||t.w, lang:'en-US', html:'👂', word:t.w,
+    choices:[{html:phFor(t,'chp'),correct:true},{html:phFor(others[0],'chp')},{html:phFor(others[1],'chp')}]
+  };
+}
+function enRunQuiz(questions){
+  if(!questions.length) return;
   $('#en-learn').style.display='none';
   $('#en-quiz').style.display='flex';
-  const pool = EN_THEMES[enTheme];
-  const n = Math.min(6, pool.length);
-  const questions = pick(pool, n).map(t=>{
-    const others = pick(pool.filter(x=>x!==t), 2);
-    if(kind==='listen') return {
-      say:t.w, lang:'en-US', html:'👂',
-      choices:[{html:phFor(t,'chp'),correct:true},{html:phFor(others[0],'chp')},{html:phFor(others[1],'chp')}]
-    };
-    return {
-      say:`Từ nào là ${t.vi}?`, html:phFor(t,'php'),
-      choices:[{html:t.w,correct:true,cls:'word'},{html:others[0].w,cls:'word'},{html:others[1].w,cls:'word'}]
-    };
-  });
   runQuiz({
     promptEl:$('#en-prompt'), speakBtn:$('#en-speak'),
     choicesEl:$('#en-choices'), progressEl:$('#en-progress'),
     questions,
+    onMiss(q){ if(q.word) saveWeak(q.word); },
     onDone(right,total){
       if(questActive!==null){
         const pass = right>=Math.ceil(total/2);
@@ -129,6 +151,55 @@ function startEnQuiz(kind){
       showResult(quizStars(right,total), `Đúng ${right}/${total} câu!`);
     }
   });
+}
+function startEnQuiz(kind){
+  const pool = EN_THEMES[enTheme];
+  const n = Math.min(6, pool.length);
+  const questions = pick(pool, n).map(t=>{
+    const others = pick(pool.filter(x=>x!==t), 2);
+    if(kind==='listen') return enPhotoQ(t, others);
+    return {
+      say:`Từ nào là ${t.vi}?`, html:phFor(t,'php'), word:t.w,
+      choices:[{html:t.w,correct:true,cls:'word'},{html:others[0].w,cls:'word'},{html:others[1].w,cls:'word'}]
+    };
+  });
+  enRunQuiz(questions);
+}
+function startEnWeak(){
+  const words = safeParse('bhv_en_weak', [], Array.isArray).filter(w=>typeof w==='string');
+  if(!words.length){ speak('Bé cố lên nhé!'); return; }
+  const questions = [];
+  for(const w of words){
+    const found = findEn(w);
+    if(!found) continue;
+    const others = enDistractors(found.it, found.items);
+    if(!others) continue;
+    questions.push(enPhotoQ(found.it, others));
+  }
+  if(!questions.length){ speak('Bé cố lên nhé!'); return; }
+  enRunQuiz(questions);
+}
+/* say strings MUST match audio bank 100% */
+const EN_STARTERS = [
+  {say:"It's a cat.", w:'cat'},
+  {say:"It's a dog.", w:'dog'},
+  {say:"It's an apple.", w:'apple'},
+  {say:"It's a bus.", w:'bus'},
+  {say:"I can run.", w:'run'},
+  {say:"I can jump.", w:'jump'},
+  {say:"The sun is hot.", w:'sun'},
+  {say:"I see a bird.", w:'bird'}
+];
+function startEnSentences(){
+  const bank = [];
+  for(const s of EN_STARTERS){
+    const found = findEn(s.w);
+    if(!found) continue;
+    const others = enDistractors(found.it, found.items);
+    if(!others) continue;
+    bank.push(enPhotoQ(found.it, others, s.say));
+  }
+  enRunQuiz(pick(bank, Math.min(6, bank.length)));
 }
 /* memory match: emoji <-> word pairs */
 function startMemory(){

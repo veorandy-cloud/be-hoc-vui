@@ -122,6 +122,7 @@
         <div class="menu-card" style="background:var(--violet)" data-level="sentences"><div class="em">📝</div><div class="tt">Điền câu</div></div>
         <div class="menu-card" style="background:#F59E0B" data-level="repeat"><div class="em">🗣️</div><div class="tt">Đọc theo</div></div>
         <div class="menu-card" style="background:#14B8A6" data-level="ghep"><div class="em">🧩</div><div class="tt">Ghép vần</div></div>
+        <div class="menu-card" style="background:#059669" data-level="story"><div class="em">📚</div><div class="tt">Đọc truyện</div></div>
         <div class="menu-card" style="background:var(--pink)" data-level="mix"><div class="em">🎲</div><div class="tt">Trộn tất cả</div></div>
       </div>
       <div id="read-quiz" style="display:none;flex:1;min-height:0;flex-direction:column;gap:12px">
@@ -188,6 +189,8 @@
           <button class="btn primary" id="en-g1">🎧 Nghe chọn hình</button>
           <button class="btn primary" id="en-g2">📝 Chọn từ đúng</button>
           <button class="btn primary" id="en-g3">🧠 Lật hình</button>
+          <button class="btn primary" id="en-g4">💬 Nghe câu</button>
+          <button class="btn" id="en-weak">⭐ Ôn từ yếu</button>
           <button class="btn" id="en-mic" style="display:none">🎤 Nói theo: TẮT</button>
         </div>
       </div>
@@ -219,6 +222,10 @@
         <div class="menu-card" style="background:#0284C7" data-level="add"><div class="em">➕</div><div class="tt">Phép cộng</div></div>
         <div class="menu-card" style="background:#65A30D" data-level="sub"><div class="em">➖</div><div class="tt">Phép trừ</div></div>
         <div class="menu-card" style="background:var(--violet)" data-level="compare"><div class="em">⚖️</div><div class="tt">Nhiều hơn</div></div>
+        <div class="menu-card" style="background:#B45309" data-level="mix20"><div class="em">🧮</div><div class="tt">Phạm vi 20</div></div>
+        <div class="menu-card" style="background:#DB2777" data-level="story"><div class="em">📖</div><div class="tt">Lời văn</div></div>
+        <div class="menu-card" style="background:#EA580C" data-level="bond"><div class="em">🧩</div><div class="tt">Thành phần</div></div>
+        <div class="menu-card" style="background:#0D9488" data-level="shape"><div class="em">⬜</div><div class="tt">Hình</div></div>
         <div class="menu-card" style="background:var(--pink)" data-level="mix"><div class="em">🎲</div><div class="tt">Trộn tất cả</div></div>
       </div>
       <div id="math-quiz" style="display:none;flex:1;min-height:0;flex-direction:column;gap:12px">
@@ -308,7 +315,7 @@
 <script src="js/english.js"></script>
 <script src="js/music.js"></script>
 <script src="js/quest.js"></script>
-<script src="assets/vendor/three.min.js"></script>
+<!-- three.min.js 603KB tải LƯỜI khi lần đầu bấm 🏝️ (xem ensureThree trong island.js) — đừng thêm lại vào đây -->
 <script src="js/island.js"></script>
 <script>
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){

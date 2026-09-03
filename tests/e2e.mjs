@@ -3,7 +3,7 @@
    Fail bất kỳ assertion nào → exit 1. */
 import { chromium } from 'playwright-core';
 
-const BASE = 'http://localhost:8080';
+const BASE = 'http://127.0.0.1:8080';
 let failed = 0;
 const ok = (cond, name) => {
   console.log((cond ? 'PASS' : 'FAIL') + ' - ' + name);
@@ -41,6 +41,9 @@ ok(cardBg && cardBg !== 'rgba(0, 0, 0, 0)' && !/255,\s*255,\s*255/.test(cardBg),
    `thẻ home có màu thật (--coral áp dụng: ${cardBg})`);
 
 // 2. vào được cả 6 màn từ home + quay về
+// 2-pre. lazy-load Three.js: lúc MỞ APP chưa được parse (603KB chỉ nạp khi lần đầu bấm 🏝️)
+ok(await page.evaluate(() => typeof window.THREE === 'undefined'),
+   'lazy-load: Three.js KHÔNG tải lúc boot');
 for (const id of ['scr-write', 'scr-read', 'scr-draw', 'scr-en', 'scr-quest', 'scr-music', 'scr-math']) {
   await page.click(`[data-go="${id}"]`);
   await page.waitForTimeout(450);
@@ -53,7 +56,7 @@ ok(await page.$eval('#scr-stickers', el => el.classList.contains('active')), 'v�
 
 // 2b. đảo sticker 3D: WebGL render ra hình (hoặc fallback tử tế nếu máy không có WebGL)
 await page.click('#btn-island', { force: true });
-await page.waitForTimeout(1500);
+await page.waitForTimeout(3000); // lần đầu phải chờ inject three.min.js (603KB, localhost ~vài trăm ms)
 const isl = await page.evaluate(() => {
   const fb = !!document.querySelector('.island-fallback');
   let px = 0;
@@ -77,6 +80,16 @@ const cls = await page.$$eval('#read-choices .choice', els => els.map(e => e.cla
 ok(/good/.test(cls), 'quiz: chọn đáp án có phản hồi .good');
 await goHome();
 
+// 3b-pre. đọc truyện: màn kể chuyện mở được, hiện tựa truyện (kể từng câu chạy nền)
+await page.click('[data-go="scr-read"]');
+await page.waitForTimeout(300);
+await page.click('[data-level="story"]', { force: true });
+await page.waitForTimeout(600);
+const storyOpen = await page.$eval('#read-progress', el => el.textContent.includes('📖'));
+const storyLines = await page.$$eval('#read-prompt .story-line', els => els.length);
+ok(storyOpen && storyLines >= 5, `đọc truyện: mở được, ${storyLines} câu truyện hiển thị`);
+await goHome();
+
 // 3b. toán 0-10: menu → đếm số → chọn đáp án có phản hồi
 await page.click('[data-go="scr-math"]');
 await page.waitForTimeout(400);
@@ -85,6 +98,132 @@ await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
 for (const b of await page.$$('#math-choices .choice')) { await b.click({ force: true }); await page.waitForTimeout(120); }
 const mcls = await page.$$eval('#math-choices .choice', els => els.map(e => e.className).join(' '));
 ok(/good/.test(mcls), 'toán: chọn đáp án có phản hồi .good');
+await goHome();
+
+// 3c. toán phạm vi 20: menu mới → vào lượt chơi có đáp án
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+await page.click('#math-menu [data-level="mix20"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const q20 = await page.$eval('#math-progress', el => el.textContent);
+ok(/Câu 1 \/ 6/.test(q20), `toán phạm vi 20: lượt chơi khởi động (${q20.trim()})`);
+await goHome();
+
+// 3d. toán M1: khung mười (2×5) thay emoji-repeat — đếm 1–10 luôn có .ten-frame
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+await page.click('#math-menu [data-level="count"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const tfCount = await page.$eval('#math-prompt', el => ({
+  frames: el.querySelectorAll('.ten-frame').length,
+  filled: el.querySelectorAll('.ten-frame .dot.on').length,
+  cells: el.querySelectorAll('.ten-frame .dot').length
+}));
+ok(tfCount.frames === 1, `toán đếm: đúng 1 khung mười (thấy ${tfCount.frames})`);
+ok(tfCount.cells === 10, `toán đếm: khung 10 ô (thấy ${tfCount.cells})`);
+ok(tfCount.filled >= 1 && tfCount.filled <= 10, `toán đếm: chấm đầy 1–10 (thấy ${tfCount.filled})`);
+await goHome();
+
+// 3e. toán M1 mix20: có khung mười trong quiz (prompt hoặc đáp án), không chuỗi emoji dài
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+await page.click('#math-menu [data-level="mix20"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const tf20 = await page.$eval('#math-quiz', el => {
+  const frames = el.querySelectorAll('.ten-frame').length;
+  const cells = [...el.querySelectorAll('.ten-frame')].map(f => f.querySelectorAll('.dot').length);
+  const longEmoji = /(?:\p{Extended_Pictographic}[\uFE0F\u200D]*){12,}/u.test(el.textContent);
+  return { frames, cells, longEmoji };
+});
+ok(tf20.frames >= 1, `toán 20: có khung mười (thấy ${tf20.frames})`);
+ok(tf20.cells.every(n => n === 10), `toán 20: mỗi khung đúng 10 ô (${tf20.cells.join(',')})`);
+ok(!tf20.longEmoji, 'toán 20: không emoji-repeat ≥12');
+await goHome();
+
+// 3f. toán M2 lời văn: menu mới → chuyện có số + khung mười + 3 đáp án
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+const storyBtn = await page.$('#math-menu [data-level="story"]');
+ok(!!storyBtn, 'toán: có mục lời văn');
+if (!storyBtn) throw new Error('thiếu #math-menu [data-level="story"]');
+await storyBtn.click({ force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const st = await page.$eval('#math-quiz', el => {
+  const story = el.querySelector('#math-prompt .math-story');
+  const frames = el.querySelectorAll('.ten-frame').length;
+  const cells = [...el.querySelectorAll('.ten-frame')].map(f => f.querySelectorAll('.dot').length);
+  const txt = story ? story.textContent.trim() : '';
+  return {
+    txt, frames, cells,
+    nChoices: el.querySelectorAll('#math-choices .choice').length,
+    progress: (el.querySelector('#math-progress') || {}).textContent || ''
+  };
+});
+ok(/Câu 1 \/ 6/.test(st.progress), `toán lời văn: lượt 6 câu (${st.progress.trim()})`);
+ok(st.txt.length >= 20, `toán lời văn: có đoạn chuyện (${st.txt.length} ký tự)`);
+ok(/\d/.test(st.txt), 'toán lời văn: chuyện có số');
+ok(st.frames >= 1, `toán lời văn: có khung mười (thấy ${st.frames})`);
+ok(st.cells.every(n => n === 10), `toán lời văn: mỗi khung đúng 10 ô (${st.cells.join(',')})`);
+ok(st.nChoices === 3, `toán lời văn: 3 đáp án số (thấy ${st.nChoices})`);
+for (const b of await page.$$('#math-choices .choice')) { await b.click({ force: true }); await page.waitForTimeout(120); }
+const scls = await page.$$eval('#math-choices .choice', els => els.map(e => e.className).join(' '));
+ok(/good/.test(scls), 'toán lời văn: chọn đáp án có phản hồi .good');
+await goHome();
+
+// 3g. toán M3 thành phần số
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+ok(!!(await page.$('#math-menu [data-level="bond"]')), 'toán: có mục thành phần');
+await page.click('#math-menu [data-level="bond"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const bond = await page.$eval('#math-quiz', el => ({
+  frames: el.querySelectorAll('.ten-frame').length,
+  plus: [...el.querySelectorAll('#math-choices .choice')].filter(c => /\+/.test(c.textContent)).length,
+  progress: (el.querySelector('#math-progress')||{}).textContent||''
+}));
+ok(/Câu 1 \/ 6/.test(bond.progress), `toán thành phần: lượt 6 câu (${bond.progress.trim()})`);
+ok(bond.frames >= 1, `toán thành phần: có khung mười (thấy ${bond.frames})`);
+ok(bond.plus === 3, `toán thành phần: 3 đáp án dạng a + b (thấy ${bond.plus})`);
+await goHome();
+
+// 3h. toán M4 hình
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+ok(!!(await page.$('#math-menu [data-level="shape"]')), 'toán: có mục hình');
+await page.click('#math-menu [data-level="shape"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+const shp = await page.$eval('#math-quiz', el => ({
+  svg: !!el.querySelector('#math-prompt svg, #math-prompt .math-shape'),
+  n: el.querySelectorAll('#math-choices .choice').length
+}));
+ok(shp.svg, 'toán hình: hiện 1 hình SVG');
+ok(shp.n === 3, `toán hình: 3 tên hình (thấy ${shp.n})`);
+await goHome();
+
+// 3i. tập viết: hàng đợi chữ yếu (chữ đạt 3 sao bị bỏ qua)
+await page.click('[data-go="scr-write"]');
+await page.waitForTimeout(400);
+const weakQ = await page.evaluate(() => {
+  const keep = writeBest;
+  writeBest = { a:3, ă:3 };
+  wSet = 'low'; wIdx = 0;
+  const i = nextWeakIdx();
+  const ch = WRITE_SETS.low[i];
+  writeBest = keep;
+  return { ok: typeof nextWeakIdx === 'function' && ch !== 'a' && ch !== 'ă', ch };
+});
+ok(weakQ.ok, `tập viết: nextWeakIdx bỏ chữ đã 3 sao (ra '${weakQ.ch}')`);
+await goHome();
+
+// 3j. tiếng Anh: nút nghe câu + ôn từ yếu có mặt
+await page.click('[data-go="scr-en"]');
+await page.waitForTimeout(400);
+ok(!!(await page.$('#en-g4')), 'tiếng Anh: có nút nghe câu');
+ok(!!(await page.$('#en-weak')), 'tiếng Anh: có nút ôn từ yếu');
+await page.click('#en-g4', { force: true });
+await page.waitForSelector('#en-choices .choice', { timeout: 5000 });
+const enc = await page.$eval('#en-progress', el => el.textContent);
+ok(/Câu 1 \/ 6/.test(enc), `tiếng Anh câu: lượt 6 (${enc.trim()})`);
 await goHome();
 
 // 4. tập viết: stroke data + chế độ Từng nét từ chối nét sai + Tự viết nhận nét
@@ -120,6 +259,26 @@ await drawLine();
 await page.waitForTimeout(200);
 const after = await page.$eval('#write-canvas', c => c.toDataURL());
 ok(before !== after, 'tự viết: canvas có nét sau khi vẽ');
+// 4b. chấm hướng nét (nợ audit lần 3): nét VUÔNG GÓC với mẫu phải bị từ chối; nét tô đúng mẫu thì đậu
+const dirTest = await page.evaluate(() => {
+  const g = glyphStrokes();
+  const t = g.strokes[0];
+  const n = t.length, mid = t[Math.floor(n/2)];
+  const dx = t[n-1][0]-t[0][0], dy = t[n-1][1]-t[0][1];
+  const len = Math.hypot(dx,dy) || 40;
+  const px = -dy/len, py = dx/len;                 // pháp tuyến với nét mẫu
+  const half = len*0.45;
+  const perp = [];
+  for (let i=0;i<=20;i++){ const s=-half + 2*half*i/20; perp.push([mid[0]+px*s, mid[1]+py*s]); }
+  const before = gStroke;
+  guideCheck(perp);                                 // vuông góc → phải bị từ chối
+  const rejected = gStroke === before;
+  guideCheck(t.map(p=>[p[0], p[1]]));               // tô đúng mẫu → phải đậu
+  return { rejected, advanced: gStroke === before+1 };
+});
+ok(dirTest.rejected, 'hướng nét: nét vuông góc với mẫu bị từ chối');
+ok(dirTest.advanced, 'hướng nét: nét tô đúng mẫu vẫn đậu');
+await page.evaluate(() => { wHist.reset(); redrawWrite(); }); // dọn state cho assertion sau
 await goHome();
 
 // 5. tô màu: tranh line-art render (lineMask sẵn sàng → canvas line có pixel)
@@ -207,6 +366,21 @@ const swReg = await page.evaluate(() =>
   ])
 );
 ok(swReg, 'service worker đăng ký thành công');
+
+// 7b. phụ huynh: banner nhắc sao lưu khi có tiến độ mà >14 ngày chưa export
+await page.evaluate(() => { localStorage.setItem('bhv_stars', '10'); }); // đảm bảo "có dữ liệu"
+await page.click('#btn-parent', { force: true });
+await page.waitForTimeout(300);
+const gate = await page.$eval('#pg-q', el => el.textContent);
+const [ga, gb] = gate.split('×').map(s => parseInt(s));
+await page.$$eval('#pg-choices .choice', (els, ans) => {
+  const t = els.find(e => e.textContent === String(ans));
+  if (t) t.click();
+}, ga * gb);
+await page.waitForTimeout(400);
+const bkBanner = await page.$eval('#ps-grid', el => el.textContent.includes('Chưa sao lưu hơn 14 ngày'));
+ok(bkBanner, 'phụ huynh: banner nhắc sao lưu hiện khi chưa export >14 ngày');
+await goHome();
 
 // 8. không có lỗi console/pageerror trong toàn bộ phiên
 ok(errors.length === 0, 'không có lỗi console/pageerror');

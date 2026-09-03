@@ -35,6 +35,7 @@ const en = t => add(t, 'en');
   'Album đầy rồi, tranh cũ nhất sẽ được thay nhé!',
   'Bé xem cô viết mẫu nhé!',
   'Chưa đúng nét, bé thử lại nhé!',
+  'Chưa đúng chiều nét, bé xem cô vẽ nhé!',
   'Gần đúng rồi! Bé vẽ cả nét một hơi nhé!',
   'Bé đặt bút ở chấm vàng nhé!',
   'Bấm lần nữa để nhập dữ liệu và ghi đè nhé!',
@@ -110,6 +111,39 @@ vi('Bé đếm xem có bao nhiêu hình nhé!');
 vi('Bên nào có nhiều hơn?');
 for (let a = 1; a <= 9; a++) for (let b = 1; a + b <= 10; b++) vi(`${a} cộng ${b} bằng mấy?`);
 for (let a = 1; a <= 10; a++) for (let b = 1; b <= a; b++) vi(`${a} trừ ${b} bằng mấy?`);
+
+// toán lời văn 1 bước (math.js MATH_BUILDERS.story) — khớp 100% với say
+[
+  'Na có 3 quả táo. Mẹ cho thêm 2 quả. Na có tất cả mấy quả táo?',
+  'Bo có 4 viên kẹo. Bạn cho thêm 3 viên. Bo có tất cả mấy viên kẹo?',
+  'Có 5 con gà. Thêm 2 con gà. Tất cả mấy con gà?',
+  'Na hái được 6 bông hoa. Hái thêm 1 bông. Na có mấy bông hoa?',
+  'Có 2 cái bánh. Mẹ làm thêm 5 cái bánh. Tất cả mấy cái bánh?',
+  'Bo có 7 viên bi. Cho bạn 3 viên. Bo còn mấy viên bi?',
+  'Có 8 quả cam. Ăn mất 2 quả. Còn lại mấy quả cam?',
+  'Na có 6 cái kẹo. Cho em 4 cái. Na còn mấy cái kẹo?',
+  'Có 9 con cá. Bơi đi 5 con. Còn lại mấy con cá?',
+  'Bo có 5 quả táo. Ăn 1 quả. Bo còn mấy quả táo?'
+].forEach(vi);
+for (let n = 2; n <= 10; n++) vi(`Số ${n} gồm mấy và mấy?`);
+vi('Đây là hình gì?');
+["It's a cat.","It's a dog.","It's an apple.","It's a bus.","I can run.","I can jump.","The sun is hot.","I see a bird."].forEach(en);
+
+// toán phạm vi 20 (math.js qAdd20/qSub20 — KHÔNG NHỚ: mirror ĐÚNG logic sinh câu, thêm bao nhiêu liệt kê bấy nhiêu)
+for (let b = 1; b <= 10; b++) vi(`10 cộng ${b} bằng mấy?`);
+for (let a = 11; a <= 16; a++) for (let b = 1; b <= 9 - (a % 10); b++) vi(`${a} cộng ${b} bằng mấy?`);
+for (let a = 11; a <= 19; a++) {
+  vi(`${a} trừ 10 bằng mấy?`);
+  for (let b = 1; b <= a % 10; b++) vi(`${a} trừ ${b} bằng mấy?`);
+}
+
+// đọc truyện (reading.js startStory): lời dẫn + tựa + từng câu + từng câu hỏi hiểu
+D.STORIES.forEach(st => {
+  vi(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`);
+  vi(st.title);
+  st.lines.forEach(l => vi(l));
+  st.qs.forEach(q => vi(q.q));
+});
 
 // tô màu xong → reveal ảnh thật (drawing.js showPicReveal)
 D.PIC_META.forEach(p => {
