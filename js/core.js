@@ -1,5 +1,4 @@
 "use strict";
-"use strict";
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
@@ -17,6 +16,16 @@ function safeParse(key, fb, chk){
   catch(e){ try{ localStorage.removeItem(key); }catch(e2){} return fb; }
 }
 const isObj = v => typeof v==='object' && !Array.isArray(v);
+function todayGoal(){
+  const t = new Date().toISOString().slice(0,10);
+  let d = safeParse('bhv_today', {d:t, write:0, math:0}, isObj);
+  if(!isObj(d) || d.d!==t) d = {d:t, write:0, math:0};
+  return d;
+}
+function bumpToday(k){
+  const d = todayGoal(); d[k]=(d[k]||0)+1;
+  localStorage.setItem('bhv_today', JSON.stringify(d));
+}
 
 /* ============ AUDIO ============ */
 let AC;

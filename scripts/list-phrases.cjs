@@ -43,7 +43,8 @@ const en = t => add(t, 'en');
   'Bé tô trong đường nét nhé!',
   'Mình chơi lâu rồi, nghỉ mắt chút nhé!',
   'Bé bấm phím đang sáng nhé!',
-  'Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!'
+  'Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!',
+  'Bé gõ theo nhịp nhé!'
 ].forEach(vi);
 // tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
 ['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));
@@ -93,6 +94,8 @@ for (const items of Object.values(D.EN_THEMES)) {
 }
 en('Great job!');
 en('Almost! Try again!');
+en('queen'); en('umbrella'); en('van');
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(en);
 
 // bài hát (dân ca Việt có lang:'vi-VN' — đọc giọng Việt); LỜI hát tag kind:'song' → gen pitch/rate tươi hơn
 D.SONGS.forEach(s => {

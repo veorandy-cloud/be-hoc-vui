@@ -42,9 +42,39 @@ const QUEST_LANDS = [
     {em:'⬜', t:'quiz', q:()=>MATH_BUILDERS.shape()},
     {em:'🐣', t:'en', theme:'🍓 Fruit', kind:'listen'},
     {em:'👑', t:'quiz', boss:true, q:()=>shuffle([qCount(),qAdd(),qWord(),qVan2(),qDigraph(),qSentence()])}
+  ]},
+  {nm:'📚 Rừng Truyện', color:'#DB2777', stations:[
+    {em:'📚', nm:'Đọc truyện', t:'quiz', q:()=>qStoryQuest()},
+    {em:'✏️', nm:'Viết tiếng ba', t:'write', set:'syl', ch:'ba'},
+    {em:'🔢', nm:'Toán 11–20', t:'quiz', q:()=>MATH_BUILDERS.mix20().slice(0,5)},
+    {em:'🐣', nm:'Câu tiếng Anh', t:'en', kind:'sent'},
+    {em:'👑', nm:'Trạm trùm', t:'quiz', boss:true, q:()=>shuffle([
+      qStoryQuest()[0],
+      MATH_BUILDERS.carry()[0],
+      MATH_BUILDERS.mix20()[0],
+      qWord(),
+      qSentence(),
+      qDigraph()
+    ])}
   ]}
 ];
 const STATIONS = QUEST_LANDS.flatMap(l=>l.stations);
+function qStoryQuest(){
+  const st = rand(STORIES);
+  return st.qs.map(q=>({
+    say:q.q,
+    html:`<div style="font-size:44px">${st.em}</div><div class="sentence">${q.q}</div>`,
+    choices:[0,1,2].map(i=>({html:q.c[i], correct:q.a===i, cls:'word'}))
+  }));
+}
+function stationName(s){
+  if(s.nm) return s.nm;
+  if(s.boss) return 'Trạm trùm';
+  if(s.t==='write') return 'Tập viết';
+  if(s.t==='en') return 'Tiếng Anh';
+  if(s.t==='memory') return 'Lật hình';
+  return 'Đố vui';
+}
 let questDone = Number(localStorage.getItem('bhv_quest'))||0;
 let questActive = null; // index trạm đang chơi, null = không trong quest
 const OFFSETS = ['6%','30%','55%','30%','6%'];
@@ -76,6 +106,10 @@ function renderQuestMap(){
         launchStation(idx);
       };
       row.appendChild(b);
+      const nm=document.createElement('span');
+      nm.className='station-nm';
+      nm.textContent=stationName(s);
+      row.appendChild(nm);
       map.appendChild(row);
     });
   });
@@ -90,6 +124,8 @@ function questComplete(){
     questDone++; localStorage.setItem('bhv_quest', questDone);
     updateQuestUI();
     addStars(s.boss?4:2); // thưởng thêm khi qua trạm, trùm x2
+  }else if(questActive!==null && questActive<questDone){
+    addStars(1); // ôn lại trạm cũ: 1⭐, không tăng questDone
   }
   questActive=null;
   showScreen('scr-quest');
@@ -123,10 +159,11 @@ function launchStation(idx){
     wIdx = Math.max(0, WRITE_SETS[wSet].indexOf(s.ch));
     showScreen('scr-write');
   }else if(s.t==='en'){
-    enTheme = s.theme;
+    if(s.theme) enTheme = s.theme;
     showScreen('scr-en');
-    $$('#en-chips .chip').forEach(x=>x.classList.toggle('on', x.textContent===s.theme));
-    startEnQuiz(s.kind);
+    $$('#en-chips .chip').forEach(x=>x.classList.toggle('on', x.textContent===enTheme));
+    if(s.kind==='sent' || s.kind==='sentence') startEnSentences();
+    else startEnQuiz(s.kind);
   }else if(s.t==='memory'){
     enTheme = s.theme;
     showScreen('scr-en');
@@ -202,7 +239,9 @@ function showParentStats(){
     ['✏️ Chữ đã luyện', `${wrote} chữ (đạt 3 sao: ${w3})`],
     ['✏️ Chữ cần ôn', Object.entries(writeBest).filter(([,v])=>v<2).map(([k])=>k).slice(0,10).join(' ')||'—'],
     ['🎁 Sticker', `${unlockedCount()+goldCount()}/${STICKERS.length*2}`],
-    ['🖼️ Tranh đã lưu', gal.length]
+    ['🖼️ Tranh đã lưu', gal.length],
+    ['📖 Tuần đọc', `Vần tuần ${learnWeek.v} · chữ ghép tuần ${learnWeek.d}`],
+    ['🎯 Mục tiêu', `Hôm nay: viết ${todayGoal().write||0}/2 chữ · toán ${todayGoal().math||0}/1 lượt`]
   ];
   // nhắc sao lưu định kỳ — iOS purge localStorage khi thiếu bộ nhớ nếu CHƯA Add to Home Screen;
   // export/import là lớp cứu duy nhất (persist() trên Safari vô tác dụng)

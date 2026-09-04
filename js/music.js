@@ -9,6 +9,8 @@ let songGain=null, songOscs=[], songSession=0; // session token: chuỗi async c
 const PIANO_KEYS = [60,62,64,65,67,69,71,72]; // C4–C5 white keys
 const PIANO_LABELS = ['Đô','Rê','Mi','Fa','Sol','La','Si','Đô'];
 let pianoNotes=[], pianoIdx=0, pianoExpect=null;
+let tapTimes=[], tapExpectIdx=0, tapHits=0;
+const TAP_WINDOW=0.18;
 function lightPiano(){
   $$('#piano-keys .pkey').forEach(b=>b.classList.remove('lit'));
   if(pianoExpect==null) return;
@@ -136,7 +138,13 @@ function initMusic(){
     $('#song-sing').onclick=()=>singSong();
     $('#song-read').onclick=()=>readSong();
     $('#song-play').onclick=startPlayAlong;
+    $('#song-tap').onclick=startTapBeat;
     $('#song-stop').onclick=stopSong;
+    $('#tap-pad').onclick=()=>{
+      ensureAC(); playKick(0); tapJudgeAt(AC.currentTime);
+      const p=$('#tap-pad'); p.classList.add('hit');
+      setTimeout(()=>p.classList.remove('hit'), 90);
+    };
     $('#song-back').onclick=()=>{ stopSong(); $('#song-view').style.display='none'; $('#song-list').style.display='grid'; };
     const box=$('#piano-keys');
     PIANO_KEYS.forEach((m,i)=>{
@@ -162,6 +170,7 @@ function startPlayAlong(){
   }
   pianoIdx=0; pianoExpect=pianoNotes[0];
   $('#piano-keys').style.display='flex';
+  $('#tap-pad').style.display='none';
   lightPiano();
   speak('Bé bấm phím đang sáng nhé!');
   ensureAC(); loadPiano();
@@ -183,11 +192,34 @@ function tapPiano(midi){
   lightPiano();
   sndPop();
 }
+function startTapBeat(){
+  if(!curSong) return;
+  stopSong();
+  ensureAC(); loadPiano();
+  const beat=60/curSong.bpm;
+  const t0=AC.currentTime+0.4;
+  tapTimes=Array.from({length:8}, (_,i)=> t0+i*beat);
+  tapExpectIdx=0; tapHits=0;
+  $('#piano-keys').style.display='none';
+  $('#tap-pad').style.display='flex';
+  for(let i=0;i<8;i++) playKick(tapTimes[i]-AC.currentTime);
+  speak('Bé gõ theo nhịp nhé!');
+}
+function tapJudgeAt(t){
+  if(!tapTimes.length || tapExpectIdx>=tapTimes.length) return;
+  if(Math.abs(t-tapTimes[tapExpectIdx])<=TAP_WINDOW){
+    tapHits++; tapExpectIdx++;
+    if(tapExpectIdx===tapTimes.length){
+      sndWin(); speak(rand(PRAISE)); addStars(1);
+    }
+  }
+}
 function openSong(i){
   curSong=SONGS[i];
   $('#song-list').style.display='none';
   $('#song-view').style.display='flex';
   $('#piano-keys').style.display='none';
+  $('#tap-pad').style.display='none';
   $('#hdr-title').textContent = curSong.em+' '+curSong.title;
   const ly=$('#song-lyrics'); ly.innerHTML='';
   curSong.lines.forEach((ln,li)=>{

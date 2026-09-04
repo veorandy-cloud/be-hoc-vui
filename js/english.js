@@ -28,6 +28,8 @@ function initEnglish(){
     $('#en-g2').onclick = ()=>startEnQuiz('read');
     $('#en-g3').onclick = startMemory;
     $('#en-g4').onclick = startEnSentences;
+    $('#en-g5').onclick = startEnPhonicsMenu;
+    $('#en-phx-play').onclick = startEnPhonicsQuiz;
     $('#en-weak').onclick = startEnWeak;
     if(SRCls){
       const mb=$('#en-mic');
@@ -47,6 +49,7 @@ function showEnLearn(){
   $('#en-learn').style.display='flex';
   $('#en-quiz').style.display='none';
   $('#en-memory').style.display='none';
+  $('#en-phx').style.display='none';
 }
 function renderFlash(){
   const grid=$('#en-cards'); grid.innerHTML='';
@@ -134,6 +137,7 @@ function enPhotoQ(t, others, say){
 function enRunQuiz(questions){
   if(!questions.length) return;
   $('#en-learn').style.display='none';
+  $('#en-phx').style.display='none';
   $('#en-quiz').style.display='flex';
   runQuiz({
     promptEl:$('#en-prompt'), speakBtn:$('#en-speak'),
@@ -201,11 +205,94 @@ function startEnSentences(){
   }
   enRunQuiz(pick(bank, Math.min(6, bank.length)));
 }
+/* E3 phonics: 26 letters, words from EN_THEMES by first-token initial */
+let enPhonicsLetter='a', enPhonicsBuilt=false;
+function enPhonicsInit(w){
+  return String(w).toLowerCase().split(/[\s-]/)[0][0];
+}
+function enPhonicsWords(letter){
+  const L = String(letter||'').toLowerCase().slice(0,1);
+  const seen = new Set();
+  const out = [];
+  for(const items of Object.values(EN_THEMES)){
+    for(const it of items){
+      if(enPhonicsInit(it.w)!==L) continue;
+      if(seen.has(it.w)) continue;
+      seen.add(it.w);
+      out.push(it);
+      if(out.length>=8) break;
+    }
+    if(out.length>=8) break;
+  }
+  for(const it of (EN_PHONICS_EXTRA[L]||[])){
+    if(seen.has(it.w)) continue;
+    seen.add(it.w);
+    out.push(it);
+  }
+  if(L==='x'){
+    const found = findEn('box');
+    if(found && !seen.has(found.it.w)) out.push(found.it);
+  }
+  return out;
+}
+function startEnPhonicsMenu(){
+  $('#en-learn').style.display='none';
+  $('#en-quiz').style.display='none';
+  $('#en-memory').style.display='none';
+  $('#en-phx').style.display='flex';
+  if(!enPhonicsBuilt){
+    const host=$('#en-phx-letters');
+    host.innerHTML='';
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(ch=>{
+      const b=document.createElement('button');
+      b.className='btn';
+      b.dataset.letter=ch;
+      b.textContent=ch.toUpperCase();
+      b.onclick=()=>{
+        enPhonicsLetter=ch;
+        $$('#en-phx-letters [data-letter]').forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');
+        speak(ch.toUpperCase(),'en-US');
+        const wrap=$('#en-phx-words'); wrap.innerHTML='';
+        enPhonicsWords(ch).slice(0,8).forEach(it=>{
+          const d=document.createElement('span');
+          d.className='phx-item';
+          d.innerHTML=`${phFor(it,'phx-ph')}<span>${it.w}</span>`;
+          wrap.appendChild(d);
+        });
+      };
+      host.appendChild(b);
+    });
+    enPhonicsBuilt=true;
+  }
+}
+function startEnPhonicsQuiz(){
+  const letter = enPhonicsLetter || 'a';
+  const pool = enPhonicsWords(letter);
+  const n = Math.max(1, Math.min(6, pool.length));
+  if(!pool.length) return;
+  const all = Object.values(EN_THEMES).flat().concat(Object.values(EN_PHONICS_EXTRA).flat());
+  const questions = pick(pool, n).map(t=>{
+    const others = [];
+    const seen = new Set([t.w]);
+    for(const x of shuffle(all)){
+      if(seen.has(x.w)) continue;
+      if(letter!=='x' && enPhonicsInit(x.w)===letter) continue;
+      seen.add(x.w);
+      others.push(x);
+      if(others.length>=2) break;
+    }
+    if(others.length<2) return null;
+    return enPhotoQ(t, others);
+  }).filter(Boolean);
+  enRunQuiz(questions);
+}
 /* memory match: emoji <-> word pairs */
 function startMemory(){
   const gen = ++uiGen;
   roundActive=true;
   $('#en-learn').style.display='none';
+  $('#en-phx').style.display='none';
   $('#en-memory').style.display='flex';
   const items = pick(EN_THEMES[enTheme], 4);
   const cards = shuffle(items.flatMap(it=>[

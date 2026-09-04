@@ -298,6 +298,12 @@ const EN_THEMES = {
   ]
 };
 
+/* E3 phonics: chữ cái không có (đủ) từ trong EN_THEMES — KHÔNG thêm vào EN_THEMES (không ảnh wiki mới) */
+const EN_PHONICS_EXTRA = {
+  q: [{em:'👑', w:'queen', vi:'nữ hoàng'}],
+  u: [{em:'☂️', w:'umbrella', vi:'cái ô'}],
+  v: [{em:'🚐', w:'van', vi:'xe van'}]
+};
 
 const SONGS = [
   {em:'🔤', title:'ABC Song', vi:'Bài hát bảng chữ cái', bpm:100, lines:[
@@ -903,5 +909,5 @@ const DRAW_GUIDES = (()=>{
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, SYL_EX, WORD_EX, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, SONGS, PICS, PIC_META, DRAW_GUIDES, VAN2, DIGRAPHS, STORIES, spellTieng };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, EN_PHONICS_EXTRA, SONGS, PICS, PIC_META, DRAW_GUIDES, VAN2, DIGRAPHS, STORIES, spellTieng };
 }

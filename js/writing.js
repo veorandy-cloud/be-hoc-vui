@@ -335,6 +335,7 @@ function guideCheck(pts){
         writeBest[charKey()]=earned;
         localStorage.setItem('bhv_write', JSON.stringify(writeBest));
       }
+      if(typeof bumpToday==='function') bumpToday('write');
       ovCallback = ()=>{ wIdx=nextWeakIdx(); resetWrite(); };
       if(questActive!==null) ovCallback = (curChar()===STATIONS[questActive].ch) ? questComplete : resetWrite;
       showResult(award, 'Bé viết đúng thứ tự nét!');
@@ -435,6 +436,7 @@ function gradeWrite(){
     writeBest[charKey()]=earned;
     localStorage.setItem('bhv_write', JSON.stringify(writeBest));
   }
+  if(typeof bumpToday==='function') bumpToday('write');
   ovCallback = ()=>{ wIdx=nextWeakIdx(); resetWrite(); };
   if(earned===0) ovCallback = resetWrite;
   // quest: phải viết ĐÚNG chữ của trạm — đổi sang chữ/số dễ hơn không được tính qua trạm

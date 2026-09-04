@@ -57,10 +57,12 @@
           <button class="btn primary" id="song-sing">▶️ Hát cùng nhạc</button>
           <button class="btn" id="song-read">🗣️ Đọc lời chậm</button>
           <button class="btn" id="song-play">🎹 Đàn theo</button>
+          <button class="btn" id="song-tap">🥁 Gõ nhịp</button>
           <button class="btn" id="song-stop">⏹️ Dừng</button>
           <button class="btn" id="song-back">🎵 Bài khác</button>
         </div>
         <div id="piano-keys"></div>
+        <button id="tap-pad" type="button" style="display:none">🥁</button>
         <div id="song-lyrics"></div>
       </div>
     </section>
@@ -205,6 +207,7 @@
           <button class="btn primary" id="en-g2">📝 Chọn từ đúng</button>
           <button class="btn primary" id="en-g3">🧠 Lật hình</button>
           <button class="btn primary" id="en-g4">💬 Nghe câu</button>
+          <button class="btn primary" id="en-g5">🔤 Phonics</button>
           <button class="btn" id="en-weak">⭐ Ôn từ yếu</button>
           <button class="btn" id="en-mic" style="display:none">🎤 Nói theo: TẮT</button>
         </div>
@@ -220,6 +223,11 @@
       <div id="en-memory" style="flex:1;min-height:0;display:none;flex-direction:column;gap:12px">
         <div class="quiz-progress" id="mem-progress"></div>
         <div id="mem-grid"></div>
+      </div>
+      <div id="en-phx" style="display:none;flex:1;min-height:0;flex-direction:column;gap:10px">
+        <div id="en-phx-letters"></div>
+        <div id="en-phx-words"></div>
+        <button class="btn primary" id="en-phx-play">🎧 Nghe chọn hình</button>
       </div>
     </section>
 

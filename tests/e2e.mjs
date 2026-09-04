@@ -359,6 +359,48 @@ const enc = await page.$eval('#en-progress', el => el.textContent);
 ok(/Câu 1 \/ 6/.test(enc), `tiếng Anh câu: lượt 6 (${enc.trim()})`);
 await goHome();
 
+// 3k. E3 phonics: 26 chữ, từ có sẵn theo chữ đầu, Q/U/V/X vẫn có ≥1 từ
+await page.click('[data-go="scr-en"]');
+await page.waitForTimeout(400);
+ok(!!(await page.$('#en-g5')), 'tiếng Anh: có nút phonics');
+if (!(await page.$('#en-g5'))) throw new Error('thiếu #en-g5');
+await page.click('#en-g5', { force: true });
+await page.waitForTimeout(400);
+const phx = await page.evaluate(() => {
+  const btns = [...document.querySelectorAll('#en-phx [data-letter]')];
+  const letters = btns.map(b => (b.dataset.letter || '').toLowerCase()).join('');
+  const wordsFn = typeof enPhonicsWords === 'function';
+  const a = wordsFn ? enPhonicsWords('a').map(it => (it.w || it).toLowerCase()) : [];
+  const q = wordsFn ? enPhonicsWords('q').map(it => (it.w || it).toLowerCase()) : [];
+  const u = wordsFn ? enPhonicsWords('u').map(it => (it.w || it).toLowerCase()) : [];
+  const v = wordsFn ? enPhonicsWords('v').map(it => (it.w || it).toLowerCase()) : [];
+  const x = wordsFn ? enPhonicsWords('x').map(it => (it.w || it).toLowerCase()) : [];
+  const init = w => String(w).toLowerCase().split(/[\s-]/)[0][0];
+  return {
+    n: btns.length, letters, wordsFn,
+    aN: a.length, aOk: a.length >= 1 && a.every(w => init(w) === 'a'),
+    qN: q.length, uN: u.length, vN: v.length,
+    xN: x.length, xHasBox: x.includes('box')
+  };
+});
+ok(phx.n === 26, `phonics: 26 chữ (thấy ${phx.n})`);
+ok(phx.letters === 'abcdefghijklmnopqrstuvwxyz', `phonics: đủ a–z (${phx.letters})`);
+ok(phx.wordsFn, 'phonics: có enPhonicsWords');
+ok(phx.aOk && phx.aN >= 1, `phonics A: từ bắt đầu bằng a (n=${phx.aN})`);
+ok(phx.qN >= 1 && phx.uN >= 1 && phx.vN >= 1, `phonics Q/U/V có từ (q=${phx.qN} u=${phx.uN} v=${phx.vN})`);
+ok(phx.xN >= 1 && phx.xHasBox, `phonics X dùng box (n=${phx.xN})`);
+await page.click('#en-phx [data-letter="a"]', { force: true });
+await page.waitForTimeout(300);
+const aTxt = await page.$eval('#en-phx-words', el => el.textContent.toLowerCase());
+ok(/apple|ant|arm|angry/.test(aTxt), `phonics A: hiện từ minh họa (${aTxt.slice(0,40)})`);
+ok(!!(await page.$('#en-phx-play')), 'phonics: có nút nghe chọn hình');
+if (!(await page.$('#en-phx-play'))) throw new Error('thiếu #en-phx-play');
+await page.click('#en-phx-play', { force: true });
+await page.waitForSelector('#en-choices .choice', { timeout: 5000 });
+const php = await page.$eval('#en-progress', el => el.textContent);
+ok(/Câu 1 \//.test(php), `phonics quiz: có lượt chơi (${php.trim()})`);
+await goHome();
+
 // 4. tập viết: stroke data + chế độ Từng nét từ chối nét sai + Tự viết nhận nét
 await page.click('[data-go="scr-write"]');
 await page.waitForTimeout(700);
@@ -557,6 +599,89 @@ await page.waitForTimeout(150);
 ok(await page.evaluate(() => pianoExpect) === 67, 'đàn theo: nốt 3 Twinkle là Sol 67');
 await goHome();
 
+// 5i. Mu2: gõ nhịp — 8 phách, gõ sớm không tính, gõ đúng phách +1
+await page.click('[data-go="scr-music"]');
+await page.waitForTimeout(400);
+await page.click('#song-list .menu-card:nth-child(2)', { force: true });
+await page.waitForTimeout(400);
+ok(!!(await page.$('#song-tap')), 'nhạc: có nút gõ nhịp');
+if (!(await page.$('#song-tap'))) throw new Error('thiếu #song-tap');
+await page.click('#song-tap', { force: true });
+await page.waitForTimeout(400);
+ok(await page.$eval('#tap-pad', el => {
+  const r = el.getBoundingClientRect();
+  const vis = getComputedStyle(el).display !== 'none' && r.width > 0 && r.height > 0;
+  return vis && r.width >= 44 && r.height >= 44;
+}), 'gõ nhịp: có pad ≥44px');
+const tapN = await page.evaluate(() => typeof tapTimes !== 'undefined' && tapTimes.length);
+ok(tapN >= 8, `gõ nhịp: ≥8 phách (thấy ${tapN})`);
+ok(await page.evaluate(() => typeof tapJudgeAt === 'function'), 'gõ nhịp: có tapJudgeAt');
+if (!(await page.evaluate(() => typeof tapJudgeAt === 'function'))) throw new Error('thiếu tapJudgeAt');
+const miss = await page.evaluate(() => {
+  const i0 = tapExpectIdx, h0 = tapHits;
+  tapJudgeAt(tapTimes[0] - 0.5);
+  return { idx: tapExpectIdx, hits: tapHits, i0, h0 };
+});
+ok(miss.hits === miss.h0 && miss.idx === miss.i0, 'gõ nhịp: gõ sớm không tính');
+const hit = await page.evaluate(() => {
+  tapJudgeAt(tapTimes[0]);
+  return { idx: tapExpectIdx, hits: tapHits };
+});
+ok(hit.hits === 1 && hit.idx === 1, `gõ nhịp: gõ đúng phách +1 (hits=${hit.hits} idx=${hit.idx})`);
+await goHome();
+
+// 5h. Q1: thám hiểm nối nội dung mới (truyện, viết tiếng, mix20/có nhớ, câu EN) + tên trạm + replay sao
+await page.click('[data-go="scr-quest"]');
+await page.waitForTimeout(400);
+const q1 = await page.evaluate(() => {
+  const storyQ = new Set(STORIES.flatMap(st => st.qs.map(x => x.q)));
+  let story = false, mix20 = false;
+  for (const s of STATIONS) {
+    if (s.t !== 'quiz' || typeof s.q !== 'function') continue;
+    const src = String(s.q);
+    if (/mix20|carry/.test(src)) mix20 = true;
+    try {
+      const qs = s.q();
+      if (qs.some(qq => storyQ.has(qq.say))) story = true;
+    } catch (e) {}
+  }
+  const labels = [...document.querySelectorAll('#quest-map .station-nm')].map(el => el.textContent.trim()).filter(Boolean);
+  return {
+    lands: QUEST_LANDS.length,
+    n: STATIONS.length,
+    names: QUEST_LANDS.map(l => l.nm),
+    story, mix20,
+    syl: STATIONS.some(s => s.t === 'write' && s.set === 'syl'),
+    sent: STATIONS.some(s => s.t === 'en' && (s.kind === 'sent' || s.kind === 'sentence')),
+    labels: labels.length,
+    label0: labels[0] || ''
+  };
+});
+ok(q1.lands >= 7, `thám hiểm: ${q1.lands} vùng (≥7)`);
+ok(q1.n >= 35, `thám hiểm: ${q1.n} trạm (≥35)`);
+ok(q1.story, 'thám hiểm: có trạm đọc hiểu truyện');
+ok(q1.syl, 'thám hiểm: có trạm viết tiếng (set syl)');
+ok(q1.mix20, 'thám hiểm: có trạm mix20/có nhớ');
+ok(q1.sent, 'thám hiểm: có trạm câu tiếng Anh');
+ok(q1.labels >= 35, `bản đồ: tên trạm hiện đủ (${q1.labels})`);
+ok(q1.label0.length >= 2, `bản đồ: trạm đầu có tên ('${q1.label0}')`);
+
+const replay = await page.evaluate(() => {
+  const keep = { qd: questDone, qa: questActive, st: stars };
+  questDone = 3; questActive = 0;
+  const before = stars;
+  questComplete();
+  const out = { dStars: stars - before, questDone, active: questActive };
+  questDone = keep.qd; questActive = keep.qa; stars = keep.st;
+  localStorage.setItem('bhv_quest', String(keep.qd));
+  localStorage.setItem('bhv_stars', String(keep.st));
+  return out;
+});
+ok(replay.dStars >= 1, `replay trạm cũ vẫn có sao (Δ${replay.dStars})`);
+ok(replay.questDone === 3, `replay không tăng questDone (thấy ${replay.questDone})`);
+ok(replay.active === null, 'replay xong questActive=null');
+await goHome();
+
 // 6. audio manifest khớp số câu trong phrases.json và mp3 tải được
 const audio = await page.evaluate(async () => {
   const man = await (await fetch('assets/audio/manifest.json')).json();
@@ -605,6 +730,9 @@ await page.$$eval('#pg-choices .choice', (els, ans) => {
 await page.waitForTimeout(400);
 const bkBanner = await page.$eval('#ps-grid', el => el.textContent.includes('Chưa sao lưu hơn 14 ngày'));
 ok(bkBanner, 'phụ huynh: banner nhắc sao lưu hiện khi chưa export >14 ngày');
+const psTxt = await page.$eval('#ps-grid', el => el.textContent);
+ok(/Tuần đọc|Vần tuần/.test(psTxt), 'phụ huynh: có tuần đọc');
+ok(/Hôm nay|Mục tiêu/.test(psTxt), 'phụ huynh: có mục tiêu ngày');
 await goHome();
 
 // 8. không có lỗi console/pageerror trong toàn bộ phiên

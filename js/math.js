@@ -218,6 +218,7 @@ function startMathRound(level){
     choicesEl:$('#math-choices'), progressEl:$('#math-progress'),
     questions: MATH_BUILDERS[level](),
     onDone(right, total){
+      if(typeof bumpToday==='function') bumpToday('math');
       ovCallback = initMath;
       showResult(quizStars(right, total), `Đúng ${right}/${total} câu!`);
     }
