@@ -1,13 +1,15 @@
 # Bé Học Vui — Tiến trình dự án
 
-> App học lớp 1 cho iPad (PWA): tập viết, tập đọc, vẽ/tô màu, tiếng Anh, ca hát, thám hiểm.
-> Cập nhật: 2026-08-25
+> App học lớp 1 cho iPad (PWA): tập viết, tập đọc, vẽ/tô màu, tiếng Anh, ca hát, thám hiểm, toán.
+> Cập nhật: 2026-09-04 · live `bhv-v36`
 
 ## Tóm tắt hiện trạng
 
-App chạy đầy đủ ở dạng PWA nhiều file, live tại https://veorandy-cloud.github.io/be-hoc-vui/. App nói **1500 câu, ĐỦ 1500/1500 mp3** (Edge TTS — HoaiMy tiếng Việt, Ana giọng bé gái tiếng Anh; máy dev Windows hiện CÓ Python 3.13 + edge-tts nên tự thu âm được: `node scripts/list-phrases.cjs && PYTHONIOENCODING=utf-8 python scripts/gen_audio.py`).
+PWA nhiều file, live https://veorandy-cloud.github.io/be-hoc-vui/ (`sw.js` **bhv-v36**, `AUDIO_CACHE` `bhv-audio-v2`). **1745/1745 mp3** (Edge TTS HoaiMy vi + Ana en). Máy dev Windows: Python 3.13 + edge-tts.
 
-Muốn test phải chạy qua HTTP server (không mở file trực tiếp), server cần hỗ trợ Range request cho mp3 — máy này không có Python nên dùng static server Node bất kỳ trỏ vào thư mục gốc → http://localhost:8080. Smoke test UI: Edge headless + `playwright-core` (channel `msedge`, không cần tải browser).
+Test: Node static server **`127.0.0.1:8080`** (không `localhost` — Playwright trên máy này là IPv6). `node tests/e2e.mjs` + `node tests/user-sim.mjs` (channel `msedge`). 2026-09-04: **e2e ALL PASS**, **user-sim ALL PASS**.
+
+Nội dung live: 76 glyph nét VN · 16 truyện · 22 chủ đề EN / 196 từ / 151 ảnh · phonics 26 chữ · 32 tranh tô · 3 vẽ theo mẫu · 20 bài hát (piano sample + đàn theo + gõ nhịp) · toán khung mười / mix20 / có nhớ / lời văn / thành phần / hình · quest **7 vùng / 35 trạm**. Gallery cap 12.
 
 ## Đã hoàn thành
 
@@ -56,15 +58,17 @@ Plan cải tiến 4 đợt:
 - **Đợt C — Perf/arch — ✅ XONG 2026-08-13**: `floodFillData` pure trên ImageData + buffer seen/stack tái dùng (hết cấp phát ~9.6MB/tap) · undo tô màu: replay batch mọi fill trên 1 ImageData (N×get+put → 1×get+put) + bake nền sớm khi >6 fill · `speakAsync` tái dùng 1 Audio element + `audioResolve` đảm bảo promise luôn resolve khi bị cắt (chuỗi Đọc lời không treo) · xoay iPad giữ tranh vẽ tự do (chụp → scale lại; undo reset) · **tách app.js → 8 module** (core/paint/writing/reading/drawing/english/music/quest — thứ tự load trong index.html, pure move đã verify tổng ký tự) · sw.js bump `bhv-v3` + CORE 14 file + `bhv-img-v1` route sẵn cho ảnh Phase 2 · e2e thêm listener HTTP≥400 + `goHome()` (vì 🏠 giờ hỏi xác nhận giữa lượt). Audio: **773/773 mp3**. E2E: **ALL PASS 15/15**.
 - **Đợt D — Content — ✅ XONG 2026-08-13**: qLetter có bảng AMBIG loại cặp đồng âm s/x, d/r, i/y · `y` → 'y dài' · Đọc theo: chữ đơn chấm theo token (hết 'a' ăn theo 'ba'), chữ y nhận cả 'i' · bộ thanh 'co' (có tiếng 'cõ' vô nghĩa) → bộ 'bo' · EXAMPLES.n: quả na 🍈 → con nai 🦌 · EN theo Starters: tooth→arm+leg, scissors/clock→pencil+crayon, gloves/cap/trousers→hat/boots/pants, drum→box, thêm 2 theme 🏠 House (8 từ) + 😊 Feelings (6 từ) → **14 chủ đề / 109 từ** (Weather giữ làm theme bonus ngoài Starters) · sửa 3 bài hát lệch nốt (If You're Happy, Head Shoulders ×3 dòng, Rain Rain ×2 dòng) · bỏ 5 câu mp3 mồ côi khỏi pipeline + xoá 36 mp3 thừa. Audio: **719/719 mp3**. E2E: ALL PASS 15/15 (assertion audio giờ so với phrases.json, hết hardcode).
 
-## Chưa làm (roadmap đã chốt)
+## Roadmap đã chốt (Phase 2–4 + đảo + deploy)
 
-| Phase | Nội dung | Trạng thái |
-|---|---|---|
-| **2 — Tiếng Anh sâu** | ✅ XONG 2026-08-13: **133 từ / 14 chủ đề** (Animals 10→20, Food 8→16, +Transport/House; VN words 20→30) · **86 ảnh THẬT** từ Wikipedia (pipeline `scripts/gen_images.cjs`, retry/backoff, override title cho từ nhập nhằng — water/key/lamp đã sửa tay sau khi soi mắt) · flashcard + quiz nghe-chọn + quiz đọc dùng ảnh, emoji fallback khi thiếu/lỗi · sw `warm-images` precache offline · credit ảnh ở trang phụ huynh · audio **826/826 mp3** · e2e 17 assertion ALL PASS. Deploy GitHub Pages: https://veorandy-cloud.github.io/be-hoc-vui/ | ✅ |
-| **3 — Tập viết sâu** | ✅ XONG 2026-08-13: **76 glyph có thứ tự nét** (`js/strokes.js` sinh từ font 1-nét Hershey futural public-domain qua `scripts/gen_strokes.cjs` + 4 dấu Việt tự định nghĩa: breve/mũ/móc/gạch-đ) · 3 mức như LetterSchool: 👀 **Xem mẫu** (nét chạy animation như cô viết), 🔢 **Từng nét** (mặc định — đồ theo nét đánh số, chấm từng nét bằng resample+khoảng cách, sai 2 lần cô vẽ mẫu lại nét đó, nét run tay "snap" thành nét chuẩn xanh), ✍️ **Tự viết** (chấm coverage như cũ) · trạm quest viết dùng chế độ Từng nét · audio 833/833 · e2e 19 assertion ALL PASS (2 assertion mới: stroke data + nét sai bị từ chối) | ✅ |
-| **4 — Tô màu + Nhạc** | ✅ XONG 2026-08-15: tô màu **20→32 tranh** (12 tranh mới 12-27 vùng tô: voi, hươu cao cổ, rùa, cua, trực thăng, thuyền buồm, ong, nhà nấm, bánh kem, cánh cụt, đêm trăng, kỳ lân — vẽ tay SVG, verify bằng screenshot Edge headless, sửa 3 tranh sau khi soi mắt) · bài hát có **ban nhạc đệm WebAudio**: kick (sine quét 140→45Hz) mỗi 2 phách + bass gảy gốc/quãng-5 luân phiên mỗi phách + hi-hat (noise + highpass 6kHz) phách lệch, đè lên nền pad cũ — không cần file mp3, offline được, mọi nguồn âm vào `songOscs` nên nút Dừng vẫn dừng thật · KHÔNG có câu nói mới → không regen audio · sw bump `bhv-v5` · e2e **22 assertion ALL PASS** (3 mới: ≥32 tranh, ≥30 nguồn âm khi Hát, giữ sạch console) | ✅ |
-| **Đảo Sticker 3D** | ✅ XONG 2026-08-15: `js/island.js` + **Three.js r128 UMD bundle local** (`assets/vendor/three.min.js`, 603KB≈150KB gzip, MIT) — đảo low-poly bồng bềnh (cát/cỏ/núi tuyết/2 cây dừa/mây trôi/nước), **sticker mở khoá mọc lên đảo** theo vòng xoắn (bộ vàng bay vòng quanh đỉnh núi có quầng sáng), vuốt xoay + quán tính + tự xoay khi rảnh, **chạm sticker → nảy + đọc tên** (tên sticker đã có mp3 sẵn), 2 câu giới thiệu mới (audio **835/835**) · nút 🏝️ trong màn Bộ sưu tập · render loop tự dừng khi rời màn (không tốn pin) · WebGL fail → fallback chữ tử tế · **review 3-agent đã fix**: dispose texture khi refresh (leak GPU), lọc pointerId (chống chạm 2 ngón xoay loạn), `webglcontextlost` preventDefault (iOS kill context), bỏ preserveDrawingBuffer (pin) — e2e render đồng bộ, songGain .85 (chống clip), bass/kick không đặt vào nửa phách lẻ cuối dòng, thêm `.nojekyll` · sw `bhv-v6` (CORE + vendor + island.js) · e2e **23 assertion ALL PASS** | ✅ |
-| **Deploy** | ✅ GitHub Pages: https://veorandy-cloud.github.io/be-hoc-vui/ — iPad dùng qua Add to Home Screen | ✅ |
+Tất cả ✅ — chi tiết nằm ở các đợt 2026-08 bên dưới. Live GitHub Pages, iPad Add to Home Screen.
+
+## Còn nợ (không chặn app)
+
+| Nợ | Ghi chú |
+|---|---|
+| Tai kiểm 3 melody VN trên iPad | Kìa Con Bướm Vàng / Một Con Vịt / Dung Dăng Dung Dẻ / Thằng Bờm — schema MIDI OK, chưa nghe loa iPad |
+| Bản đồ thám hiểm “có hình” | 35 trạm đã có `.station-nm`; chưa minh họa |
+| R2 đọc trôi từng tiếng | Truyện đã highlight câu; chưa thành mode riêng |
 
 ### Đợt "tối ưu + làm dày nội dung" — 2026-08-25
 Chạy trên máy dev Windows (lần đầu CÓ Python 3.13 + edge-tts → tự thu âm được, không cần máy khác).
@@ -78,7 +82,26 @@ Chạy trên máy dev Windows (lần đầu CÓ Python 3.13 + edge-tts → tự 
 - **P3.C — 📚 Đọc truyện (mode mới)**: 8 truyện 5-6 câu (chữ lớp 1, có mối liên hệ nhân vật-sự việc) — cô kể từng câu highlight vàng, xong 3 câu hỏi hiểu/truyện qua runQuiz (đáp án đúng phân bố đều A/B/C). STORIES trong data.js, startStory trong reading.js.
 - **P3.D — Ca hát 16 → 20 bài** (+Kìa Con Bướm Vàng [tin cậy melody CAO], Một Con Vịt, Dung Dăng Dung Dẻ, Thằng Bờm [TRUNG BÌNH — cần tai kiểm trên iPad]; đều kết chủ âm C, range 60-72, tổng phách chẵn).
 - **Audio: 1202 → 1500 clips** (gen_audio chạy tại chỗ, 1500/1500 lần đầu, 0 flake) · sw bump `bhv-v20` · **e2e 35/35 PASS** (+6 assertion: lazy-three boot, đảo sau inject, hướng nét ×2, mix20, truyện, banner sao lưu) · **user-sim 32/32 PASS** (bài VN mới chạy qua full band 128 nguồn âm) · soi mắt screenshot: menu đọc/toán, màn truyện, banner phụ huynh.
-- Còn nợ kế tiếp: ảnh thật cho 6 theme EN mới (gen_images.cjs + soi mắt từng ảnh), tai kiểm 3 melody mới trên iPad.
+- Nợ lúc đó: ảnh 6 theme EN + tai kiểm iPad. **Ảnh 151/151 đã xong** (2026-09, `441855c`). Tai kiểm iPad vẫn treo.
+
+### Roadmap A — đi sâu lớp 1 — ✅ XONG 2026-09-03 (live `bhv-v36`, commit `ec2a965`)
+
+Cách A: xong nợ nhỏ rồi đi sâu từng mục. Test: TDD e2e RED → spawn implementer → GREEN. Serve `127.0.0.1:8080`.
+
+| Khối | Việc |
+|---|---|
+| Ảnh EN | 151 photo, 22 theme / 196 từ |
+| Toán M1–M5 | khung mười + tia số; lời văn; thành phần; hình; cộng/trừ có nhớ phạm vi 20 |
+| Viết W1–W4 | hàng chữ yếu; tiếng (`syl`); HOA mẫu VN; chép từ |
+| Đọc R1, R3, R4 | ảnh từ; 16 truyện + pics; từ/câu theo tuần `bhv_learn` |
+| Anh E1–E3 | ôn từ yếu; câu Starters; **phonics 26 chữ** (Q/U/V extra, X=`box`) |
+| Vẽ D1–D3 | 3 bài theo mẫu; tô theo tuần DIGRAPHS; tô trong đường (gợi ý, không phạt) |
+| Nhạc Mu1–Mu2 | đàn 8 phím Twinkle; gõ nhịp 8 phách (cửa sổ 0.18s) |
+| Quest Q1 | vùng 7 📚 Rừng Truyện (35 trạm); tên trạm; replay +1⭐; phụ huynh tuần đọc + mục tiêu ngày |
+| Gallery | cap 12 (đã có từ `441855c`) |
+| Dọn | xoá 5 mp3 mồ côi |
+
+Audio **1500 → 1745**. `user-sim` trỏ `127.0.0.1` (hết IPv6 miss) + khoá quest = `STATIONS.length - 1`. 2026-09-04: e2e ALL PASS · user-sim ALL PASS.
 
 ### Đợt "chữ mẫu VN + làm dày nội dung" — 2026-08-15
 - **Chữ viết thường theo đúng mẫu tập viết Bộ GD-ĐT** (thay Hershey quốc tế): `scripts/vn_lowercase.cjs` tự dựng 26 chữ + f/j/w/z bằng bezier sampling theo các nét chuẩn — cong kín, hất, móc ngược, móc hai đầu, khuyết trên (b h k l), khuyết dưới (g y), thắt (r s v k), x = )( — đúng cả **thứ tự nét** (vd: a = cong kín TRƯỚC → móc ngược SAU, khác hẳn kiểu quốc tế sổ-trước-cong-sau) và **độ cao chuẩn** (o=1 đơn vị, t=1.5, d/đ/p/q=2, b/g/h/k/l/y=2.5, khuyết dưới −1.5). HOA in + số giữ Hershey (viết giống quốc tế). Verify bằng screenshot 33 glyph. Dấu ă/â/ê/ô/ơ/ư/đ compose tự động từ base mới.

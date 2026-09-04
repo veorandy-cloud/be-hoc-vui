@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { mkdirSync } from 'fs';
 
-const BASE = 'http://localhost:8080';
+const BASE = 'http://127.0.0.1:8080';
 const SHOTS = process.env.SHOT_DIR || 'usersim-shots';
 mkdirSync(SHOTS, { recursive: true });
 let failed = 0, shotN = 0;
@@ -218,8 +218,13 @@ ok(await goHome(), 'về home sau Ca hát');
 
 // ===== 7. THÁM HIỂM: bản đồ khoá đúng (1 trạm hiện tại, còn lại 🔒), chơi trọn trạm 1 =====
 await page.click('[data-go="scr-quest"]'); await page.waitForTimeout(600);
-const nCur = (await page.$$('.station.cur')).length, nLock = (await page.$$('.station.lock')).length;
-ok(nCur === 1 && nLock === 24, `bản đồ khoá đúng: ${nCur} trạm hiện tại, ${nLock} trạm 🔒`);
+const qmap = await page.evaluate(() => ({
+  cur: document.querySelectorAll('.station.cur').length,
+  lock: document.querySelectorAll('.station.lock').length,
+  n: typeof STATIONS !== 'undefined' ? STATIONS.length : 0
+}));
+ok(qmap.cur === 1 && qmap.n >= 35 && qmap.lock === qmap.n - 1,
+   `bản đồ khoá đúng: ${qmap.cur} hiện tại, ${qmap.lock} 🔒 / ${qmap.n} trạm`);
 await shot('quest-map');
 // bé thử bấm trạm khoá: phải KHÔNG mở được
 await page.click('.station.lock', { force: true }); await page.waitForTimeout(400);
