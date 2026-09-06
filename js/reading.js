@@ -10,13 +10,14 @@ function qLetter(){
   const [d1, d2] = pick(VN_LETTERS.filter(x=>x!==t && !grp.includes(x)), 2);
   return {
     say:`Đâu là chữ ${LETTER_NAMES[t]}?`, html:'❓',
-    choices:[{html:dispLetter(t),correct:true},{html:dispLetter(d1)},{html:dispLetter(d2)}]
+    choices:[t,d1,d2].map((x,i)=>({html:dispLetter(x), correct:i===0, say:`Chữ ${LETTER_NAMES[x]}`})) // chạm là nghe tên chữ
   };
 }
 function qVan(){
   const [c,v] = rand(VAN_ITEMS);
-  // chính tả lớp 1: trước e/ê/i phải dùng 'k', không dùng 'c' — không cho đáp án nhiễu 'ce/ci/cê'
-  const pool = c==='c' ? VOWELS.filter(x=>!['e','ê','i'].includes(x)) : VOWELS;
+  // chính tả lớp 1: trước e/ê/i phải dùng 'k' (không 'c'), 'gh' (không 'g') — không cho đáp án nhiễu 'ce/ci/cê', 'ka/ko', 'ge/gi'
+  const pool = (c==='c'||c==='g') ? VOWELS.filter(x=>!['e','ê','i'].includes(x))
+             : c==='k' ? ['e','ê','i'] : VOWELS;
   const others = pick(pool.filter(x=>x!==v), 2);
   return {
     say:`${LETTER_NAMES[c]} ghép với ${LETTER_NAMES[v]}, được tiếng gì?`,
@@ -85,7 +86,7 @@ function unlockedSentences(){
 }
 function learnAdvance(kind, right, total){
   if(right < Math.ceil(total*0.7)) return; // đúng ≥70% lượt mới mở tuần kế
-  const max = kind==='v' ? 17 : 9;
+  const max = Math.max(...(kind==='v' ? VAN2 : DIGRAPHS).map(x=>x.week)); // trần = tuần cuối trong data, không hardcode
   if(learnWeek[kind] < max){ learnWeek[kind]++; localStorage.setItem('bhv_learn', JSON.stringify(learnWeek)); }
 }
 function qVan2(){
@@ -111,7 +112,7 @@ function qDigraph(){
   return {
     say:`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`,
     html:`<div style="font-size:52px">${wd.em}</div><div class="sentence">${wd.w}</div>`,
-    choices:[{html:t.d,correct:true},{html:d1.d},{html:d2.d}]
+    choices:[t,d1,d2].map((x,i)=>({html:x.d, correct:i===0, say:`Chữ ${x.name}`}))
   };
 }
 const READ_BUILDERS = {
@@ -127,7 +128,7 @@ const READ_BUILDERS = {
   mix: ()=>shuffle([qLetter(),qVan(),qTone(),qVan2(),qDigraph(),qWord(),qSentence(),qSentence()])
 };
 /* ==== Đọc truyện: cô kể truyện ngắn từng câu (highlight theo câu), xong hỏi hiểu 3 câu ==== */
-function startStory(){
+function startStory(title){
   const gen = ++uiGen;
   roundActive=true;
   $('#read-menu').style.display='none';
@@ -138,7 +139,6 @@ function startStory(){
   $('#read-prompt').innerHTML = `<div class="story-pic">${(st.pics&&st.pics[0])||st.em}</div>` +
     st.lines.map(l=>`<div class="sentence story-line" style="text-align:left">${l}</div>`).join('');
   $('#read-speak').onclick = ()=>speak(st.title);
-  speak(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`);
   // kể lần lượt từng câu — highlight câu đang đọc; uiGen check: rời màn giữa chừng thì chuỗi tự chết
   const els = $$('#read-prompt .story-line');
   let i = 0;
@@ -185,7 +185,10 @@ function startStory(){
       }
     });
   }
-  nextLine();
+  // tên bài → lời dẫn → kể. Nói XONG mới kể: trước đây nextLine() gọi ngay nên câu "Cô kể cho bé nghe truyện…" bị cắt sau 1 chữ
+  speakAsync(title||'Đọc truyện')
+    .then(()=>speakAsync(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`))
+    .then(()=>{ if(gen===uiGen) nextLine(); });
 }
 
 function readShowMenu(){
@@ -195,15 +198,19 @@ function readShowMenu(){
 $$('#read-menu .menu-card').forEach(c=>c.addEventListener('click', ()=>{
   startReadRound(c.dataset.level);
 }));
+/* tên bài cô đọc khi bé chạm thẻ (bé chưa đọc được nhãn): data-say ưu tiên, không thì lấy chữ trên thẻ */
+function cardTitle(sel){ const c=$(sel); return c ? (c.dataset.say || c.querySelector('.tt').textContent.trim()) : ''; }
 function startReadRound(level){
-  if(level==='repeat') return startRepeat();
-  if(level==='ghep') return startGhep();
-  if(level==='story') return startStory();
+  const title = cardTitle(`#read-menu [data-level="${level}"]`);
+  if(level==='repeat') return startRepeat(title);
+  if(level==='ghep') return startGhep(title);
+  if(level==='story') return startStory(title);
   $('#read-menu').style.display='none';
   $('#read-quiz').style.display='flex';
   runQuiz({
     promptEl:$('#read-prompt'), speakBtn:$('#read-speak'),
     choicesEl:$('#read-choices'), progressEl:$('#read-progress'),
+    title, intro:'Bé nghe cô hỏi, rồi chạm vào đáp án đúng nhé!',
     questions: READ_BUILDERS[level](),
     onDone(right,total){
       // lộ trình: làm tốt lượt vần cuối / chữ ghép thì mở tuần học kế tiếp
@@ -265,9 +272,10 @@ function micErrorFeedback(e){
     speak('Cô chưa nghe thấy, bé nói to hơn nhé!');
   }
 }
-function startRepeat(){
+function startRepeat(title){
   const gen = ++uiGen;
   roundActive=true;
+  let firstP = speakAsync(title||'Đọc theo').then(()=>introOnce('repeat', 'Cô đọc trước, bé đọc theo thật to nhé!'));
   $('#read-menu').style.display='none';
   $('#read-quiz').style.display='flex';
   const letters = pick(VN_LETTERS, 3).map(ch=>({
@@ -307,7 +315,8 @@ function startRepeat(){
       listenVi(it.match, this, ok=>{ if(ok===null) return; tried++; if(ok) got++; progress(); });
     });
     mk('Câu tiếp ▶', ()=>{ i++; if(i<items.length) render(); else done(); });
-    setTimeout(()=>{ if(gen===uiGen) speak(it.say); }, 300);
+    const p=firstP; firstP=Promise.resolve(); // thẻ đầu chờ tên bài + lời dẫn nói xong
+    p.then(()=>setTimeout(()=>{ if(gen===uiGen) speak(it.say); }, 300));
   }
   function done(){
     ovCallback = readShowMenu;
@@ -319,12 +328,14 @@ function startRepeat(){
 }
 
 /* ==== Ghép vần: nghe tiếng, chọn thẻ chữ cái + thẻ vần-dấu để ghép ==== */
-function startGhep(){
+function startGhep(title){
   const gen = ++uiGen;
   roundActive=true;
   $('#read-menu').style.display='none';
   $('#read-quiz').style.display='flex';
-  const CONS = [...new Set(TONE_SETS.map(s=>s[0][0]))];
+  let firstP = speakAsync(title||'Ghép vần').then(()=>introOnce('ghep', 'Bé chạm chữ cái, rồi chạm vần để ghép thành tiếng nhé!'));
+  // thẻ đầu = âm đầu (kể cả âm ghép ch/th/qu — splitTieng), thẻ sau = vần + dấu ('àn', 'ó')
+  const CONS = [...new Set(TONE_SETS.map(s=>splitTieng(s[0])[0]))];
   const total = 6;
   let i=0, right=0, firstTry=true;
   function round(){
@@ -332,7 +343,7 @@ function startGhep(){
     let locked=false; // trẻ double-tap: không khoá là right++ đúp + nhảy cóc câu (2 setTimeout cùng gen)
     const set = rand(TONE_SETS);
     const target = rand(set);
-    const c = target[0], v = target.slice(1);
+    const [c, v] = splitTieng(target);
     let selC=null;
     $('#read-progress').textContent = `Câu ${i+1} / ${total}   ${'🟢'.repeat(right)}`;
     $('#read-prompt').innerHTML = `<span id="ghep-out">❓ + ❓</span>`;
@@ -349,17 +360,18 @@ function startGhep(){
         [...row1.children].forEach(x=>x.classList.remove('good'));
         b.classList.add('good'); sndPop();
         $('#ghep-out').textContent = `${cc} + ❓`;
-        speak('Chữ '+LETTER_NAMES[cc]);
+        speak('Chữ '+onsetName(cc));
       };
       row1.appendChild(b);
     });
     let wrongs=0;
-    shuffle([v, ...pick(set.filter(x=>x!==target), 2).map(t=>t.slice(1))]).forEach(vv=>{
+    shuffle([v, ...pick(set.filter(x=>x!==target), 2).map(t=>splitTieng(t)[1])]).forEach(vv=>{
       const b=document.createElement('button');
       b.className='choice'; b.textContent=vv;
       if(vv===v) b.dataset.right='1';
       b.onclick=()=>{
         if(locked) return;
+        speak(vv); // chạm là nghe vần (+dấu) — bé chưa đọc được 'àn' vẫn ghép được bằng tai
         if(!selC){ b.classList.add('bad'); sndBad(); setTimeout(()=>b.classList.remove('bad'),500); return; }
         if(selC===c && vv===v){
           locked=true; b.classList.remove('hint');
@@ -378,7 +390,8 @@ function startGhep(){
       };
       row2.appendChild(b);
     });
-    setTimeout(()=>{ if(gen===uiGen) speak('Tìm tiếng: '+target); }, 300);
+    const p=firstP; firstP=Promise.resolve(); // câu đầu chờ tên bài + lời dẫn
+    p.then(()=>setTimeout(()=>{ if(gen===uiGen) speak('Tìm tiếng: '+target); }, 300));
   }
   /* bước đánh vần sau khi ghép đúng: cô đọc 'bờ, a, ba, huyền, bà', bé nghe lại / 🎤 đánh vần theo */
   function spellStep(target){

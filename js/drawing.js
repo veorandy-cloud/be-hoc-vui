@@ -122,7 +122,7 @@ function switchDrawTab(tab){
   $('#draw-color').style.display = tab==='color'?'flex':'none';
   $('#draw-guide').style.display = tab==='guide'?'flex':'none';
   if(tab==='free') requestAnimationFrame(rescaleFreeDraw);
-  else if(tab==='color'){ initColor(); renderColorPics(); }
+  else if(tab==='color'){ initColor(); renderColorPics(); introOnce('color', 'Bé chọn tranh, chọn màu rồi tô nhé! Bấm cái xô để đổ màu.'); }
   else initGuide();
 }
 function saveToGallery(canvas, withWhiteBg, onSaved){

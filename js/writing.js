@@ -109,6 +109,30 @@ function drawGrid(r){
   wCtx.moveTo(0, r.height/2 + cell*2); wCtx.lineTo(r.width, r.height/2 + cell*2);
   wCtx.stroke();
 }
+/* dấu thanh — strokes.js chỉ có chữ cái (+ă â ê ô ơ ư đ); 5 dấu ghép lúc runtime, khung 100 như STROKES.
+   Vẽ SAU các nét chữ (đúng thứ tự tập viết: viết chữ xong mới đánh dấu). nặng = chấm dưới chân chữ */
+// cỡ theo dấu breve trong strokes.js (rộng 15.6, cao 5.2, cách đỉnh chữ ~5 đơn vị; thân chữ thường cao 21.8)
+const TONE_STROKES = {
+  '́': [[[-5,4],[5,-4]]],                                   // sắc: chéo lên phải
+  '̀': [[[-5,-4],[5,4]]],                                   // huyền: chéo xuống phải
+  '̉': [[[-4,-3],[-1,-6],[3,-5],[4,-2],[1,0],[0,2],[0,5]]],  // hỏi: móc câu
+  '̃': [[[-7,2],[-3.5,-2],[0,1],[3.5,-2],[7,2]]],            // ngã: sóng
+  '̣': [[[0,0],[0.1,0.1]]]                                  // nặng: chấm (tap 1 điểm cũng đậu như chấm chữ i)
+};
+const TONE_RE = /[̣̀́̃̉]/g;
+/* 1 chữ có dấu → [glyph nét chữ, nét dấu đặt trên/dưới bbox chữ] (đơn vị khung 100) */
+function glyphWithTone(ch){
+  const d = ch.normalize('NFD');
+  const tone = [...d].find(x=>TONE_STROKES[x]);
+  const base = STROKES[d.replace(TONE_RE,'').normalize('NFC')];
+  if(!base) return null;
+  if(!tone) return base;
+  const pts = base.flat();
+  const xs = pts.map(p=>p[0]), ys = pts.map(p=>p[1]);
+  const cx = (Math.min(...xs)+Math.max(...xs))/2;
+  const yy = tone==='̣' ? Math.max(...ys)+7 : Math.min(...ys)-8;
+  return [...base, ...TONE_STROKES[tone].map(s=>s.map(([x,y])=>[x+cx, y+yy]))];
+}
 /* nét chữ (STROKES khung cao 100, x giữa 0) → toạ độ canvas, cùng cỡ với template font */
 function glyphStrokes(){
   const chars = [...curChar()];
@@ -119,7 +143,7 @@ function glyphStrokes(){
     const yTop = (r.height - 100*k)/2;
     const n = chars.length, slot = n>=3 ? 24 : 32, strokes = [];
     for(let i=0;i<n;i++){
-      const g = STROKES[chars[i]];
+      const g = glyphWithTone(chars[i]);
       if(!g) return null;
       const dx = (i - (n-1)/2) * slot;
       g.forEach(s=>strokes.push(s.map(([x,y])=>[r.width/2 + (x+dx)*k, yTop + y*k])));

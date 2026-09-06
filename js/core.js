@@ -81,11 +81,16 @@ fetch('assets/audio/manifest.json').then(r=>r.json()).then(j=>{ AUDIO_MAN=j; }).
 // xin iOS đừng purge storage (sao/sticker/tranh/quest) khi máy đầy — Safari 15.2+
 try{ navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(()=>{}); }catch(e){}
 function phraseId(lang, text){
-  // djb2-xor — PHẢI khớp phrase_id() trong scripts/gen_audio.py
-  let h = 5381;
+  // djb2-xor GHÉP FNV-1a (8+8 hex) — djb2 một mình va chạm với chuỗi 2 ký tự ('cá' = 'om', 'vẽ' = '83' → phát nhầm mp3).
+  // PHẢI khớp phrase_id() trong scripts/gen_audio.py (cả hai hash theo UTF-16 code unit)
   const s = lang + '|' + text;
-  for(let i=0;i<s.length;i++) h = (((h*33)>>>0) ^ s.charCodeAt(i)) >>> 0;
-  return h.toString(16);
+  let h = 5381, f = 0x811c9dc5;
+  for(let i=0;i<s.length;i++){
+    const c = s.charCodeAt(i);
+    h = (((h*33)>>>0) ^ c) >>> 0;
+    f = Math.imul(f ^ c, 0x01000193) >>> 0;
+  }
+  return h.toString(16) + f.toString(16).padStart(8,'0');
 }
 function stopSpeak(){
   try{ speechSynthesis.cancel(); }catch(e){}
@@ -134,6 +139,24 @@ function speakAsync(text, lang='vi-VN'){
   return ttsSpeak(text, lang);
 }
 function speak(text, lang='vi-VN'){ speakAsync(text, lang); }
+/* lời dẫn LẦN ĐẦU vào mỗi kiểu bài (như mọi app trẻ em: nói 1 lần rồi thôi) — xoá dữ liệu thì nói lại */
+function introOnce(key, text){
+  const k = 'bhv_intro_'+key;
+  if(localStorage.getItem(k)) return Promise.resolve();
+  localStorage.setItem(k, '1');
+  return speakAsync(text);
+}
+/* text thuần của 1 đáp án để "chạm là nghe" — html có thẻ (ảnh, khung mười) hoặc quá dài → null (im lặng) */
+function plainText(html){
+  if(typeof html!=='string' || /<[a-z]/i.test(html)) return null;
+  const t = html.replace(/&amp;/g,'&').trim();
+  return t && t.length<=40 ? t : null;
+}
+/* nút/tab có data-say: chạm là cô đọc tên (chỉ gắn cho nút KHÔNG tự nói ngay sau đó, kẻo bị cắt) */
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-say]');
+  if(el && !el.disabled) speak(el.dataset.say);
+}, true);
 
 /* hành động phá hoại (xoá tranh, xoá bài viết, thoát giữa lượt) phải chạm 2 lần trong 3s */
 function confirmTap(btn, msg, fn){
@@ -227,7 +250,15 @@ function showResult(earned, msg){
   $('#overlay').classList.add('show');
   addStars(earned);
   if(earned>=2){ confetti(earned>=3); sndWin(); }
-  speak(earned>0 ? rand(PRAISE) : rand(CHEER));
+  // 🔍 Bé có biết? — 1 trong 2 lượt làm tốt cô kể 1 điều lạ (FACTS, data.js): thưởng bằng tò mò, không chỉ bằng sao
+  const fact = (earned>=1 && Math.random()<0.5) ? rand(FACTS) : null;
+  const fe = $('#ov-fact');
+  fe.style.display = fact ? '' : 'none';
+  if(fact) fe.innerHTML = `<span class="ov-fact-em">${fact.em}</span><span><b>🔍 Bé có biết?</b>${fact.t}</span>`;
+  const gen = uiGen;
+  speakAsync(earned>0 ? rand(PRAISE) : rand(CHEER)).then(()=>{
+    if(fact && gen===uiGen && $('#overlay').classList.contains('show')) speak(fact.t);
+  });
 }
 $('#ov-next').addEventListener('click', ()=>{
   // sticker gift chain: mỗi lần đóng overlay, nếu vừa mở khoá sticker mới (thường hoặc vàng) thì khoe luôn
@@ -276,7 +307,21 @@ function showScreen(id){
   if(id==='scr-parent') initParent();
   if(id==='scr-music') initMusic();
 }
-$$('.big-card').forEach(c=>c.addEventListener('click', ()=>{ ensureAC(); showScreen(c.dataset.go); }));
+/* màn có lời dẫn lần đầu (sau khi cô nói tên khu) — tập viết tự nói lúc vào nên không có ở đây */
+const SCREEN_INTRO = {
+  'scr-draw':  ['draw',  'Bé chọn màu rồi vẽ thoả thích nhé!'],
+  'scr-quest': ['quest', 'Bé chơi qua từng trạm để mở đường mới nhé!']
+};
+$$('.big-card').forEach(c=>c.addEventListener('click', ()=>{
+  ensureAC();
+  const id = c.dataset.go;
+  showScreen(id);
+  const gen = uiGen;
+  // chạm khu nào cô đọc tên khu đó (bé chưa biết đọc nhãn) — trừ tập viết/vẽ: màn tự nói ngay lúc vào
+  const label = c.querySelector('.tt').textContent.replace(/\(.*\)/,'').trim();
+  const pre = ['scr-write','scr-draw'].includes(id) ? Promise.resolve() : speakAsync(label);
+  pre.then(()=>{ const it = SCREEN_INTRO[id]; if(it && gen===uiGen) introOnce(it[0], it[1]); });
+}));
 let roundActive=false; // đang giữa một lượt chơi — bấm 🏠 phải xác nhận kẻo mất tiến độ oan
 $('#btn-home').addEventListener('click', function(){
   const go = ()=>{ roundActive=false; questActive=null; showScreen('scr-home'); };
@@ -292,12 +337,26 @@ $('#mascot').addEventListener('click', function(){
 
 
 /* ============ QUIZ ENGINE ============ */
+/* cfg: questions · promptEl/choicesEl/progressEl/speakBtn · onDone(right,total) · onMiss(q) · firstDelay
+        · title (cô đọc tên bài trước câu 1) · intro + introKey (lời dẫn LẦN ĐẦU, introOnce)
+   Mỗi choice: html · correct · cls · say (chuỗi cô đọc khi chạm; undefined = text thuần của html; null = im) · lang */
 function runQuiz(cfg){
   const gen = ++uiGen;
   roundActive=true;
-  let idx=0, right=0, firstTry=true, locked=false, firstRender=true;
+  let idx=0, right=0, firstTry=true, locked=false, firstRender=true, retries=0;
+  let interacted=false; // bé chạm ngay khi cô còn đang đọc tên bài/lời dẫn → bỏ phần còn lại của chuỗi, không nói đè lên đáp án
   function speakQ(){ const q=cfg.questions[idx]; speak(q.say, q.lang||'vi-VN'); }
   cfg.speakBtn.onclick = speakQ;
+  // đếm bằng ngón tay (Todo Math/Khan Kids): chạm chấm khung mười / que tính → tô sáng + tiếng cao dần + cô đọc số đã đếm
+  cfg.promptEl.onclick = e=>{
+    const el = e.target.closest('.ten-frame .dot.on, .tens .tbar, .tens .udot');
+    if(!el || !cfg.promptEl.contains(el)) return;
+    el.classList.toggle('cnt');
+    const p = cfg.promptEl;
+    const total = 10*p.querySelectorAll('.tbar.cnt').length + p.querySelectorAll('.udot.cnt, .dot.cnt').length;
+    try{ ensureAC(); tone(480+Math.min(total,20)*45, 0, .1, .14); }catch(err){}
+    if(el.classList.contains('cnt')) speak(String(total));
+  };
   function render(){
     const q = cfg.questions[idx];
     firstTry=true; locked=false;
@@ -310,26 +369,46 @@ function runQuiz(cfg){
       b.className='choice'+(ch.cls?' '+ch.cls:'');
       b.innerHTML = ch.html;
       if(ch.correct) correctBtn=b;
+      // CHẠM LÀ NGHE (Khan Kids/Duolingo ABC/Monkey Junior): đáp án chữ được cô đọc lên — bé chưa biết đọc vẫn chọn được bằng tai
+      const sayCh = ch.say!==undefined ? ch.say : plainText(ch.html);
+      const lang = ch.lang || q.lang || 'vi-VN';
       b.onclick = ()=>{
         if(locked) return;
+        interacted=true;
+        b.classList.remove('wiggle'); void b.offsetWidth; b.classList.add('wiggle');
         if(ch.correct){
           locked=true; b.classList.remove('hint'); b.classList.add('good'); sndGood();
           if(firstTry) right++;
-          setTimeout(()=>{ if(gen===uiGen) next(); }, 800);
+          // đọc đáp án đúng xong mới sang câu (câu hỏi lại mà đúng ngay → khen riêng)
+          const p = (q.retry && firstTry) ? speakAsync('Bé sửa đúng rồi, giỏi quá!')
+                  : sayCh ? speakAsync(sayCh, lang) : new Promise(r=>setTimeout(r, 450));
+          p.then(()=>{ if(gen===uiGen) setTimeout(next, 350); });
         }else{
           b.classList.add('bad'); sndBad(); firstTry=false;
+          if(sayCh) speak(sayCh, lang); // bé nghe xem mình vừa chạm chữ gì — sai cũng học được
           if(cfg.onMiss) cfg.onMiss(q);
           wrongs++;
           if(wrongs>=2 && correctBtn) correctBtn.classList.add('hint');
+          // câu sai được hỏi lại cuối lượt (Duolingo ABC) — tối đa 3 câu/lượt, mỗi câu 1 lần
+          if(!q.retry && !q._requeued && retries<3){
+            q._requeued=true; retries++;
+            cfg.questions.push(Object.assign({}, q, {retry:true, _requeued:true}));
+          }
           setTimeout(()=>b.classList.remove('bad'), 500);
         }
       };
       cfg.choicesEl.appendChild(b);
     });
-    // câu đầu có thể chờ lâu hơn (cfg.firstDelay) để lời dẫn — vd câu trùm quest — không bị speakQ cắt ngang
-    const delay = firstRender ? (cfg.firstDelay||300) : 300;
-    firstRender=false;
-    setTimeout(()=>{ if(gen===uiGen) speakQ(); }, delay);
+    if(firstRender){
+      firstRender=false;
+      // câu đầu: tên bài (cfg.title) → lời dẫn lần đầu (cfg.intro) → đề; firstDelay để câu trùm quest không bị speakQ cắt
+      const delay = cfg.firstDelay||300;
+      const pre = cfg.title ? speakAsync(cfg.title) : Promise.resolve();
+      pre.then(()=> (cfg.intro && gen===uiGen && !interacted) ? introOnce(cfg.introKey||'quiz', cfg.intro) : null)
+         .then(()=>{ if(gen===uiGen && !interacted) setTimeout(()=>{ if(gen===uiGen && !interacted) speakQ(); }, delay); });
+    }else{
+      setTimeout(()=>{ if(gen===uiGen) speakQ(); }, 300);
+    }
   }
   function next(){
     idx++;

@@ -29,6 +29,7 @@ function initEnglish(){
     $('#en-g3').onclick = startMemory;
     $('#en-g4').onclick = startEnSentences;
     $('#en-g5').onclick = startEnPhonicsMenu;
+    $('#en-g6').onclick = startEnSpell;
     $('#en-phx-play').onclick = startEnPhonicsQuiz;
     $('#en-weak').onclick = startEnWeak;
     if(SRCls){
@@ -131,10 +132,11 @@ function enDistractors(it, themeItems){
 function enPhotoQ(t, others, say){
   return {
     say:say||t.w, lang:'en-US', html:'👂', word:t.w,
-    choices:[{html:phFor(t,'chp'),correct:true},{html:phFor(others[0],'chp')},{html:phFor(others[1],'chp')}]
+    // chạm ảnh nào cô đọc từ đó — chạm sai cũng học được 1 từ
+    choices:[t, ...others].map((x,i)=>({html:phFor(x,'chp'), correct:i===0, say:x.w}))
   };
 }
-function enRunQuiz(questions){
+function enRunQuiz(questions, title, intro, introKey){
   if(!questions.length) return;
   $('#en-learn').style.display='none';
   $('#en-phx').style.display='none';
@@ -142,6 +144,7 @@ function enRunQuiz(questions){
   runQuiz({
     promptEl:$('#en-prompt'), speakBtn:$('#en-speak'),
     choicesEl:$('#en-choices'), progressEl:$('#en-progress'),
+    title, intro, introKey,
     questions,
     onMiss(q){ if(q.word) saveWeak(q.word); },
     onDone(right,total){
@@ -164,10 +167,13 @@ function startEnQuiz(kind){
     if(kind==='listen') return enPhotoQ(t, others);
     return {
       say:`Từ nào là ${t.vi}?`, html:phFor(t,'php'), word:t.w,
-      choices:[{html:t.w,correct:true,cls:'word'},{html:others[0].w,cls:'word'},{html:others[1].w,cls:'word'}]
+      choices:[t, ...others].map((x,i)=>({html:x.w, correct:i===0, cls:'word', lang:'en-US'})) // chạm từ nào đọc từ đó (giọng Anh)
     };
   });
-  enRunQuiz(questions);
+  enRunQuiz(questions,
+    kind==='listen' ? 'Nghe chọn hình' : 'Chọn từ đúng',
+    kind==='listen' ? 'Bé nghe từ, rồi chạm vào hình đúng nhé!' : 'Bé nghe tiếng Việt, rồi chạm vào từ tiếng Anh đúng nhé!',
+    'en-'+kind);
 }
 function startEnWeak(){
   const words = safeParse('bhv_en_weak', [], Array.isArray).filter(w=>typeof w==='string');
@@ -181,19 +187,9 @@ function startEnWeak(){
     questions.push(enPhotoQ(found.it, others));
   }
   if(!questions.length){ speak('Bé cố lên nhé!'); return; }
-  enRunQuiz(questions);
+  enRunQuiz(questions, 'Ôn từ yếu');
 }
-/* say strings MUST match audio bank 100% */
-const EN_STARTERS = [
-  {say:"It's a cat.", w:'cat'},
-  {say:"It's a dog.", w:'dog'},
-  {say:"It's an apple.", w:'apple'},
-  {say:"It's a bus.", w:'bus'},
-  {say:"I can run.", w:'run'},
-  {say:"I can jump.", w:'jump'},
-  {say:"The sun is hot.", w:'sun'},
-  {say:"I see a bird.", w:'bird'}
-];
+/* EN_STARTERS (data.js): say strings MUST match audio bank 100% */
 function startEnSentences(){
   const bank = [];
   for(const s of EN_STARTERS){
@@ -203,7 +199,7 @@ function startEnSentences(){
     if(!others) continue;
     bank.push(enPhotoQ(found.it, others, s.say));
   }
-  enRunQuiz(pick(bank, Math.min(6, bank.length)));
+  enRunQuiz(pick(bank, Math.min(6, bank.length)), 'Nghe câu', 'Bé nghe câu, rồi chạm vào hình đúng nhé!', 'en-sent');
 }
 /* E3 phonics: 26 letters, words from EN_THEMES by first-token initial */
 let enPhonicsLetter='a', enPhonicsBuilt=false;
@@ -236,10 +232,12 @@ function enPhonicsWords(letter){
   return out;
 }
 function startEnPhonicsMenu(){
+  const gen = ++uiGen;
   $('#en-learn').style.display='none';
   $('#en-quiz').style.display='none';
   $('#en-memory').style.display='none';
   $('#en-phx').style.display='flex';
+  speakAsync('Âm chữ cái tiếng Anh').then(()=>{ if(gen===uiGen) introOnce('phonics', 'Bé chạm chữ cái để xem từ bắt đầu bằng chữ đó nhé!'); });
   if(!enPhonicsBuilt){
     const host=$('#en-phx-letters');
     host.innerHTML='';
@@ -285,7 +283,71 @@ function startEnPhonicsQuiz(){
     if(others.length<2) return null;
     return enPhotoQ(t, others);
   }).filter(Boolean);
-  enRunQuiz(questions);
+  enRunQuiz(questions, 'Nghe chọn hình');
+}
+/* E4 đánh vần: từ 3 chữ (Starters spelling) — nghe từ + xem ảnh, chạm thẻ chữ theo đúng thứ tự.
+   Dùng lại khung #en-quiz (prompt/choices) như Ghép vần dùng #read-quiz; chữ cái A–Z đã có audio (phonics) */
+function enSpellWords(){
+  const seen = new Set();
+  return Object.values(EN_THEMES).flat().filter(it=>/^[a-z]{3}$/.test(it.w) && !seen.has(it.w) && seen.add(it.w));
+}
+function startEnSpell(){
+  const gen = ++uiGen;
+  roundActive=true;
+  $('#en-learn').style.display='none';
+  $('#en-phx').style.display='none';
+  $('#en-memory').style.display='none';
+  $('#en-quiz').style.display='flex';
+  const items = pick(enSpellWords(), 5);
+  let i=0, right=0;
+  let firstP = speakAsync('Đánh vần').then(()=>introOnce('spell', 'Bé ghép chữ cái thành từ nhé!'));
+  function round(){
+    const it = items[i];
+    const letters = it.w.split('');
+    let pos=0, firstTry=true, locked=false;
+    $('#en-progress').textContent = `Câu ${i+1} / ${items.length}   ${'🟢'.repeat(right)}`;
+    $('#en-prompt').innerHTML = phFor(it,'php') +
+      `<div class="spell-slots">${letters.map(()=>`<span class="spell-slot">_</span>`).join('')}</div>`;
+    $('#en-speak').onclick = ()=>speak(it.w,'en-US');
+    const slots = $$('#en-prompt .spell-slot');
+    // 2 thẻ nhiễu: chữ cái không có trong từ (từ có chữ lặp như 'egg' vẫn đủ thẻ: 3 thẻ đúng + 2 nhiễu)
+    const extra = pick('abcdefghijklmnopqrstuvwxyz'.split('').filter(c=>!letters.includes(c)), 2);
+    const ch=$('#en-choices'); ch.innerHTML='';
+    shuffle([...letters, ...extra]).forEach(L=>{
+      const b=document.createElement('button');
+      b.className='choice spell-tile'; b.textContent=L;
+      b.onclick=()=>{
+        if(locked || b.classList.contains('used')) return;
+        speak(L.toUpperCase(),'en-US');
+        if(L===letters[pos]){
+          b.classList.add('used'); slots[pos].textContent=L; slots[pos].classList.add('on'); sndPop();
+          pos++;
+          if(pos===letters.length){
+            locked=true; if(firstTry) right++;
+            sndGood(); setTimeout(()=>{ if(gen===uiGen) speak(it.w,'en-US'); }, 350);
+            setTimeout(()=>{ if(gen!==uiGen) return; i++; if(i<items.length) round(); else done(); }, 1600);
+          }
+        }else{
+          firstTry=false; saveWeak(it.w);
+          b.classList.add('bad'); sndBad(); setTimeout(()=>b.classList.remove('bad'),500);
+        }
+      };
+      ch.appendChild(b);
+    });
+    const p=firstP; firstP=Promise.resolve(); // từ đầu chờ tên bài + lời dẫn nói xong
+    p.then(()=>setTimeout(()=>{ if(gen===uiGen) speak(it.w,'en-US'); }, 300));
+  }
+  function done(){
+    if(questActive!==null){
+      const pass = right>=Math.ceil(items.length/2);
+      ovCallback = pass ? questComplete : questRetry;
+      showResult(quizStars(right,items.length), pass?`Đúng ${right}/${items.length} — qua trạm!`:`Đúng ${right}/${items.length} — thử lại nhé!`);
+      return;
+    }
+    ovCallback = showEnLearn;
+    showResult(quizStars(right, items.length), `Đúng ${right}/${items.length} từ!`);
+  }
+  round();
 }
 /* memory match: emoji <-> word pairs */
 function startMemory(){
@@ -302,7 +364,7 @@ function startMemory(){
   const grid=$('#mem-grid'); grid.innerHTML='';
   let first=null, lock=false, matched=0, mistakes=0;
   $('#mem-progress').textContent = 'Lật hình tìm cặp giống nhau!';
-  speak('Bé hãy lật hình để tìm cặp giống nhau nhé!');
+  speakAsync('Lật hình').then(()=>{ if(gen===uiGen) speak('Bé hãy lật hình để tìm cặp giống nhau nhé!'); });
   cards.forEach(cd=>{
     const b=document.createElement('button');
     b.className='mem-card'; b.textContent='❓';

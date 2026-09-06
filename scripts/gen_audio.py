@@ -18,15 +18,17 @@ RATE = "-10%"  # chậm lại một chút cho trẻ
 SONG_RATE, SONG_PITCH = "+6%", "+25Hz"
 
 def phrase_id(lang: str, text: str) -> str:
-    """djb2-xor, PHẢI khớp với phraseId() trong js/app.js.
+    """djb2-xor GHÉP FNV-1a (8+8 hex), PHẢI khớp với phraseId() trong js/core.js.
+    djb2 một mình va chạm với chuỗi 2 ký tự ('cá' = 'om') → ghép thêm FNV-1a.
     JS chạy trên code unit UTF-16 (charCodeAt) — phải encode utf-16-le rồi hash
     từng cặp byte, nếu không chuỗi chứa emoji/ký tự ngoài BMP sẽ ra id khác JS."""
-    h = 5381
+    h, f = 5381, 0x811C9DC5
     data = (lang + "|" + text).encode("utf-16-le")
     for i in range(0, len(data), 2):
         unit = data[i] | (data[i + 1] << 8)
         h = ((h * 33) & 0xFFFFFFFF) ^ unit
-    return format(h, "x")  # hex, khớp toString(16)
+        f = ((f ^ unit) * 0x01000193) & 0xFFFFFFFF
+    return format(h, "x") + format(f, "08x")  # khớp toString(16) + padStart(8,'0')
 
 async def gen_one(sem, item, results):
     pid = phrase_id(item["lang"], item["t"])

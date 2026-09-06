@@ -1,15 +1,15 @@
 # Bé Học Vui — Tiến trình dự án
 
 > App học lớp 1 cho iPad (PWA): tập viết, tập đọc, vẽ/tô màu, tiếng Anh, ca hát, thám hiểm, toán.
-> Cập nhật: 2026-09-04 · live `bhv-v36`
+> Cập nhật: 2026-09-06 · `bhv-v37` (chưa push)
 
 ## Tóm tắt hiện trạng
 
-PWA nhiều file, live https://veorandy-cloud.github.io/be-hoc-vui/ (`sw.js` **bhv-v36**, `AUDIO_CACHE` `bhv-audio-v2`). **1745/1745 mp3** (Edge TTS HoaiMy vi + Ana en). Máy dev Windows: Python 3.13 + edge-tts.
+PWA nhiều file, live https://veorandy-cloud.github.io/be-hoc-vui/ (`sw.js` **bhv-v37**, `AUDIO_CACHE` **bhv-audio-v3**). **3573 mp3** (Edge TTS HoaiMy vi + Ana en; tên file = djb2+FNV của `lang|text`). Máy dev Windows: Python 3.13 + edge-tts.
 
-Test: Node static server **`127.0.0.1:8080`** (không `localhost` — Playwright trên máy này là IPv6). `node tests/e2e.mjs` + `node tests/user-sim.mjs` (channel `msedge`). 2026-09-04: **e2e ALL PASS**, **user-sim ALL PASS**.
+Test: Node static server **`127.0.0.1:8080`** (không `localhost` — Playwright trên máy này là IPv6). `node tests/e2e.mjs` + `node tests/user-sim.mjs` (channel `msedge`) + `node tests/perf.mjs`. 2026-09-06 (cuối ngày): **e2e ALL PASS 200**, **user-sim ALL PASS 147** (~16 phút, chơi hết 40 trạm).
 
-Nội dung live: 76 glyph nét VN · 16 truyện · 22 chủ đề EN / 196 từ / 151 ảnh · phonics 26 chữ · 32 tranh tô · 3 vẽ theo mẫu · 20 bài hát (piano sample + đàn theo + gõ nhịp) · toán khung mười / mix20 / có nhớ / lời văn / thành phần / hình · quest **7 vùng / 35 trạm**. Gallery cap 12.
+Nội dung: 76 glyph nét VN (+5 dấu thanh ghép runtime) · **121 vần** (tuần 10–29) · 11 âm ghép · 37 bộ dấu · 101 từ · 51 câu điền · 16 truyện · tập viết 25 tiếng / 18 từ · 22 chủ đề EN / 196 từ / 151 ảnh · **90 câu Starters** · phonics 26 chữ · đánh vần 35 từ 3 chữ · 32 tranh tô · 3 vẽ theo mẫu · 20 bài hát (piano sample + **đàn theo mọi bài** + gõ nhịp) · toán khung mười / mix20 / có nhớ / lời văn (30) / thành phần / hình & khối / **đến 100 / dãy số / xem giờ / đo cm** · quest **8 vùng / 40 trạm**. Gallery cap 12.
 
 ## Đã hoàn thành
 
@@ -67,8 +67,11 @@ Tất cả ✅ — chi tiết nằm ở các đợt 2026-08 bên dưới. Live G
 | Nợ | Ghi chú |
 |---|---|
 | Tai kiểm 3 melody VN trên iPad | Kìa Con Bướm Vàng / Một Con Vịt / Dung Dăng Dung Dẻ / Thằng Bờm — schema MIDI OK, chưa nghe loa iPad |
-| Bản đồ thám hiểm “có hình” | 35 trạm đã có `.station-nm`; chưa minh họa |
+| Bản đồ thám hiểm “có hình” | 40 trạm đã có `.station-nm`; chưa minh họa |
 | R2 đọc trôi từng tiếng | Truyện đã highlight câu; chưa thành mode riêng |
+| Chính tả nghe-viết / kể chuyện theo tranh | SGK HK2, chưa có mode |
+| Vần hiếm bỏ qua | `ec` (xẻng/éc) không có từ + emoji hợp trẻ → không đưa vào VAN2 |
+| Cỡ audio | 2792 clip precache (~40MB) — nếu iPad cũ chậm lần đầu, cân nhắc warm theo màn |
 
 ### Đợt "tối ưu + làm dày nội dung" — 2026-08-25
 Chạy trên máy dev Windows (lần đầu CÓ Python 3.13 + edge-tts → tự thu âm được, không cần máy khác).
@@ -83,6 +86,42 @@ Chạy trên máy dev Windows (lần đầu CÓ Python 3.13 + edge-tts → tự 
 - **P3.D — Ca hát 16 → 20 bài** (+Kìa Con Bướm Vàng [tin cậy melody CAO], Một Con Vịt, Dung Dăng Dung Dẻ, Thằng Bờm [TRUNG BÌNH — cần tai kiểm trên iPad]; đều kết chủ âm C, range 60-72, tổng phách chẵn).
 - **Audio: 1202 → 1500 clips** (gen_audio chạy tại chỗ, 1500/1500 lần đầu, 0 flake) · sw bump `bhv-v20` · **e2e 35/35 PASS** (+6 assertion: lazy-three boot, đảo sau inject, hướng nét ×2, mix20, truyện, banner sao lưu) · **user-sim 32/32 PASS** (bài VN mới chạy qua full band 128 nguồn âm) · soi mắt screenshot: menu đọc/toán, màn truyện, banner phụ huynh.
 - Nợ lúc đó: ảnh 6 theme EN + tai kiểm iPad. **Ảnh 151/151 đã xong** (2026-09, `441855c`). Tai kiểm iPad vẫn treo.
+
+### Đợt "HK2 làm dày" — 2026-09-06 (`bhv-v37`)
+
+Khảo sát khoảng trống so với SGK lớp 1 + Cambridge Starters → app rộng nhưng mỏng ruột, HK2 gần trống. Làm cả 3 khối, không kiến trúc mới (data.js + builder sẵn có). **Mặc định đã chốt:** thứ tự vần/tuần bám **Cánh Diều** (vần p/c + vần đôi + âm đệm ở tuần 18–29); từ mới tiếng Việt dùng **emoji** (ảnh thật chỉ cho EN).
+
+| Khối | Việc |
+|---|---|
+| **A Tiếng Việt** | `VAN2` 32 → **121 vần** (âm/im/om…, ap…up, ân/ât/et/êt/ot/ơt/un/ưt, ac…ưc, âng/ong/ung/ưng/eng/ênh/êch/ich, ây/ơi/ưi/êu/iu/ưu/ia/ua/ưa, iên…ươt, iêng…ươc, iêm…ươi, oa…oăt, oang…uych), `learnAdvance` trần = max week trong data · `TONE_SETS` 6 → **37 bộ** (chỉ tiếng có nghĩa, ≥3/bộ; có âm ghép chi/tha/nhe/qua… và vần đóng ban/can/mai…) · `splitTieng`/`onsetName` (ONSETS dài trước ngắn) → `spellTieng` đánh vần đúng SGK cho âm ghép + vần đóng (`chờ, o, cho, sắc, chó` · `bờ, an, ban, huyền, bàn`), Ghép vần thẻ đầu là `ch/th/qu` thật · `VAN_ITEMS` +10 (k chỉ e/ê/i, g/c không e/ê/i) · tập viết tiếng 6 → **25** (bà bé mẹ chó thỏ nhà… bút cam tôm cây), chép từ 5 → **18** (mèo… thuyền trường vườn): **dấu thanh ghép runtime** `glyphWithTone()` + `TONE_STROKES` (nét dấu = nét cuối, sắc/huyền/hỏi/ngã trên đỉnh, nặng dưới chân; cỡ theo breve strokes.js) · `SENTENCES` 16 → **51** (sinh hoạt/trường lớp/cơ thể/thiên nhiên, nhiễu không lộ trong câu) · `WORD_ITEMS` 44 → **101** (en → ảnh thật khi có). |
+| **B Toán HK2** | `MATH_STORY_BANK` chuyển vào data.js 10 → **30** (có phạm vi 11–20) · `MATH_100` bank cộng/trừ KHÔNG nhớ (chục tròn + 2 chữ số ± 1 chữ số) · 4 mục mới: 💯 **Đến 100** (bó que tính `tensBlocks`, đếm chục, `Bé tìm số N`, so sánh, ±) · 🔁 **Dãy số** (liền sau/liền trước/khuyết dãy 5) · 🕒 **Xem giờ** (đồng hồ SVG giờ đúng + thứ trong tuần `WEEKDAYS`) · 📏 **Đo cm** (thước SVG 10 cm + bút chì, so sánh băng giấy) · Hình → **Hình & khối** (+khối lập phương, khối hộp chữ nhật, `say` riêng). |
+| **C Anh + nhạc** | `EN_STARTERS` chuyển vào data.js 8 → **90 câu** (It's a… / I can… / What colour…? / How many…? / Touch your… / This is my… / I am…; từ khoá đều `findEn`) · mode 🔡 **Đánh vần** `startEnSpell` (35 từ 3 chữ, 3 ô + 5 thẻ, thẻ sai rung + lưu từ yếu, quest kind `spell`) · **đàn theo mọi bài**: `buildPiano()` dựng phím theo nốt bài (8 phím trắng + Sol↓/La↓/Si♭ khi cần, phím đen nền tối), bỏ câu "chọn bài Ngôi sao nhỏ". |
+| **Quest** | vùng 8 🏫 **Lớp Học Vui** (Vần mới · Viết tiếng bà · Toán đến 100 · Đánh vần tiếng Anh · trùm HK2) → 40 trạm. |
+| **Pipeline** | list-phrases đọc thẳng bank từ data.js (story/100/weekday/EN_STARTERS), thêm `Chữ chờ…` (Ghép vần), tiếng + SYL_EX/WORD_EX, `Bé vẽ nét số 6…24`. Audio 1745 → **2792**. e2e +50 assertion (vần/đánh vần/dấu thanh/4 mục toán/builder đúng chương trình/EN spell/đàn Old MacDonald/vùng 8). |
+
+Soi mắt screenshot: bó que tính, so sánh 100, dãy số, đồng hồ, thước, bà/mẹ/thuyền (dấu đúng vị trí), Ghép vần `qu`, vần cuối, đánh vần EN, phím đàn, bản đồ vùng 8, menu toán 14 thẻ (vừa 1 màn iPad ngang). Fix sau soi: nhãn tuần `Thai/Tba` → `T2…T7/CN`.
+
+**"All e2e" (cùng ngày):** e2e thêm mục 10 — quét 40 lượt mọi `READ_BUILDERS`/`MATH_BUILDERS` + 8 lượt mọi trạm quest (tuần mở hết) + toàn bộ bank cố định → mọi `say` phải có mp3 trong manifest, mọi câu ≥2 lựa chọn/≥1 đúng/không trùng (**187 PASS**). user-sim viết lại: chơi **mọi** mục (10 đọc kể cả truyện/đọc theo, 14 toán, 6 game EN + phonics + ôn từ yếu + đổi chủ đề, album, đàn theo Old MacDonald 25/25 nốt, gõ nhịp 8/8) rồi **thám hiểm hết 40/40 trạm** tới cúp — bé "thông minh" bằng hook `window.runQuiz` (biết đáp án, không sửa app), trạm viết đồ theo `glyphStrokes()` từng nét, lật hình có trí nhớ, đánh vần đọc từ từ `alt` ảnh (**144 PASS**, ~13 phút — chạy nền, timeout ≥15 phút). perf.mjs trỏ `127.0.0.1` (localhost = IPv6): boot JS 327KB/126ms, heap 2.9MB.
+
+### Đợt "nhìn bằng mắt bé 6 tuổi" — 2026-09-06 (cùng `bhv-v37`)
+
+Rà từng mode như trẻ chưa biết đọc, đối chiếu Khan Academy Kids / Duolingo ABC / Monkey Junior / Todo Math / LetterSchool. Yêu cầu: chất hơn lượng — thu hút, lạ, gợi tò mò.
+
+| # | Đã làm | Kỹ thuật |
+|---|---|---|
+| 1 | **Chạm là nghe** — mọi đáp án chữ/số/ảnh được cô đọc khi chạm; đúng → đọc xong mới sang câu; sai → nghe mình vừa chạm gì + nút nhún | `runQuiz`: choice `say`/`plainText(html)`/`say:null`, `lang` per choice; Ghép vần thẻ vần cũng đọc; ~800 mp3 mới (số 0–100, `p cộng q`, tiếng CV, vần, từ, đáp án truyện, giờ/cm/thứ…) |
+| 2 | **Tên bài đọc lên** khi chạm thẻ home/đọc/toán/EN (bé không đọc được nhãn) | `cfg.title` chain trước đề; `data-say` generic handler cho tab/nút không tự nói |
+| 3 | **Hình học đảo chiều**: "Đâu là hình tròn?" → chạm 1 trong 3 hình tô màu ngẫu nhiên | `qShape` + `SHAPE_FILLS`, choice say = tên hình |
+| 4 | **Lời dẫn lần đầu** cho mỗi kiểu bài (quiz/đếm/ghép vần/đọc theo/EN nghe/EN đọc/câu/phonics/vẽ/tô/quest) | `introOnce(key,text)` cờ `bhv_intro_*`; `SCREEN_INTRO` cho vẽ/quest. Sửa luôn bug cũ: câu "Cô kể cho bé nghe truyện…" bị `nextLine()` cắt ngay |
+| 5 | **Đếm bằng ngón tay**: chạm chấm khung mười / que tính → sáng viền, tiếng cao dần, cô đọc số đã đếm (que = +10) | `promptEl.onclick` trong runQuiz, class `.cnt` |
+| 6 | **Từ hợp trẻ**: bỏ bộ dấu ghe/ghẻ, mu/mù/mủ, tù/tụ → `mua/mùa/múa`, `tu/tú/tủ`; VAN2 bỏ `uych` (huỵch/huých), thay chênh lệch→đội mũ lệch, loay hoay→gió xoáy, toát mồ hôi→lối thoát, băn khoăn→ngoằn ngoèo, huân chương→tuần lễ, khuỳnh tay→luýnh quýnh | 120 vần · 36 bộ dấu |
+| 7 | **Hỏi lại câu sai** cuối lượt (Duolingo ABC), sửa đúng → "Bé sửa đúng rồi, giỏi quá!" | `retry` clone, tối đa 3/lượt; progress `Câu 2 / 7` |
+| 8 | **Thẻ HK2 khoá bí ẩn** 🔒 (Đến 100 / Dãy số / Xem giờ / Đo cm): mở khi làm tốt 6 lượt toán khác → pháo hoa + "Bé mở được bài mới rồi!"; phụ huynh có nút 🔓 Mở tất cả bài + dòng tiến độ | `bhv_mathok`, `bhv_unlockall`, `hk2Unlocked()`; quest vẫn cho "nếm thử" toán 100 |
+| 9 | **🔍 Bé có biết?** — 28 sự thật lạ (ong bay 2 vòng Trái Đất, bạch tuộc 3 tim, ốc sên ngủ 3 năm…) gắn với con vật/thiên nhiên trong app, hiện + cô kể sau 50% lượt làm tốt | `FACTS` data.js, `#ov-fact` trong overlay, speakAsync chain sau lời khen |
+
+Audio 2792 → **3573**. e2e +12 assertion (mục 11) + sweep kiểm luôn chuỗi `say` của từng đáp án; user-sim thêm luồng khoá/mở HK2, tăng maxQ vì có hỏi lại + đọc đáp án.
+
+**Bug nặng lộ ra nhờ "chạm là nghe"**: `phraseId` djb2-xor **va chạm với chuỗi 2 ký tự** (11 cặp: `cá`=`om`, `vẽ`=`83`, `bé`=`ne`, `lá`=`he`, `mô`=`ip`…) → chạm vần "om" phát mp3 "cá". Sửa gốc: `phraseId` = djb2 **ghép FNV-1a** (16 hex) ở cả core.js lẫn gen_audio.py; 3562 file đổi tên bằng script (không thu lại), 11 file va chạm xoá + gen lại 22 clip; `AUDIO_CACHE` → **bhv-audio-v3**. e2e sweep giờ bắt cả trùng id.
 
 ### Roadmap A — đi sâu lớp 1 — ✅ XONG 2026-09-03 (live `bhv-v36`, commit `ec2a965`)
 

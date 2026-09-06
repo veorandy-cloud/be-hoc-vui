@@ -46,7 +46,7 @@
         <div class="big-card" id="card-quest" data-go="scr-quest"><div class="em">🗺️</div><div class="tt">Thám hiểm <span id="quest-count"></span></div></div>
         <div class="big-card" id="card-music" data-go="scr-music"><div class="em">🎵</div><div class="tt">Ca hát</div></div>
       </div>
-      <div id="sticker-shelf">🎁 Bộ sưu tập sticker <span id="shelf-count"></span></div>
+      <div id="sticker-shelf" data-say="Bộ sưu tập sticker">🎁 Bộ sưu tập sticker <span id="shelf-count"></span></div>
     </section>
 
     <!-- MUSIC -->
@@ -54,12 +54,12 @@
       <div id="song-list" class="menu-grid"></div>
       <div id="song-view" style="display:none;flex:1;min-height:0;flex-direction:column;gap:10px">
         <div class="toolbar">
-          <button class="btn primary" id="song-sing">▶️ Hát cùng nhạc</button>
+          <button class="btn primary" id="song-sing" data-say="Hát cùng nhạc">▶️ Hát cùng nhạc</button>
           <button class="btn" id="song-read">🗣️ Đọc lời chậm</button>
           <button class="btn" id="song-play">🎹 Đàn theo</button>
           <button class="btn" id="song-tap">🥁 Gõ nhịp</button>
           <button class="btn" id="song-stop">⏹️ Dừng</button>
-          <button class="btn" id="song-back">🎵 Bài khác</button>
+          <button class="btn" id="song-back" data-say="Bài khác">🎵 Bài khác</button>
         </div>
         <div id="piano-keys"></div>
         <button id="tap-pad" type="button" style="display:none">🥁</button>
@@ -121,7 +121,7 @@
     <section id="scr-read" class="screen">
       <div id="read-menu" class="menu-grid">
         <div class="menu-card" style="background:var(--coral)" data-level="letters"><div class="em">🔤</div><div class="tt">Chữ cái</div></div>
-        <div class="menu-card" style="background:#0284C7" data-level="van"><div class="em">🎵</div><div class="tt">Vần &amp; dấu</div></div>
+        <div class="menu-card" style="background:#0284C7" data-level="van" data-say="Vần và dấu"><div class="em">🎵</div><div class="tt">Vần &amp; dấu</div></div>
         <div class="menu-card" style="background:#DB2777" data-level="van2"><div class="em">🔚</div><div class="tt">Vần cuối</div></div>
         <div class="menu-card" style="background:#7C3AED" data-level="digraph"><div class="em">🔗</div><div class="tt">Chữ ghép</div></div>
         <div class="menu-card" style="background:#65A30D" data-level="words"><div class="em">🖼️</div><div class="tt">Từ ngữ</div></div>
@@ -144,8 +144,8 @@
     <!-- DRAWING -->
     <section id="scr-draw" class="screen">
       <div class="tabs">
-        <button class="btn tab on" id="tab-free">🖌️ Vẽ tự do</button>
-        <button class="btn tab" id="tab-color">🖼️ Tô màu</button>
+        <button class="btn tab on" id="tab-free" data-say="Vẽ tự do">🖌️ Vẽ tự do</button>
+        <button class="btn tab" id="tab-color" data-say="Tô màu">🖼️ Tô màu</button>
         <button class="btn tab" id="tab-guide">✏️ Theo mẫu</button>
       </div>
       <div id="draw-free" style="flex:1;min-height:0;display:flex;flex-direction:column;gap:9px">
@@ -208,6 +208,7 @@
           <button class="btn primary" id="en-g3">🧠 Lật hình</button>
           <button class="btn primary" id="en-g4">💬 Nghe câu</button>
           <button class="btn primary" id="en-g5">🔤 Phonics</button>
+          <button class="btn primary" id="en-g6">🔡 Đánh vần</button>
           <button class="btn" id="en-weak">⭐ Ôn từ yếu</button>
           <button class="btn" id="en-mic" style="display:none">🎤 Nói theo: TẮT</button>
         </div>
@@ -249,7 +250,12 @@
         <div class="menu-card" style="background:#7C3AED" data-level="carry"><div class="em">🔟</div><div class="tt">Có nhớ</div></div>
         <div class="menu-card" style="background:#DB2777" data-level="story"><div class="em">📖</div><div class="tt">Lời văn</div></div>
         <div class="menu-card" style="background:#EA580C" data-level="bond"><div class="em">🧩</div><div class="tt">Thành phần</div></div>
-        <div class="menu-card" style="background:#0D9488" data-level="shape"><div class="em">⬜</div><div class="tt">Hình</div></div>
+        <div class="menu-card" style="background:#0D9488" data-level="shape" data-say="Hình và khối"><div class="em">⬜</div><div class="tt">Hình &amp; khối</div></div>
+        <!-- HK2: data-lock → 🔒 tới khi bé làm tốt 6 lượt toán khác (math.js hk2Unlocked) hoặc phụ huynh bật "Mở tất cả bài" -->
+        <div class="menu-card" style="background:#4F46E5" data-level="hundred" data-lock="hk2"><div class="em">💯</div><div class="tt">Đến 100</div></div>
+        <div class="menu-card" style="background:#0891B2" data-level="order" data-lock="hk2"><div class="em">🔁</div><div class="tt">Dãy số</div></div>
+        <div class="menu-card" style="background:#C026D3" data-level="time" data-lock="hk2"><div class="em">🕒</div><div class="tt">Xem giờ</div></div>
+        <div class="menu-card" style="background:#65A30D" data-level="measure" data-lock="hk2" data-say="Đo xăng ti mét"><div class="em">📏</div><div class="tt">Đo cm</div></div>
         <div class="menu-card" style="background:var(--pink)" data-level="mix"><div class="em">🎲</div><div class="tt">Trộn tất cả</div></div>
       </div>
       <div id="math-quiz" style="display:none;flex:1;min-height:0;flex-direction:column;gap:12px">
@@ -298,6 +304,7 @@
         <div class="toolbar">
           <button class="btn" id="ps-export">📤 Sao lưu</button>
           <button class="btn" id="ps-import">📥 Nhập lại</button>
+          <button class="btn" id="ps-unlock">🔒 Mở tất cả bài: TẮT</button>
           <button class="btn" id="ps-reset">🗑️ Xoá toàn bộ dữ liệu bé học</button>
         </div>
       </div>
@@ -312,6 +319,7 @@
     <div id="ov-emoji">🎉</div>
     <div id="ov-msg">Giỏi quá!</div>
     <div id="ov-stars">⭐⭐⭐</div>
+    <div id="ov-fact" style="display:none"></div>
     <button class="btn primary" id="ov-next">Tiếp tục ▶</button>
   </div>
 </div>

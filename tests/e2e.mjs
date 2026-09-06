@@ -18,7 +18,7 @@ page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.
 page.on('response', r => { if (r.status() >= 400) errors.push(`HTTP ${r.status()}: ${r.url()}`); });
 
 // chữ 'a' đã có điểm → không kích hoạt "cô viết mẫu trước" (demo cũng vẽ mực coral, nhiễu assertion đếm pixel)
-await page.addInitScript(() => localStorage.setItem('bhv_write', '{"a":3}'));
+await page.addInitScript(() => { localStorage.setItem('bhv_write', '{"a":3}'); localStorage.setItem('bhv_unlockall', '1'); }); // unlockall: thẻ toán HK2 mở sẵn (khoá được test riêng ở mục 11)
 await page.goto(BASE, { waitUntil: 'load', timeout: 15000 });
 await page.waitForTimeout(800);
 
@@ -57,7 +57,7 @@ ok(await page.$eval('#scr-stickers', el => el.classList.contains('active')), 'v�
 // 2b. đảo sticker 3D: WebGL render ra hình (hoặc fallback tử tế nếu máy không có WebGL)
 await page.click('#btn-island', { force: true });
 await page.waitForTimeout(3000); // lần đầu phải chờ inject three.min.js (603KB, localhost ~vài trăm ms)
-const isl = await page.evaluate(() => {
+const islProbe = () => page.evaluate(() => {
   const fb = !!document.querySelector('.island-fallback');
   let px = 0;
   const c = document.querySelector('#island-canvas');
@@ -67,6 +67,8 @@ const isl = await page.evaluate(() => {
   }
   return { fb, px, ready: typeof islReady !== 'undefined' && islReady };
 });
+let isl = await islProbe();
+if (!isl.ready) { await page.waitForTimeout(4000); isl = await islProbe(); } // server bận (SW đang warm 3573 mp3) → three.min.js tới muộn
 ok(isl.ready && isl.px > 20000, `đảo 3D render (canvas ${isl.px}b${isl.fb ? ', FALLBACK' : ''})`);
 await goHome();
 
@@ -225,11 +227,12 @@ ok(!!(await page.$('#math-menu [data-level="shape"]')), 'toán: có mục hình'
 await page.click('#math-menu [data-level="shape"]', { force: true });
 await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
 const shp = await page.$eval('#math-quiz', el => ({
-  svg: !!el.querySelector('#math-prompt svg, #math-prompt .math-shape'),
-  n: el.querySelectorAll('#math-choices .choice').length
+  svgs: el.querySelectorAll('#math-choices .choice svg.math-shape').length,
+  n: el.querySelectorAll('#math-choices .choice').length,
+  fills: new Set([...el.querySelectorAll('#math-choices svg.math-shape')].map(s => s.getAttribute('fill'))).size
 }));
-ok(shp.svg, 'toán hình: hiện 1 hình SVG');
-ok(shp.n === 3, `toán hình: 3 tên hình (thấy ${shp.n})`);
+ok(shp.svgs === 3 && shp.n === 3, `toán hình: cô hỏi "Đâu là hình…?" → 3 HÌNH để chạm (thấy ${shp.svgs} svg / ${shp.n} nút)`);
+ok(shp.fills === 3, `toán hình: 3 hình 3 màu khác nhau (${shp.fills})`);
 await goHome();
 
 // 3n. toán M5 cộng/trừ có nhớ phạm vi 20
@@ -681,6 +684,347 @@ ok(replay.dStars >= 1, `replay trạm cũ vẫn có sao (Δ${replay.dStars})`);
 ok(replay.questDone === 3, `replay không tăng questDone (thấy ${replay.questDone})`);
 ok(replay.active === null, 'replay xong questActive=null');
 await goHome();
+
+// ===== 9. HK2 làm dày (2026-09-06): vần đôi/âm đệm, dấu thanh tập viết, toán đến 100/giờ/cm, EN đánh vần, đàn mọi bài =====
+// 9a. tiếng Việt: VAN2 phủ HK2, đánh vần âm ghép + vần đóng, lộ trình vần mở tới tuần cuối trong data rồi dừng
+await page.click('[data-go="scr-read"]');
+await page.waitForTimeout(300);
+const vn2 = await page.evaluate(() => {
+  const bare = s => s.normalize('NFD').replace(/[̣̀́̃̉]/g, '').normalize('NFC');
+  const ok = VAN2.every(v => v.words.length === 2 && v.words.every(w => bare(w.tieng).endsWith(v.van) && w.em));
+  const maxW = Math.max(...VAN2.map(v => v.week));
+  const keep = Object.assign({}, learnWeek);
+  learnWeek = { v: maxW - 1, d: 9 };
+  learnAdvance('v', 6, 6); const w1 = learnWeek.v;
+  learnAdvance('v', 6, 6); const w2 = learnWeek.v;
+  learnWeek = { v: maxW, d: 9 };
+  const pool = new Set(Array.from({ length: 60 }, () => (qVan2().choices.find(c => c.correct) || {}).html));
+  learnWeek = keep; localStorage.setItem('bhv_learn', JSON.stringify(keep));
+  return {
+    n: VAN2.length, ok, maxW, w1, w2, poolN: pool.size,
+    hasDouble: ['uôn', 'ương', 'oan', 'uyên', 'ap', 'oc'].every(v => VAN2.some(x => x.van === v)),
+    sp1: spellTieng('bàn'), sp2: spellTieng('chó'), sp3: spellTieng('quả'),
+    split: JSON.stringify([splitTieng('chó'), splitTieng('bàn'), splitTieng('nghé')]),
+    tones: TONE_SETS.length, tonesOk: TONE_SETS.every(s => s.length >= 3),
+    sents: SENTENCES.length, sentOk: SENTENCES.every(s => !s.d.some(d => s.html.toLowerCase().includes(d))),
+    words: WORD_ITEMS.length
+  };
+});
+ok(vn2.n >= 110 && vn2.ok, `vần: ${vn2.n} vần, mỗi vần 2 từ đúng vần + emoji`);
+ok(vn2.hasDouble, 'vần: có vần p/c, vần đôi, âm đệm (ap oc uôn ương oan uyên)');
+ok(vn2.w1 === vn2.maxW && vn2.w2 === vn2.maxW, `lộ trình vần: mở tới tuần ${vn2.maxW} rồi dừng (${vn2.w1}/${vn2.w2})`);
+ok(vn2.poolN >= 20, `qVan2 tuần cuối rút từ pool rộng (${vn2.poolN} vần khác nhau / 60 câu)`);
+ok(vn2.sp1 === 'bờ, an, ban, huyền, bàn', `đánh vần vần đóng: ${vn2.sp1}`);
+ok(vn2.sp2 === 'chờ, o, cho, sắc, chó' && vn2.sp3 === 'quờ, a, qua, hỏi, quả', `đánh vần âm ghép: ${vn2.sp2} · ${vn2.sp3}`);
+ok(vn2.split === '[["ch","ó"],["b","àn"],["ngh","é"]]', `splitTieng: ${vn2.split}`);
+ok(vn2.tones >= 30 && vn2.tonesOk, `bộ dấu thanh: ${vn2.tones} bộ, mỗi bộ ≥3 tiếng`);
+ok(vn2.sents >= 50 && vn2.sentOk, `điền câu: ${vn2.sents} câu, nhiễu không lộ trong câu`);
+ok(vn2.words >= 100, `từ ngữ: ${vn2.words} từ`);
+// Ghép vần: bộ có âm ghép → thẻ đầu là 'ch/th/qu' chứ không phải 1 chữ cái cắt đôi
+const ghepOn = await page.evaluate(() => [...new Set(TONE_SETS.map(s => splitTieng(s[0])[0]))]);
+ok(ghepOn.includes('ch') && ghepOn.includes('qu') && ghepOn.includes('c'), `Ghép vần: thẻ âm đầu có âm ghép (${ghepOn.filter(x => x.length > 1).join(',')})`);
+await goHome();
+
+// 9b. tập viết: tiếng có dấu thanh — nét dấu ghép runtime (bà = nét b + nét a + 1 nét huyền)
+await page.click('[data-go="scr-write"]');
+await page.waitForTimeout(500);
+const tone = await page.evaluate(() => {
+  const keep = { s: wSet, i: wIdx };
+  wSet = 'syl'; wIdx = WRITE_SETS.syl.indexOf('bà');
+  const g = glyphStrokes();
+  const nb = STROKES.b.length + STROKES.a.length;
+  wIdx = WRITE_SETS.syl.indexOf('mẹ');
+  const gm = glyphStrokes();
+  const nm = STROKES.m.length + STROKES.e.length;
+  // dấu nặng nằm DƯỚI chân chữ e, dấu huyền nằm TRÊN đỉnh chữ a
+  const aTop = Math.min(...g.strokes[STROKES.b.length].map(p => p[1]));
+  const huyenY = g.strokes[nb][0][1];
+  const eBottom = Math.max(...gm.strokes[STROKES.m.length].map(p => p[1]));
+  const nangY = gm.strokes[nm][0][1];
+  wSet = keep.s; wIdx = keep.i;
+  return {
+    has: WRITE_SETS.syl.includes('bà') && WRITE_SETS.syl.includes('chó') && WRITE_SETS.word.includes('thuyền'),
+    n: g ? g.strokes.length : 0, nb, nM: gm ? gm.strokes.length : 0, nm,
+    huyenAbove: huyenY < aTop, nangBelow: nangY > eBottom,
+    syl: WRITE_SETS.syl.length, word: WRITE_SETS.word.length
+  };
+});
+ok(tone.has, 'tập viết: có tiếng có dấu/âm ghép (bà, chó) + từ dài (thuyền)');
+ok(tone.n === tone.nb + 1, `tập viết 'bà': nét chữ + 1 nét huyền (${tone.n} = ${tone.nb}+1)`);
+ok(tone.nM === tone.nm + 1 && tone.nangBelow, `tập viết 'mẹ': dấu nặng là nét cuối, nằm dưới chân chữ`);
+ok(tone.huyenAbove, 'tập viết: dấu huyền nằm trên đỉnh chữ');
+ok(tone.syl >= 20 && tone.word >= 15, `tập viết: ${tone.syl} tiếng, ${tone.word} từ`);
+await goHome();
+
+// 9c. toán HK2: 4 mục mới vào được lượt 6 câu, hiện đúng đồ dùng trực quan; builder đúng chương trình
+for (const [lv, sel, label] of [
+  ['hundred', '.tens', 'bó que tính'], ['order', '.math-seq', 'dãy số'],
+  ['time', 'svg.math-clock, .week-strip', 'đồng hồ/tuần'], ['measure', 'svg.math-ruler, .len-bar', 'thước cm']
+]) {
+  await page.click('[data-go="scr-math"]');
+  await page.waitForTimeout(400);
+  const btn = await page.$(`#math-menu [data-level="${lv}"]`);
+  ok(!!btn, `toán: có mục ${lv}`);
+  if (!btn) throw new Error(`thiếu #math-menu [data-level="${lv}"]`);
+  await btn.click({ force: true });
+  await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+  const r = await page.$eval('#math-quiz', (el, s) => ({
+    progress: (el.querySelector('#math-progress') || {}).textContent || '',
+    vis: !!el.querySelector(s), nChoices: el.querySelectorAll('#math-choices .choice').length
+  }), sel);
+  ok(/Câu 1 \/ 6/.test(r.progress), `toán ${lv}: lượt 6 câu (${r.progress.trim()})`);
+  ok(r.vis, `toán ${lv}: hiện ${label}`);
+  ok(r.nChoices >= 2, `toán ${lv}: có đáp án (${r.nChoices})`);
+  await goHome();
+}
+const hk2 = await page.evaluate(() => {
+  const parse = q => { const m = (q.say || '').match(/(\d+)\s+(cộng|trừ)\s+(\d+)/); return m ? { a: +m[1], op: m[2], b: +m[3] } : null; };
+  const h = Array.from({ length: 10 }, () => MATH_BUILDERS.hundred()).flat();
+  const ops = h.map(parse).filter(Boolean);
+  const noCarry = ops.every(r => r.op === 'cộng' ? (r.a % 10) + (r.b % 10) < 10 && r.a + r.b <= 100 : r.a % 10 >= r.b % 10 && r.a >= r.b);
+  const hasRead = h.some(q => /Bé tìm số \d+/.test(q.say)), hasCmp = h.some(q => q.say === 'Số nào lớn hơn?');
+  const t = MATH_BUILDERS.time();
+  const clocks = t.filter(q => q.say === 'Đồng hồ chỉ mấy giờ?');
+  const clockOk = clocks.every(q => q.choices.length === 3 && q.choices.every(c => / giờ$/.test(c.html)) && /math-clock/.test(q.html));
+  const wd = t.filter(q => /thứ mấy\?$/.test(q.say));
+  const wdOk = wd.every(q => q.choices.filter(c => c.correct).length === 1 && WEEKDAYS.includes(q.choices.find(c => c.correct).html));
+  const o = MATH_BUILDERS.order();
+  const oOk = o.every(q => q.choices.filter(c => c.correct).length === 1 && /math-seq/.test(q.html));
+  const m = MATH_BUILDERS.measure();
+  const rulers = m.filter(q => /xăng ti mét/.test(q.say));
+  const rOk = rulers.every(q => q.choices.every(c => / cm$/.test(c.html)) && /math-ruler/.test(q.html));
+  const shapes = MATH_SHAPE_BANK.map(s => s.name);
+  const story = MATH_STORY_BANK.length, storyOk = MATH_STORY_BANK.every(s => (s.add ? s.a + s.b : s.a - s.b) === s.ans);
+  return { nOps: ops.length, noCarry, hasRead, hasCmp, clocks: clocks.length, clockOk, wd: wd.length, wdOk, oOk, rulers: rulers.length, rOk,
+    khoi: shapes.filter(n => /^khối/.test(n)).length, story, storyOk, story20: MATH_STORY_BANK.some(s => s.ans > 10) };
+});
+ok(hk2.nOps >= 20 && hk2.noCarry, `toán đến 100: ${hk2.nOps} phép đều KHÔNG nhớ/mượn, ≤100`);
+ok(hk2.hasRead && hk2.hasCmp, 'toán đến 100: có đọc số + so sánh số');
+ok(hk2.clocks >= 3 && hk2.clockOk, `xem giờ: ${hk2.clocks} đồng hồ SVG, đáp án "N giờ"`);
+ok(hk2.wd >= 1 && hk2.wdOk, `thứ trong tuần: ${hk2.wd} câu, đáp án là thứ hợp lệ`);
+ok(hk2.oOk, 'dãy số: mỗi câu đúng 1 đáp án, hiện dãy');
+ok(hk2.rulers >= 3 && hk2.rOk, `đo cm: ${hk2.rulers} thước SVG, đáp án "N cm"`);
+ok(hk2.khoi === 2, `hình & khối: 2 khối (thấy ${hk2.khoi})`);
+ok(hk2.story >= 30 && hk2.storyOk && hk2.story20, `lời văn: ${hk2.story} bài, đáp số đúng, có phạm vi 11–20`);
+
+// 9d. tiếng Anh: câu Starters ≥60 đều có từ khoá trong EN_THEMES; mode đánh vần 3 chữ
+const enSt = await page.evaluate(() => ({ n: EN_STARTERS.length, missing: EN_STARTERS.filter(s => !findEn(s.w)).map(s => s.w), spell: enSpellWords().length }));
+ok(enSt.n >= 60 && enSt.missing.length === 0, `EN câu: ${enSt.n} câu, từ khoá đều có ảnh/thẻ (thiếu: ${enSt.missing.join(',') || 'không'})`);
+ok(enSt.spell >= 20, `EN đánh vần: ${enSt.spell} từ 3 chữ`);
+await page.click('[data-go="scr-en"]');
+await page.waitForTimeout(400);
+ok(!!(await page.$('#en-g6')), 'tiếng Anh: có nút đánh vần');
+if (!(await page.$('#en-g6'))) throw new Error('thiếu #en-g6');
+await page.click('#en-g6', { force: true });
+await page.waitForTimeout(500);
+const sp0 = await page.evaluate(() => ({
+  slots: document.querySelectorAll('#en-prompt .spell-slot').length,
+  tiles: document.querySelectorAll('#en-choices .spell-tile').length,
+  progress: $('#en-progress').textContent
+}));
+ok(sp0.slots === 3 && sp0.tiles === 5, `đánh vần: 3 ô chữ + 5 thẻ (${sp0.slots}/${sp0.tiles}) — ${sp0.progress.trim()}`);
+// bé thử từng thẻ tới khi ô đầu được điền — thẻ sai phải rung (.bad) rồi không điền
+let filled = false, wrongs = 0;
+for (const t of await page.$$('#en-choices .spell-tile')) {
+  await t.click({ force: true });
+  await page.waitForTimeout(120);
+  const s0 = await page.$eval('#en-prompt .spell-slot', el => el.textContent);
+  if (s0 !== '_') { filled = true; break; }
+  wrongs++;
+}
+ok(filled, `đánh vần: thẻ đúng điền vào ô 1 (sau ${wrongs} lần sai)`);
+const usedN = await page.$$eval('#en-choices .spell-tile.used', els => els.length);
+ok(usedN === 1, `đánh vần: thẻ đã dùng bị mờ (${usedN})`);
+await goHome();
+
+// 9e. nhạc: đàn theo mọi bài — Old MacDonald cần Sol↓/La↓ (55, 57) ngoài 8 phím → phím dựng theo bài
+await page.click('[data-go="scr-music"]');
+await page.waitForTimeout(400);
+const omIdx = await page.evaluate(() => SONGS.findIndex(s => /Old MacDonald/.test(s.title)));
+ok(omIdx >= 0, 'nhạc: có Old MacDonald');
+await page.click(`#song-list .menu-card:nth-child(${omIdx + 1})`, { force: true });
+await page.waitForTimeout(400);
+await page.click('#song-play', { force: true });
+await page.waitForTimeout(400);
+const om = await page.evaluate(() => ({
+  keys: [...document.querySelectorAll('#piano-keys [data-midi]')].map(e => +e.dataset.midi),
+  expect: pianoExpect, first: curSong.lines[0].n[0][0],
+  vis: getComputedStyle($('#piano-keys')).display !== 'none'
+}));
+ok(om.vis && om.keys.includes(55) && om.keys.includes(57) && om.keys.includes(60), `đàn theo Old MacDonald: phím có Sol↓ La↓ (${om.keys.join(',')})`);
+ok(om.expect === om.first, `đàn theo: nốt đầu = nốt đầu bài (${om.expect})`);
+await goHome();
+
+// 9f. thám hiểm: vùng 8 nối nội dung HK2
+const q8 = await page.evaluate(() => ({
+  lands: QUEST_LANDS.length, n: STATIONS.length,
+  spell: STATIONS.some(s => s.t === 'en' && s.kind === 'spell'),
+  hundred: STATIONS.some(s => s.t === 'quiz' && /hundred/.test(String(s.q))),
+  ba: STATIONS.some(s => s.t === 'write' && s.ch === 'bà')
+}));
+ok(q8.lands >= 8 && q8.n >= 40, `thám hiểm: ${q8.lands} vùng / ${q8.n} trạm`);
+ok(q8.spell && q8.hundred && q8.ba, 'thám hiểm: có trạm đánh vần EN, toán đến 100, viết tiếng bà');
+
+// 10. QUÉT TOÀN BỘ: mọi câu `say` của mọi builder (đọc/toán/40 trạm quest, tuần mở hết) + mọi bank cố định
+//     phải có mp3 trong manifest (invariant #1 CLAUDE.md); mỗi câu hỏi ≥2 lựa chọn, ≥1 đúng, không trùng đáp án
+const sweep = await page.evaluate(() => {
+  const miss = new Set(), bad = [];
+  let n = 0;
+  const has = (lang, t) => !!(AUDIO_MAN && AUDIO_MAN[phraseId(lang, t)]);
+  const vi = t => { if (!has('vi', t)) miss.add('vi|' + t); };
+  const en = t => { if (!has('en', t)) miss.add('en|' + t); };
+  const check = (q, src) => {
+    n++;
+    if (q.say) ((q.lang || 'vi-VN').startsWith('vi') ? vi : en)(q.say);
+    const cs = q.choices || [];
+    // chạm là nghe: chuỗi cô đọc khi chạm từng đáp án cũng phải có mp3 (say riêng hoặc text thuần của html)
+    cs.forEach(c => { const s = c.say !== undefined ? c.say : plainText(c.html); if (s) ((c.lang || q.lang || 'vi-VN').startsWith('vi') ? vi : en)(s); });
+    const nC = cs.filter(c => c.correct).length, htmls = cs.map(c => c.html);
+    if (nC < 1 || cs.length < 2 || new Set(htmls).size !== htmls.length)
+      bad.push(`${src}: ${(q.say || '').slice(0, 40)} (correct=${nC} n=${cs.length} uniq=${new Set(htmls).size})`);
+  };
+  const keep = Object.assign({}, learnWeek);
+  learnWeek = { v: Math.max(...VAN2.map(x => x.week)), d: Math.max(...DIGRAPHS.map(x => x.week)) };
+  for (let i = 0; i < 40; i++) {
+    for (const [k, b] of Object.entries(READ_BUILDERS)) b().forEach(q => check(q, 'read.' + k));
+    for (const [k, b] of Object.entries(MATH_BUILDERS)) b().forEach(q => check(q, 'math.' + k));
+  }
+  for (let i = 0; i < 8; i++) STATIONS.forEach((s, si) => { if (s.t === 'quiz') s.q().forEach(q => check(q, 'quest#' + (si + 1))); });
+  learnWeek = keep;
+  EN_STARTERS.forEach(s => en(s.say));
+  Object.values(EN_THEMES).flat().forEach(it => { en(it.w); vi(`Từ nào là ${it.vi}?`); });
+  Object.values(EN_PHONICS_EXTRA).flat().forEach(it => en(it.w));
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(en);
+  ['Great job!', 'Almost! Try again!'].forEach(en);
+  STORIES.forEach(st => { vi(st.title); st.lines.forEach(vi); st.qs.forEach(q => vi(q.q)); vi(`Cô kể cho bé nghe truyện: ${st.title}. Bé nghe kỹ nhé!`); });
+  TONE_SETS.flat().forEach(t => { vi(t); vi(spellTieng(t)); vi('Tìm tiếng: ' + t); });
+  WRITE_SETS.syl.forEach(s => { vi(s); vi(`Bé hãy viết tiếng ${s} nhé!`); });
+  WRITE_SETS.word.forEach(s => vi(`Bé hãy viết từ ${s} nhé!`));
+  Object.values(SYL_EX).concat(Object.values(WORD_EX), Object.values(EXAMPLES)).forEach(ex => vi(ex.w));
+  for (const [ch, name] of Object.entries(LETTER_NAMES)) {
+    if (/^\d$/.test(ch)) { vi(`Số ${name}`); vi(`Bé hãy viết số ${name} nhé!`); }
+    else { vi(`Chữ ${name}`); vi(`Chữ ${name} hoa`); vi(`Bé hãy viết chữ ${name} nhé!`); vi(`Bé hãy viết chữ ${name} hoa nhé!`); }
+  }
+  VN_LETTERS.forEach(ch => vi(`Đâu là chữ ${LETTER_NAMES[ch]}?`));
+  DIGRAPHS.forEach(d => vi('Chữ ' + d.name));
+  VAN_ITEMS.forEach(([c, v]) => vi(`${LETTER_NAMES[c]} ghép với ${LETTER_NAMES[v]}, được tiếng gì?`));
+  WORD_ITEMS.forEach(w => vi('Tìm từ: ' + w.w));
+  SENTENCES.forEach(s => { vi(s.say); vi(stripDeco(s.html.replace('___', s.a))); });
+  SONGS.forEach(s => { const l = s.lang === 'vi-VN' ? vi : en; l(s.title); s.lines.forEach(x => l(x.t)); });
+  PIC_META.forEach(p => { vi(`Bé tô xong bức tranh ${p.nm} rồi! Đẹp tuyệt vời!`); if (p.en) en(p.en); });
+  DRAW_GUIDES.forEach(g => vi(`Bé hãy vẽ ${g.nm} theo mẫu nhé!`));
+  STICKERS.forEach(s => { vi(s.nm); vi(`Chúc mừng bé! Bé nhận được sticker ${s.nm}!`); vi(`Tuyệt đỉnh! Bé nhận được sticker vàng: ${s.nm}!`); });
+  [...PRAISE, ...CHEER, ...JOKES].forEach(vi);
+  for (let k = 1; k <= 24; k++) vi(`Bé vẽ nét số ${NUMVI[k - 1] || k} nhé!`);
+  ['Bé ghép chữ cái thành từ nhé!', 'Bé bấm phím đang sáng nhé!', 'Bé gõ theo nhịp nhé!', 'Trạm trùm đây! Bé cố lên nhé!',
+   'Bé hãy hoàn thành trạm phía trước đã nhé!', 'Bé hãy lật hình để tìm cặp giống nhau nhé!', 'Bé đặt bút ở chấm vàng nhé!',
+   'Chưa đúng nét, bé thử lại nhé!', 'Chưa đúng chiều nét, bé xem cô vẽ nhé!', 'Bé xem cô viết mẫu nhé!',
+   'Bé sửa đúng rồi, giỏi quá!', 'Bé chơi thật giỏi các bài toán khác để mở khoá nhé!', 'Bé mở được bài mới rồi! Chạm vào thẻ mới xem nhé!'].forEach(vi);
+  FACTS.forEach(f => vi(f.t));
+  Object.values(SCREEN_INTRO).forEach(([, t]) => vi(t));
+  // tên thẻ / nút cô đọc khi chạm (title, data-say, big-card)
+  [...document.querySelectorAll('#read-menu .menu-card, #math-menu .menu-card')].forEach(c => vi(c.dataset.say || c.querySelector('.tt').textContent.trim()));
+  [...document.querySelectorAll('[data-say]')].forEach(el => vi(el.dataset.say));
+  [...document.querySelectorAll('.big-card')].filter(c => !['scr-write', 'scr-draw'].includes(c.dataset.go))
+    .forEach(c => vi(c.querySelector('.tt').textContent.replace(/\(.*\)/, '').trim()));
+  TONE_SETS.flat().forEach(t => vi(splitTieng(t)[1]));
+  // hash không được va chạm (djb2 đơn từng cho 'cá' = 'om'): thử toàn bộ chuỗi 2 ký tự phổ biến + số 0–100
+  const ids = new Map(); const dup = [];
+  const probe = [];
+  for (const a of 'abcdđeêghiklmnoôơpqrstuvxy') for (const b of 'aăâeêioôơuưáàảãạéèẻẽẹóòỏõọúùủũụíìỉĩị') probe.push(a + b);
+  for (let k = 0; k <= 100; k++) probe.push(String(k));
+  probe.forEach(t => { const id = phraseId('vi', t); if (ids.has(id) && ids.get(id) !== t) dup.push(ids.get(id) + '=' + t); ids.set(id, t); });
+  return { n, miss: [...miss], bad, dup };
+});
+ok(sweep.dup.length === 0, `phraseId: không va chạm trên ${'>2000'} chuỗi ngắn (${sweep.dup.slice(0, 3).join(', ')})`);
+ok(sweep.miss.length === 0, `audio sweep: ${sweep.n} câu hỏi sinh ra + toàn bộ bank cố định đều có mp3` +
+   (sweep.miss.length ? ` — THIẾU ${sweep.miss.length}: ${sweep.miss.slice(0, 6).join(' ; ')}` : ''));
+ok(sweep.bad.length === 0, `builder: mọi câu ≥2 lựa chọn, ≥1 đúng, không trùng đáp án` +
+   (sweep.bad.length ? ` — ${sweep.bad.length} lỗi: ${sweep.bad.slice(0, 4).join(' ; ')}` : ''));
+
+// 11. "chất" cho bé 6 tuổi: chạm là nghe · đếm bằng ngón tay · hỏi lại câu sai · thẻ HK2 khoá mở dần · Bé có biết? · lời dẫn 1 lần
+await page.evaluate(() => { Object.keys(localStorage).filter(k => k.startsWith('bhv_intro_')).forEach(k => localStorage.removeItem(k)); });
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+await page.click('#math-menu [data-level="count"]', { force: true });
+await page.waitForSelector('#math-choices .choice', { timeout: 5000 });
+// lời dẫn chỉ nói SAU tên bài (~1s) và chỉ khi bé CHƯA chạm gì — nên chờ cờ TRƯỚC khi bấm đáp án
+const introFlag = await page.waitForFunction(() => localStorage.getItem('bhv_intro_count') === '1', null, { timeout: 8000 }).then(() => true).catch(() => false);
+ok(introFlag, 'lời dẫn lần đầu: cờ bhv_intro_count ghi sau khi cô đọc tên bài (bé chưa chạm)');
+const c11 = await page.evaluate(() => {
+  const ans = document.querySelectorAll('#math-prompt .ten-frame .dot.on').length;
+  const btns = [...document.querySelectorAll('#math-choices .choice')];
+  const wrong = btns.find(b => b.textContent.trim() !== String(ans));
+  const p0 = $('#math-progress').textContent.trim();
+  wrong.click();
+  const srcWrong = audioEl ? audioEl.src : '';
+  const dots = [...document.querySelectorAll('#math-prompt .ten-frame .dot.on')];
+  dots[0].click(); const s1 = audioEl.src, c1 = dots[0].classList.contains('cnt');
+  dots[1].click(); const s2 = audioEl.src;
+  dots[1].click(); const c2off = !dots[1].classList.contains('cnt'); // chạm lại = bỏ đếm
+  return {
+    ans, p0, wrongTxt: wrong.textContent.trim(),
+    saidWrong: srcWrong.includes(phraseId('vi', wrong.textContent.trim())),
+    bad: wrong.classList.contains('bad') || wrong.classList.contains('wiggle'),
+    c1, said1: s1.includes(phraseId('vi', '1')), said2: s2.includes(phraseId('vi', '2')), c2off,
+    intro: localStorage.getItem('bhv_intro_count') === '1'
+  };
+});
+ok(c11.saidWrong, `chạm là nghe: bấm đáp án sai "${c11.wrongTxt}" → cô đọc số đó`);
+ok(c11.bad, 'chạm là nghe: nút rung/nhún khi chạm');
+ok(c11.c1 && c11.said1 && c11.said2, 'đếm bằng ngón tay: chạm chấm 1 → sáng + "1", chấm 2 → "2"');
+ok(c11.c2off, 'đếm bằng ngón tay: chạm lại thì bỏ đếm');
+// hỏi lại câu sai: bấm đúng → sang câu 2, tổng câu 6 → 7
+await page.$$eval('#math-choices .choice', (els, ans) => { const t = els.find(e => e.textContent.trim() === String(ans)); if (t) t.click(); }, c11.ans);
+await page.waitForTimeout(2500);
+const p1 = await page.$eval('#math-progress', el => el.textContent.trim());
+ok(/Câu 2 \/ 7/.test(p1) && /Câu 1 \/ 6/.test(c11.p0), `hỏi lại câu sai: ${c11.p0} → ${p1}`);
+await goHome();
+// thẻ HK2 khoá: chưa đủ 6 lượt → 4 thẻ 🔒, chạm không mở; đủ 6 → mở
+await page.click('[data-go="scr-math"]');
+await page.waitForTimeout(400);
+const lk = await page.evaluate(() => {
+  const keep = { u: localStorage.getItem('bhv_unlockall'), m: localStorage.getItem('bhv_mathok') };
+  localStorage.removeItem('bhv_unlockall'); localStorage.setItem('bhv_mathok', '2');
+  const l1 = hk2Unlocked(); initMath();
+  const locked = document.querySelectorAll('#math-menu .menu-card.locked').length;
+  document.querySelector('#math-menu [data-level="hundred"]').click();
+  const stillMenu = getComputedStyle($('#math-quiz')).display === 'none';
+  const said = audioEl.src.includes(phraseId('vi', 'Bé chơi thật giỏi các bài toán khác để mở khoá nhé!'));
+  localStorage.setItem('bhv_mathok', '6');
+  const l2 = hk2Unlocked(); initMath();
+  const after = document.querySelectorAll('#math-menu .menu-card.locked').length;
+  if (keep.u) localStorage.setItem('bhv_unlockall', keep.u); else localStorage.removeItem('bhv_unlockall');
+  if (keep.m) localStorage.setItem('bhv_mathok', keep.m); else localStorage.removeItem('bhv_mathok');
+  initMath();
+  return { l1, locked, stillMenu, said, l2, after };
+});
+ok(!lk.l1 && lk.locked === 4, `khoá HK2: 2/6 lượt → 4 thẻ 🔒 (thấy ${lk.locked})`);
+ok(lk.stillMenu && lk.said, 'khoá HK2: chạm thẻ khoá không mở bài, cô giải thích');
+ok(lk.l2 && lk.after === 0, 'khoá HK2: đủ 6 lượt → mở hết');
+// 🔍 Bé có biết? — ép random để hiện, kiểm tra thẻ + số fact
+const fact = await page.evaluate(() => {
+  const r = Math.random; Math.random = () => 0.1;
+  const st = stars;
+  showResult(3, 'test');
+  Math.random = r;
+  const fe = $('#ov-fact');
+  const out = { shown: fe.style.display !== 'none' && /Bé có biết/.test(fe.textContent), n: FACTS.length,
+                allEm: FACTS.every(f => f.em && f.t.length > 20) };
+  $('#overlay').classList.remove('show'); ovCallback = null;
+  stars = st; localStorage.setItem('bhv_stars', String(st)); updateStarUI();
+  return out;
+});
+ok(fact.shown, 'Bé có biết?: thẻ sự thật lạ hiện trong bảng kết quả');
+ok(fact.n >= 24 && fact.allEm, `Bé có biết?: ${fact.n} sự thật, mỗi cái có emoji + câu`);
+await goHome();
+// từ nhạy cảm/trừu tượng đã thay
+const clean = await page.evaluate(() => ({
+  tones: TONE_SETS.flat().filter(t => ['ghẻ', 'mủ', 'mù', 'tù', 'tụ'].includes(t)),
+  van: VAN2.flatMap(v => v.words.map(w => w.w)).filter(w => /huỵch|huých|chênh lệch|huân chương|băn khoăn|khuỳnh/.test(w)),
+  hasNew: TONE_SETS.some(s => s.includes('múa')) && VAN2.some(v => v.words.some(w => w.w === 'ngoằn ngoèo'))
+}));
+ok(clean.tones.length === 0 && clean.van.length === 0 && clean.hasNew, `từ hợp trẻ: bỏ ${['ghẻ', 'mủ', 'mù', 'tù', 'huỵch'].join('/')}, có múa/ngoằn ngoèo`);
 
 // 6. audio manifest khớp số câu trong phrases.json và mp3 tải được
 const audio = await page.evaluate(async () => {

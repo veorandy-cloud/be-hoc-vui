@@ -49,41 +49,95 @@ const WRITE_SETS = {
   low: [...VN_LETTERS,'f','j','w','z'],
   up:  [...VN_LETTERS,'f','j','w','z'].map(c=>c.toUpperCase()),
   num: ['0','1','2','3','4','5','6','7','8','9'],
-  syl: ['ba','bo','be','ma','me','la'],
-  word: ['ong','hoa','cua','voi','sao']
+  // tiếng: CV không dấu → có dấu thanh → âm ghép → vần đóng (nét dấu thanh ghép lúc runtime, writing.js TONE_STROKES)
+  syl: ['ba','bo','be','ma','me','la','bà','bé','bố','mẹ','cá','lá','đá','chó','thỏ','nhà','phở','bút','cam','kem','tôm','sen','mít','cây','mây'],
+  word: ['ong','hoa','cua','voi','sao','mèo','chim','bóng','kẹo','bánh','sách','trăng','bướm','chuối','nước','thuyền','trường','vườn']
 };
-const SYL_EX = { ba:{w:'ba',em:'3️⃣'}, bo:{w:'bo',em:'🐄'}, be:{w:'be',em:'🐐'}, ma:{w:'ma',em:'👻'}, me:{w:'me',em:'👩'}, la:{w:'la',em:'🌿'} };
+const SYL_EX = {
+  ba:{w:'ba',em:'3️⃣'}, bo:{w:'bo',em:'🐄'}, be:{w:'be',em:'🐐'}, ma:{w:'ma',em:'👻'}, me:{w:'me',em:'👩'}, la:{w:'la',em:'🌿'},
+  bà:{w:'bà',em:'👵'}, bé:{w:'bé',em:'👶'}, bố:{w:'bố',em:'👨'}, mẹ:{w:'mẹ',em:'👩'}, cá:{w:'cá',em:'🐟'}, lá:{w:'lá',em:'🍃'},
+  đá:{w:'đá',em:'🪨'}, chó:{w:'chó',em:'🐶'}, thỏ:{w:'thỏ',em:'🐰'}, nhà:{w:'nhà',em:'🏠'}, phở:{w:'phở',em:'🍜'},
+  bút:{w:'bút',em:'✏️'}, cam:{w:'cam',em:'🍊'}, kem:{w:'kem',em:'🍦'}, tôm:{w:'tôm',em:'🦐'}, sen:{w:'sen',em:'🪷'},
+  mít:{w:'mít',em:'🍈'}, cây:{w:'cây',em:'🌳'}, mây:{w:'mây',em:'☁️'}
+};
 const WORD_EX = {
   ong:{w:'con ong',em:'🐝'},
   hoa:{w:'bông hoa',em:'🌸'},
   cua:{w:'con cua',em:'🦀'},
   voi:{w:'con voi',em:'🐘'},
-  sao:{w:'ngôi sao',em:'⭐'}
+  sao:{w:'ngôi sao',em:'⭐'},
+  mèo:{w:'con mèo',em:'🐱'}, chim:{w:'con chim',em:'🐦'}, bóng:{w:'quả bóng',em:'⚽'}, kẹo:{w:'cái kẹo',em:'🍬'},
+  bánh:{w:'cái bánh',em:'🍰'}, sách:{w:'quyển sách',em:'📚'}, trăng:{w:'ông trăng',em:'🌙'}, bướm:{w:'con bướm',em:'🦋'},
+  chuối:{w:'quả chuối',em:'🍌'}, nước:{w:'cốc nước',em:'💧'}, thuyền:{w:'con thuyền',em:'⛵'},
+  trường:{w:'trường học',em:'🏫'}, vườn:{w:'khu vườn',em:'🌷'}
 };
 const VOWELS = ['a','e','i','o','u','ơ','ô','ê'];
 const VAN_ITEMS = [
   ['b','a'],['b','o'],['b','i'],['c','a'],['c','o'],['m','a'],['m','e'],
   ['l','a'],['l','o'],['t','i'],['t','a'],['n','o'],['n','a'],['h','a'],['h','o'],
-  ['v','e'],['v','o'],['s','o'],['d','a'],['đ','o']
+  ['v','e'],['v','o'],['s','o'],['d','a'],['đ','o'],
+  ['k','i'],['k','ê'],['g','a'],['g','o'],['r','a'],['x','e'],['s','a'],['đ','a'],['v','i'],['h','ê']
 ];
+/* bộ dấu thanh: chỉ giữ tiếng CÓ NGHĨA (bộ 'co' từng bị bỏ vì 'cõ' vô nghĩa) — mỗi bộ ≥3 tiếng để qTone/Ghép vần
+   chọn được 1 đích + 2 nhiễu. Nửa sau: âm ghép + vần đóng để Ghép vần dạy 'ch + ó', 'b + àn' */
 const TONE_SETS = [
   ['ba','bà','bá','bả','bã','bạ'],
   ['la','là','lá','lả','lã','lạ'],
   ['ma','mà','má','mả','mã','mạ'],
   ['be','bè','bé','bẻ','bẽ','bẹ'],
   ['bo','bò','bó','bỏ','bõ','bọ'],
-  ['me','mè','mé','mẻ','mẽ','mẹ']
+  ['me','mè','mé','mẻ','mẽ','mẹ'],
+  ['ca','cà','cá','cả'],
+  ['lo','lò','ló','lọ'],
+  ['bi','bì','bí','bị'],
+  ['mo','mò','mó','mỏ','mõ'],
+  ['ha','hà','há','hả','hạ'],
+  ['dê','dế','dễ'],
+  ['cô','cố','cổ','cỗ'],
+  ['to','tò','tỏ'],
+  ['ve','vè','vé','vẻ','vẽ'],
+  ['mua','mùa','múa'],
+  ['tu','tú','tủ'],
+  ['đo','đò','đó','đỏ','đọ'],
+  ['hô','hồ','hố','hổ','hộ'],
+  ['bê','bề','bế','bể','bệ'],
+  ['chi','chì','chí','chỉ','chị'],
+  ['tha','thà','thả'],
+  ['nhe','nhè','nhé','nhẽ','nhẹ'],
+  ['tra','trà','trả'],
+  ['kho','khò','khó'],
+  ['pha','phà','phá'],
+  ['giò','gió','giỏ'],
+  ['qua','quà','quá','quả'],
+  ['ban','bàn','bán','bạn'],
+  ['can','càn','cán','cản','cạn'],
+  ['tan','tàn','tán','tản'],
+  ['bay','bày','bảy'],
+  ['cao','cào','cáo','cạo'],
+  ['sao','sào','sáo'],
+  ['bang','bàng','bảng'],
+  ['mai','mài','mái','mải','mãi','mại']
 ];
 /* đánh vần tiếng CV (TONE_SETS) theo SGK lớp 1: 'bà' → 'bờ, a, ba, huyền, bà' — chuỗi cô đọc mẫu.
    Dùng CHUNG cho app + scripts/list-phrases.cjs (chuỗi phải khớp 100% để có mp3 thu sẵn) */
 const TONE_MARKS = {'̀':'huyền','́':'sắc','̉':'hỏi','̃':'ngã','̣':'nặng'};
+const ONSETS = ['ngh','ng','nh','ch','th','ph','kh','gh','gi','tr','qu']; // dài trước ngắn: ngh trước ng
+function splitTieng(t){ // 'chó' → ['ch','ó'], 'bàn' → ['b','àn'], 'bà' → ['b','à']
+  const on = ONSETS.find(o=>t.startsWith(o)) || t[0];
+  return [on, t.slice(on.length)];
+}
+function onsetName(c){ // 'ch' → 'chờ' (DIGRAPHS), 'b' → 'bờ' (LETTER_NAMES)
+  const dg = DIGRAPHS.find(x=>x.d===c);
+  return dg ? dg.name : (LETTER_NAMES[c] || c);
+}
 function spellTieng(t){
-  const c = t[0], d = t.slice(1).normalize('NFD');
+  const [c, rest] = splitTieng(t);
+  const d = rest.normalize('NFD');
   const mark = [...d].find(ch=>TONE_MARKS[ch]);
   const v0 = d.replace(/[̣̀́̃̉]/g,'').normalize('NFC');
   const base = c + v0;
-  return mark ? `${LETTER_NAMES[c]}, ${v0}, ${base}, ${TONE_MARKS[mark]}, ${t}`
-              : `${LETTER_NAMES[c]}, ${v0}, ${base}`;
+  return mark ? `${onsetName(c)}, ${v0}, ${base}, ${TONE_MARKS[mark]}, ${t}`
+              : `${onsetName(c)}, ${v0}, ${base}`;
 }
 /* Vần có âm cuối — nửa sau HK1 SGK lớp 1; week = tuần học, lộ trình mở dần (bhv_learn) */
 const VAN2 = [
@@ -118,7 +172,97 @@ const VAN2 = [
   {van:'ông',week:16,words:[{w:'ông bà',tieng:'ông',em:'👴'},{w:'dòng sông',tieng:'sông',em:'🏞️'}]},
   {van:'anh',week:17,words:[{w:'quả chanh',tieng:'chanh',em:'🍋'},{w:'bức tranh',tieng:'tranh',em:'🖼️'}]},
   {van:'inh',week:17,words:[{w:'cái kính',tieng:'kính',em:'👓'},{w:'máy tính',tieng:'tính',em:'💻'}]},
-  {van:'ach',week:17,words:[{w:'cuốn sách',tieng:'sách',em:'📚'},{w:'viên gạch',tieng:'gạch',em:'🧱'}]}
+  {van:'ach',week:17,words:[{w:'cuốn sách',tieng:'sách',em:'📚'},{w:'viên gạch',tieng:'gạch',em:'🧱'}]},
+  /* tuần 18-29: phần còn lại HK1 + HK2 theo trật tự Cánh Diều (vần p/c, vần đôi iê/uô/ươ, vần âm đệm oa/uy) */
+  {van:'âm',week:18,words:[{w:'mâm cơm',tieng:'mâm',em:'🍱'},{w:'âm nhạc',tieng:'âm',em:'🎵'}]},
+  {van:'im',week:18,words:[{w:'chim sẻ',tieng:'chim',em:'🐦'},{w:'trái tim',tieng:'tim',em:'❤️'}]},
+  {van:'om',week:18,words:[{w:'vòm cây',tieng:'vòm',em:'🌳'},{w:'đom đóm',tieng:'đóm',em:'✨'}]},
+  {van:'ơm',week:18,words:[{w:'bát cơm',tieng:'cơm',em:'🍚'},{w:'rơm rạ',tieng:'rơm',em:'🌾'}]},
+  {van:'um',week:18,words:[{w:'chùm nho',tieng:'chùm',em:'🍇'},{w:'tủm tỉm',tieng:'tủm',em:'😊'}]},
+  {van:'ap',week:19,words:[{w:'tháp cao',tieng:'tháp',em:'🗼'},{w:'xe đạp',tieng:'đạp',em:'🚲'}]},
+  {van:'ăp',week:19,words:[{w:'bắp ngô',tieng:'bắp',em:'🌽'},{w:'cặp sách',tieng:'cặp',em:'🎒'}]},
+  {van:'âp',week:19,words:[{w:'tập vở',tieng:'tập',em:'📓'},{w:'cá mập',tieng:'mập',em:'🦈'}]},
+  {van:'ep',week:19,words:[{w:'đôi dép',tieng:'dép',em:'🩴'},{w:'kẹp tóc',tieng:'kẹp',em:'🎀'}]},
+  {van:'êp',week:19,words:[{w:'bếp lửa',tieng:'bếp',em:'🔥'},{w:'xếp hình',tieng:'xếp',em:'🧩'}]},
+  {van:'ip',week:20,words:[{w:'nhịp trống',tieng:'nhịp',em:'🥁'},{w:'kịp giờ',tieng:'kịp',em:'⏰'}]},
+  {van:'op',week:20,words:[{w:'con cọp',tieng:'cọp',em:'🐯'},{w:'họp lớp',tieng:'họp',em:'🏫'}]},
+  {van:'ôp',week:20,words:[{w:'cái hộp',tieng:'hộp',em:'📦'},{w:'lộp bộp',tieng:'lộp',em:'🌧️'}]},
+  {van:'ơp',week:20,words:[{w:'lớp học',tieng:'lớp',em:'🏫'},{w:'tia chớp',tieng:'chớp',em:'⚡'}]},
+  {van:'up',week:20,words:[{w:'búp bê',tieng:'búp',em:'🪆'},{w:'giúp mẹ',tieng:'giúp',em:'🤝'}]},
+  {van:'ân',week:21,words:[{w:'bàn chân',tieng:'chân',em:'🦶'},{w:'cái cân',tieng:'cân',em:'⚖️'}]},
+  {van:'ât',week:21,words:[{w:'mặt đất',tieng:'đất',em:'🌍'},{w:'thứ nhất',tieng:'nhất',em:'🥇'}]},
+  {van:'et',week:21,words:[{w:'con vẹt',tieng:'vẹt',em:'🦜'},{w:'sấm sét',tieng:'sét',em:'⚡'}]},
+  {van:'êt',week:21,words:[{w:'ngày tết',tieng:'tết',em:'🧧'},{w:'con rết',tieng:'rết',em:'🐛'}]},
+  {van:'ot',week:21,words:[{w:'kẹo ngọt',tieng:'ngọt',em:'🍬'},{w:'giọt nước',tieng:'giọt',em:'💧'}]},
+  {van:'ơt',week:21,words:[{w:'quả ớt',tieng:'ớt',em:'🌶️'},{w:'cái thớt',tieng:'thớt',em:'🪵'}]},
+  {van:'un',week:21,words:[{w:'con giun',tieng:'giun',em:'🪱'},{w:'phun nước',tieng:'phun',em:'⛲'}]},
+  {van:'ưt',week:21,words:[{w:'mứt tết',tieng:'mứt',em:'🍬'},{w:'đứt dây',tieng:'đứt',em:'✂️'}]},
+  {van:'ac',week:22,words:[{w:'bác sĩ',tieng:'bác',em:'👨‍⚕️'},{w:'các bạn',tieng:'các',em:'👫'}]},
+  {van:'ăc',week:22,words:[{w:'mắc áo',tieng:'mắc',em:'🧥'},{w:'chắc chắn',tieng:'chắc',em:'💪'}]},
+  {van:'âc',week:22,words:[{w:'quả gấc',tieng:'gấc',em:'🍈'},{w:'bậc thang',tieng:'bậc',em:'🪜'}]},
+  {van:'oc',week:22,words:[{w:'con cóc',tieng:'cóc',em:'🐸'},{w:'học bài',tieng:'học',em:'📖'}]},
+  {van:'ôc',week:22,words:[{w:'con ốc',tieng:'ốc',em:'🐌'},{w:'gốc cây',tieng:'gốc',em:'🌳'}]},
+  {van:'uc',week:22,words:[{w:'hoa cúc',tieng:'cúc',em:'🌼'},{w:'chúc mừng',tieng:'chúc',em:'🎉'}]},
+  {van:'ưc',week:22,words:[{w:'sức khoẻ',tieng:'sức',em:'💪'},{w:'mực tím',tieng:'mực',em:'🖋️'}]},
+  {van:'âng',week:23,words:[{w:'nhà tầng',tieng:'tầng',em:'🏢'},{w:'vầng trăng',tieng:'vầng',em:'🌙'}]},
+  {van:'ong',week:23,words:[{w:'con ong',tieng:'ong',em:'🐝'},{w:'bóng đá',tieng:'bóng',em:'⚽'}]},
+  {van:'ung',week:23,words:[{w:'cái thùng',tieng:'thùng',em:'🪣'},{w:'khủng long',tieng:'khủng',em:'🦕'}]},
+  {van:'ưng',week:23,words:[{w:'rừng xanh',tieng:'rừng',em:'🌲'},{w:'sừng trâu',tieng:'sừng',em:'🐃'}]},
+  {van:'eng',week:23,words:[{w:'cái xẻng',tieng:'xẻng',em:'⛏️'},{w:'leng keng',tieng:'keng',em:'🔔'}]},
+  {van:'ênh',week:23,words:[{w:'bập bênh',tieng:'bênh',em:'🎢'},{w:'con kênh',tieng:'kênh',em:'🏞️'}]},
+  {van:'êch',week:23,words:[{w:'con ếch',tieng:'ếch',em:'🐸'},{w:'đội mũ lệch',tieng:'lệch',em:'🧢'}]},
+  {van:'ich',week:23,words:[{w:'tích tắc',tieng:'tích',em:'⏰'},{w:'tờ lịch',tieng:'lịch',em:'📅'}]},
+  {van:'ây',week:24,words:[{w:'cái cây',tieng:'cây',em:'🌳'},{w:'mây trắng',tieng:'mây',em:'☁️'}]},
+  {van:'ơi',week:24,words:[{w:'đồ chơi',tieng:'chơi',em:'🧸'},{w:'bơi lội',tieng:'bơi',em:'🏊'}]},
+  {van:'ưi',week:24,words:[{w:'ngửi hoa',tieng:'ngửi',em:'👃'},{w:'gửi thư',tieng:'gửi',em:'✉️'}]},
+  {van:'êu',week:24,words:[{w:'cái lều',tieng:'lều',em:'⛺'},{w:'kêu to',tieng:'kêu',em:'📣'}]},
+  {van:'iu',week:24,words:[{w:'ríu rít',tieng:'ríu',em:'🐦'},{w:'dịu dàng',tieng:'dịu',em:'🌸'}]},
+  {van:'ưu',week:24,words:[{w:'con cừu',tieng:'cừu',em:'🐑'},{w:'bưu điện',tieng:'bưu',em:'📮'}]},
+  {van:'ia',week:24,words:[{w:'cây mía',tieng:'mía',em:'🌾'},{w:'cái đĩa',tieng:'đĩa',em:'🍽️'}]},
+  {van:'ua',week:24,words:[{w:'con cua',tieng:'cua',em:'🦀'},{w:'mua sắm',tieng:'mua',em:'🛒'}]},
+  {van:'ưa',week:24,words:[{w:'quả dừa',tieng:'dừa',em:'🥥'},{w:'cơn mưa',tieng:'mưa',em:'🌧️'}]},
+  {van:'iên',week:25,words:[{w:'con kiến',tieng:'kiến',em:'🐜'},{w:'biển xanh',tieng:'biển',em:'🌊'}]},
+  {van:'iêt',week:25,words:[{w:'tập viết',tieng:'viết',em:'✍️'},{w:'thời tiết',tieng:'tiết',em:'🌤️'}]},
+  {van:'yên',week:25,words:[{w:'yên ngựa',tieng:'yên',em:'🐴'},{w:'chim yến',tieng:'yến',em:'🐦'}]},
+  {van:'uôn',week:25,words:[{w:'buồn ngủ',tieng:'buồn',em:'😴'},{w:'cuộn len',tieng:'cuộn',em:'🧶'}]},
+  {van:'uôt',week:25,words:[{w:'con chuột',tieng:'chuột',em:'🐭'},{w:'vuốt ve',tieng:'vuốt',em:'🐱'}]},
+  {van:'ươn',week:25,words:[{w:'khu vườn',tieng:'vườn',em:'🌷'},{w:'con lươn',tieng:'lươn',em:'🐍'}]},
+  {van:'ươt',week:25,words:[{w:'lướt ván',tieng:'lướt',em:'🏄'},{w:'trơn trượt',tieng:'trượt',em:'⛸️'}]},
+  {van:'iêng',week:26,words:[{w:'cái chiêng',tieng:'chiêng',em:'🥁'},{w:'siêng năng',tieng:'siêng',em:'📚'}]},
+  {van:'iêc',week:26,words:[{w:'con diệc',tieng:'diệc',em:'🐦'},{w:'bữa tiệc',tieng:'tiệc',em:'🎉'}]},
+  {van:'uông',week:26,words:[{w:'cái chuông',tieng:'chuông',em:'🔔'},{w:'chuồng gà',tieng:'chuồng',em:'🐔'}]},
+  {van:'uôc',week:26,words:[{w:'ngọn đuốc',tieng:'đuốc',em:'🔥'},{w:'uống thuốc',tieng:'thuốc',em:'💊'}]},
+  {van:'ương',week:26,words:[{w:'con đường',tieng:'đường',em:'🛣️'},{w:'cái gương',tieng:'gương',em:'🪞'}]},
+  {van:'ươc',week:26,words:[{w:'cốc nước',tieng:'nước',em:'💧'},{w:'bước đi',tieng:'bước',em:'🚶'}]},
+  {van:'iêm',week:27,words:[{w:'cái kiếm',tieng:'kiếm',em:'⚔️'},{w:'tiêm thuốc',tieng:'tiêm',em:'💉'}]},
+  {van:'iêp',week:27,words:[{w:'tấm thiếp',tieng:'thiếp',em:'💌'},{w:'tiếp sức',tieng:'tiếp',em:'🏃'}]},
+  {van:'uôm',week:27,words:[{w:'cánh buồm',tieng:'buồm',em:'⛵'},{w:'nhuộm vải',tieng:'nhuộm',em:'🎨'}]},
+  {van:'ươm',week:27,words:[{w:'con bướm',tieng:'bướm',em:'🦋'},{w:'thanh gươm',tieng:'gươm',em:'🗡️'}]},
+  {van:'iêu',week:27,words:[{w:'cánh diều',tieng:'diều',em:'🪁'},{w:'buổi chiều',tieng:'chiều',em:'🌇'}]},
+  {van:'yêu',week:27,words:[{w:'yêu thương',tieng:'yêu',em:'❤️'},{w:'yếu ớt',tieng:'yếu',em:'🤒'}]},
+  {van:'ươu',week:27,words:[{w:'con hươu',tieng:'hươu',em:'🦌'},{w:'chim khướu',tieng:'khướu',em:'🐦'}]},
+  {van:'uôi',week:27,words:[{w:'quả chuối',tieng:'chuối',em:'🍌'},{w:'cái đuôi',tieng:'đuôi',em:'🐒'}]},
+  {van:'ươi',week:27,words:[{w:'nụ cười',tieng:'cười',em:'😄'},{w:'quả bưởi',tieng:'bưởi',em:'🍈'}]},
+  {van:'oa',week:28,words:[{w:'bông hoa',tieng:'hoa',em:'🌸'},{w:'cái loa',tieng:'loa',em:'📢'}]},
+  {van:'oe',week:28,words:[{w:'xoè tay',tieng:'xoè',em:'🖐️'},{w:'khoẻ mạnh',tieng:'khoẻ',em:'💪'}]},
+  {van:'uê',week:28,words:[{w:'hoa huệ',tieng:'huệ',em:'🌼'},{w:'thuê xe',tieng:'thuê',em:'🚗'}]},
+  {van:'oai',week:28,words:[{w:'khoai lang',tieng:'khoai',em:'🍠'},{w:'quả xoài',tieng:'xoài',em:'🥭'}]},
+  {van:'oay',week:28,words:[{w:'xoay tròn',tieng:'xoay',em:'🔄'},{w:'gió xoáy',tieng:'xoáy',em:'🌪️'}]},
+  {van:'oan',week:28,words:[{w:'ngoan ngoãn',tieng:'ngoan',em:'😊'},{w:'máy khoan',tieng:'khoan',em:'🔧'}]},
+  {van:'oat',week:28,words:[{w:'hoạt hình',tieng:'hoạt',em:'📺'},{w:'lối thoát',tieng:'thoát',em:'🚪'}]},
+  {van:'oăn',week:28,words:[{w:'tóc xoăn',tieng:'xoăn',em:'👩‍🦱'},{w:'ngoằn ngoèo',tieng:'ngoằn',em:'🐍'}]},
+  {van:'oăt',week:28,words:[{w:'nhọn hoắt',tieng:'hoắt',em:'📌'},{w:'thoăn thoắt',tieng:'thoắt',em:'🏃'}]},
+  {van:'oang',week:29,words:[{w:'mở toang',tieng:'toang',em:'🚪'},{w:'hoàng hôn',tieng:'hoàng',em:'🌇'}]},
+  {van:'oac',week:29,words:[{w:'áo khoác',tieng:'khoác',em:'🧥'},{w:'nứt toác',tieng:'toác',em:'🪨'}]},
+  {van:'oăng',week:29,words:[{w:'con hoẵng',tieng:'hoẵng',em:'🦌'},{w:'liến thoắng',tieng:'thoắng',em:'🗣️'}]},
+  {van:'oanh',week:29,words:[{w:'khoanh tay',tieng:'khoanh',em:'🙅'},{w:'loanh quanh',tieng:'loanh',em:'🔄'}]},
+  {van:'oach',week:29,words:[{w:'thu hoạch',tieng:'hoạch',em:'🌾'},{w:'kế hoạch',tieng:'hoạch',em:'📋'}]},
+  {van:'uân',week:29,words:[{w:'mùa xuân',tieng:'xuân',em:'🌸'},{w:'tuần lễ',tieng:'tuần',em:'📅'}]},
+  {van:'uât',week:29,words:[{w:'luật chơi',tieng:'luật',em:'📜'},{w:'ảo thuật',tieng:'thuật',em:'🎩'}]},
+  {van:'uyên',week:29,words:[{w:'con thuyền',tieng:'thuyền',em:'⛵'},{w:'kể chuyện',tieng:'chuyện',em:'📖'}]},
+  {van:'uyêt',week:29,words:[{w:'tuyết rơi',tieng:'tuyết',em:'❄️'},{w:'tuyệt vời',tieng:'tuyệt',em:'👍'}]},
+  {van:'uynh',week:29,words:[{w:'phụ huynh',tieng:'huynh',em:'👨‍👩‍👧'},{w:'luýnh quýnh',tieng:'luýnh',em:'😳'}]}
+  // 'uych' (huỵch/huých) và 'ec' (xẻng/éc) bỏ: không có từ vừa cụ thể vừa hợp trẻ 6 tuổi
 ];
 /* Âm ghép (chữ ghép) tuần 5-9 SGK — app dạy từ 'chó, thỏ' thì phải dạy đọc 'ch, th' */
 const DIGRAPHS = [
@@ -147,7 +291,19 @@ const WORD_ITEMS = [
   {em:'🐝', w:'con ong', en:'bee'},{em:'🐢', w:'con rùa', en:'turtle'},
   {em:'🦀', w:'con cua', en:'crab'},{em:'🐌', w:'con ốc', en:'snail'},{em:'🐦', w:'con chim', en:'bird'},{em:'🐻', w:'con gấu', en:'bear'},
   {em:'🍍', w:'quả dứa', en:'pineapple'},{em:'🥭', w:'quả xoài', en:'mango'},{em:'🍉', w:'quả dưa hấu', en:'watermelon'},{em:'🚲', w:'xe đạp', en:'bike'},
-  {em:'🪑', w:'cái ghế', en:'chair'},{em:'👒', w:'cái mũ', en:'hat'},{em:'👟', w:'đôi giày', en:'shoes'},{em:'🌈', w:'cầu vồng', en:'rainbow'}
+  {em:'🪑', w:'cái ghế', en:'chair'},{em:'👒', w:'cái mũ', en:'hat'},{em:'👟', w:'đôi giày', en:'shoes'},{em:'🌈', w:'cầu vồng', en:'rainbow'},
+  /* chủ đề SGK: gia đình · trường lớp · đồ dùng · ăn uống · cơ thể · thiên nhiên · quần áo · xe cộ · đồ chơi · con vật (en = ảnh thật) */
+  {em:'👩', w:'mẹ', en:'mom'},{em:'👨', w:'bố', en:'dad'},{em:'👵', w:'bà', en:'grandma'},{em:'👴', w:'ông', en:'grandpa'},{em:'👶', w:'em bé', en:'baby'},
+  {em:'📖', w:'quyển sách', en:'book'},{em:'✏️', w:'bút chì', en:'pencil'},{em:'🎒', w:'cặp sách', en:'bag'},{em:'📏', w:'thước kẻ', en:'ruler'},{em:'🏫', w:'trường học', en:'school'},
+  {em:'🛏️', w:'cái giường', en:'bed'},{em:'🚪', w:'cái cửa', en:'door'},{em:'💡', w:'cái đèn', en:'lamp'},{em:'☕', w:'cái cốc', en:'cup'},{em:'🔑', w:'chìa khoá', en:'key'},{em:'📺', w:'ti vi', en:'TV'},
+  {em:'🥚', w:'quả trứng', en:'egg'},{em:'🍞', w:'bánh mì', en:'bread'},{em:'🥛', w:'sữa', en:'milk'},{em:'🍚', w:'cơm', en:'rice'},{em:'🍰', w:'bánh kem', en:'cake'},{em:'🍦', w:'kem', en:'ice cream'},
+  {em:'🍓', w:'quả dâu', en:'strawberry'},{em:'🍇', w:'quả nho', en:'grape'},{em:'🍋', w:'quả chanh', en:'lemon'},{em:'🥕', w:'cà rốt', en:'carrot'},{em:'🌽', w:'bắp ngô', en:'corn'},{em:'🍅', w:'cà chua', en:'tomato'},
+  {em:'👁️', w:'mắt', en:'eye'},{em:'👃', w:'mũi', en:'nose'},{em:'👂', w:'tai', en:'ear'},{em:'✋', w:'bàn tay', en:'hand'},{em:'🦶', w:'bàn chân', en:'foot'},
+  {em:'🌳', w:'cái cây', en:'tree'},{em:'🌊', w:'biển', en:'sea'},{em:'⛰️', w:'ngọn núi', en:'mountain'},{em:'🌧️', w:'mưa', en:'rain'},{em:'☁️', w:'mây', en:'cloud'},{em:'🍃', w:'chiếc lá', en:'leaf'},
+  {em:'👕', w:'cái áo', en:'shirt'},{em:'👖', w:'cái quần', en:'pants'},{em:'🧦', w:'đôi tất', en:'socks'},{em:'🧥', w:'áo khoác', en:'jacket'},
+  {em:'🚂', w:'tàu hoả', en:'train'},{em:'⛵', w:'thuyền buồm', en:'boat'},{em:'🚚', w:'xe tải', en:'truck'},{em:'🛵', w:'xe máy', en:'motorbike'},{em:'🚁', w:'trực thăng', en:'helicopter'},
+  {em:'⚽', w:'quả bóng', en:'ball'},{em:'🪁', w:'cánh diều', en:'kite'},{em:'🧸', w:'gấu bông', en:'teddy bear'},{em:'🎈', w:'bóng bay', en:'balloon'},{em:'🤖', w:'người máy', en:'robot'},
+  {em:'🐜', w:'con kiến', en:'ant'},{em:'🕷️', w:'con nhện', en:'spider'},{em:'🐍', w:'con rắn', en:'snake'},{em:'🦁', w:'sư tử', en:'lion'},{em:'🦒', w:'hươu cao cổ', en:'giraffe'},{em:'🦓', w:'ngựa vằn', en:'zebra'}
 ];
 const SENTENCES = [
   {say:'Con gì kêu meo meo?', html:'Con ___ kêu meo meo 🐱', a:'mèo', d:['chó','gà']},
@@ -165,7 +321,43 @@ const SENTENCES = [
   {say:'Con gì cho bé sữa uống?', html:'Con ___ cho sữa 🐄', a:'bò', d:['gà','mèo']},
   {say:'Con gì nhỏ xíu, làm ra mật ngọt?', html:'Con ___ làm mật ngọt 🐝', a:'ong', d:['bướm','cá']},
   {say:'Ban đêm, cái gì tròn tròn sáng trên trời?', html:'Mặt ___ sáng ban đêm 🌙', a:'trăng', d:['trời','sao']},
-  {say:'Quả gì màu cam, cùng tên với màu cam?', html:'Quả ___ màu cam 🍊', a:'cam', d:['táo','chuối']}
+  {say:'Quả gì màu cam, cùng tên với màu cam?', html:'Quả ___ màu cam 🍊', a:'cam', d:['táo','chuối']},
+  /* sinh hoạt hằng ngày / trường lớp / cơ thể / thiên nhiên — nhiễu KHÔNG được xuất hiện trong câu hiển thị */
+  {say:'Bé đi xe gì đến trường?', html:'Bé đi xe ___ đến trường 🚌', a:'buýt', d:['thuyền','tàu']},
+  {say:'Mẹ nấu gì cho cả nhà?', html:'Mẹ nấu ___ cho cả nhà 🍚', a:'cơm', d:['sách','áo']},
+  {say:'Bố đọc gì cho bé nghe?', html:'Bố đọc ___ cho bé nghe 📖', a:'sách', d:['cơm','giày']},
+  {say:'Trời mưa, bé che gì?', html:'Trời mưa, bé che ___ 🌂', a:'ô', d:['kính','dép']},
+  {say:'Mùa hè trời thế nào?', html:'Mùa hè trời rất ___ ☀️', a:'nóng', d:['lạnh','tối']},
+  {say:'Mùa đông trời thế nào?', html:'Mùa đông trời rất ___ ❄️', a:'lạnh', d:['nóng','sáng']},
+  {say:'Bé đánh gì mỗi sáng?', html:'Bé đánh ___ mỗi sáng 🪥', a:'răng', d:['tóc','tay']},
+  {say:'Bé rửa gì trước khi ăn?', html:'Bé rửa ___ trước khi ăn 🧼', a:'tay', d:['mắt','bụng']},
+  {say:'Cô giáo dạy bé làm gì?', html:'Cô giáo dạy bé ___ chữ ✏️', a:'viết', d:['ăn','bơi']},
+  {say:'Bé tưới gì trong vườn?', html:'Bé tưới ___ trong vườn 🪴', a:'cây', d:['xe','ghế']},
+  {say:'Chim đậu ở đâu?', html:'Chim đậu trên ___ cây 🐦', a:'cành', d:['bàn','giường']},
+  {say:'Ong bay tìm gì?', html:'Ong bay tìm ___ 🌸', a:'hoa', d:['cá','thịt']},
+  {say:'Bé mặc gì khi trời lạnh?', html:'Bé mặc ___ ấm khi trời lạnh 🧥', a:'áo', d:['giày','mũ']},
+  {say:'Bé đội gì khi ra nắng?', html:'Bé đội ___ khi ra nắng 👒', a:'mũ', d:['áo','dép']},
+  {say:'Cá bơi ở đâu?', html:'Cá bơi trong ___ 🐟', a:'nước', d:['lửa','cát']},
+  {say:'Bé ngủ ở đâu?', html:'Bé ngủ trên ___ 🛏️', a:'giường', d:['cây','nồi']},
+  {say:'Bé ăn gì vào bữa sáng?', html:'Bé ăn ___ vào bữa sáng 🍞', a:'bánh mì', d:['đá','lá']},
+  {say:'Bé uống gì mỗi ngày?', html:'Bé uống ___ mỗi ngày 🥛', a:'sữa', d:['xăng','mực']},
+  {say:'Bé cắt giấy bằng gì?', html:'Bé cắt giấy bằng ___ ✂️', a:'kéo', d:['thìa','bút']},
+  {say:'Bé vẽ tranh bằng bút gì?', html:'Bé vẽ tranh bằng bút ___ 🖍️', a:'sáp', d:['nước','đá']},
+  {say:'Cái gì chiếu sáng ban ngày?', html:'Ông ___ chiếu sáng ban ngày ☀️', a:'mặt trời', d:['trăng','sao']},
+  {say:'Gà mái đẻ gì?', html:'Gà mái đẻ ___ 🥚', a:'trứng', d:['hoa','quả']},
+  {say:'Con bò ăn gì?', html:'Con bò ăn ___ 🌿', a:'cỏ', d:['kem','cá']},
+  {say:'Con khỉ thích ăn gì?', html:'Con khỉ thích ăn ___ 🍌', a:'chuối', d:['thịt','ớt']},
+  {say:'Con mèo bắt con gì?', html:'Con mèo bắt ___ 🐭', a:'chuột', d:['voi','bò']},
+  {say:'Bé xếp gì thành nhà?', html:'Bé xếp ___ thành nhà 🧱', a:'gạch', d:['nước','mây']},
+  {say:'Bé thả gì trên đồng?', html:'Bé thả ___ trên đồng 🪁', a:'diều', d:['cá','ghế']},
+  {say:'Bé đá gì với bạn?', html:'Bé đá ___ với bạn ⚽', a:'bóng', d:['sách','bát']},
+  {say:'Tàu gì chạy trên đường ray?', html:'Tàu ___ chạy trên đường ray 🚂', a:'hoả', d:['thuỷ','bay']},
+  {say:'Bé quét nhà bằng gì?', html:'Bé quét nhà bằng ___ 🧹', a:'chổi', d:['thìa','bút']},
+  {say:'Bé nghe nhạc bằng gì?', html:'Bé nghe nhạc bằng ___ 👂', a:'tai', d:['mũi','chân']},
+  {say:'Bé ngửi hoa bằng gì?', html:'Bé ngửi hoa bằng ___ 👃', a:'mũi', d:['tai','tay']},
+  {say:'Bé xem gì trên ti vi?', html:'Bé xem ___ hoạt hình trên ti vi 📺', a:'phim', d:['cơm','cá']},
+  {say:'Mẹ tặng bé gì vào sinh nhật?', html:'Mẹ tặng bé ___ sinh nhật 🎂', a:'bánh', d:['đá','cỏ']},
+  {say:'Bé chải gì bằng lược?', html:'Bé chải ___ bằng lược 💇', a:'tóc', d:['răng','chân']}
 ];
 const EN_THEMES = {
   '🐾 Animals':[
@@ -297,6 +489,40 @@ const EN_THEMES = {
     {em:'😭',w:'cry',vi:'khóc'},{em:'😆',w:'laugh',vi:'cười'}
   ]
 };
+
+/* Câu Starters (english.js startEnSentences): w PHẢI có trong EN_THEMES (findEn) — bé nghe câu, chọn ảnh của từ khoá.
+   say khớp 100% audio bank (list-phrases đọc thẳng mảng này) */
+const EN_STARTERS = [
+  {say:"It's a cat.", w:'cat'},{say:"It's a dog.", w:'dog'},{say:"It's an apple.", w:'apple'},{say:"It's a bus.", w:'bus'},
+  {say:"I can run.", w:'run'},{say:"I can jump.", w:'jump'},{say:"The sun is hot.", w:'sun'},{say:"I see a bird.", w:'bird'},
+  {say:"It's a big elephant.", w:'elephant'},{say:"The lion is strong.", w:'lion'},{say:"I have a rabbit.", w:'rabbit'},
+  {say:"The fish can swim.", w:'fish'},{say:"The frog is green.", w:'frog'},{say:"The monkey likes bananas.", w:'monkey'},
+  {say:"The duck says quack.", w:'duck'},{say:"The cow gives milk.", w:'cow'},
+  {say:"What colour is it? It's red.", w:'red'},{say:"What colour is it? It's blue.", w:'blue'},
+  {say:"What colour is it? It's green.", w:'green'},{say:"What colour is it? It's yellow.", w:'yellow'},
+  {say:"What colour is it? It's purple.", w:'purple'},{say:"What colour is it? It's black.", w:'black'},
+  {say:"How many? One.", w:'one'},{say:"How many? Two.", w:'two'},{say:"How many? Three.", w:'three'},
+  {say:"How many? Five.", w:'five'},{say:"How many? Ten.", w:'ten'},
+  {say:"I like bananas.", w:'banana'},{say:"I like milk.", w:'milk'},{say:"I eat rice.", w:'rice'},{say:"I like cake.", w:'cake'},
+  {say:"I drink water.", w:'water'},{say:"I eat an egg.", w:'egg'},{say:"I like ice cream.", w:'ice cream'},
+  {say:"Touch your nose.", w:'nose'},{say:"Touch your ear.", w:'ear'},{say:"Clap your hands.", w:'hand'},
+  {say:"Open your mouth.", w:'mouth'},{say:"Close your eyes.", w:'eye'},
+  {say:"This is my mom.", w:'mom'},{say:"This is my dad.", w:'dad'},{say:"This is my grandma.", w:'grandma'},
+  {say:"This is my baby brother.", w:'baby'},{say:"This is my sister.", w:'sister'},
+  {say:"I have a book.", w:'book'},{say:"I have a pencil.", w:'pencil'},{say:"This is my bag.", w:'bag'},{say:"Sit on the chair.", w:'chair'},
+  {say:"It's raining.", w:'rain'},{say:"Look at the rainbow.", w:'rainbow'},{say:"I see the moon.", w:'moon'},{say:"The star is bright.", w:'star'},
+  {say:"I have a ball.", w:'ball'},{say:"Look at my kite.", w:'kite'},{say:"I like my teddy bear.", w:'teddy bear'},{say:"The robot can walk.", w:'robot'},
+  {say:"Put on your hat.", w:'hat'},{say:"Put on your shoes.", w:'shoes'},{say:"I have a red dress.", w:'dress'},{say:"Wear your jacket.", w:'jacket'},
+  {say:"I go by car.", w:'car'},{say:"I go by bike.", w:'bike'},{say:"The plane can fly.", w:'plane'},{say:"The train is long.", w:'train'},
+  {say:"The boat is on the sea.", w:'boat'},
+  {say:"I can swim.", w:'swim'},{say:"I can sing.", w:'sing'},{say:"I can dance.", w:'dance'},{say:"I can read.", w:'read'},{say:"I sleep at night.", w:'sleep'},
+  {say:"Open the door.", w:'door'},{say:"Sit on the sofa.", w:'sofa'},{say:"Turn on the lamp.", w:'lamp'},{say:"I sleep in my bed.", w:'bed'},
+  {say:"I am happy.", w:'happy'},{say:"I am sad.", w:'sad'},{say:"I am hungry.", w:'hungry'},{say:"I am cold.", w:'cold'},
+  {say:"The tree is tall.", w:'tree'},{say:"I like flowers.", w:'flower'},{say:"We go to the beach.", w:'beach'},
+  {say:"I like grapes.", w:'grape'},{say:"The lemon is sour.", w:'lemon'},{say:"The strawberry is red.", w:'strawberry'},
+  {say:"The ant is small.", w:'ant'},{say:"The bee makes honey.", w:'bee'},{say:"Look at the butterfly.", w:'butterfly'},
+  {say:"I go to school.", w:'school'},{say:"We play in the park.", w:'park'},{say:"I go home.", w:'home'}
+];
 
 /* E3 phonics: chữ cái không có (đủ) từ trong EN_THEMES — KHÔNG thêm vào EN_THEMES (không ảnh wiki mới) */
 const EN_PHONICS_EXTRA = {
@@ -905,9 +1131,86 @@ const DRAW_GUIDES = (()=>{
   ];
 })();
 
+/* ==== TOÁN (math.js) — bank câu cố định để list-phrases đọc chung, không mirror logic ==== */
+/* lời văn 1 bước: 1–10 (SGK HK1) + 11–20 không nhớ (HK2); a,b = 2 nhóm khung mười, add=1 cộng / 0 trừ */
+const MATH_STORY_BANK = [
+  {say:'Na có 3 quả táo. Mẹ cho thêm 2 quả. Na có tất cả mấy quả táo?', a:3, b:2, ans:5, add:1},
+  {say:'Bo có 4 viên kẹo. Bạn cho thêm 3 viên. Bo có tất cả mấy viên kẹo?', a:4, b:3, ans:7, add:1},
+  {say:'Có 5 con gà. Thêm 2 con gà. Tất cả mấy con gà?', a:5, b:2, ans:7, add:1},
+  {say:'Na hái được 6 bông hoa. Hái thêm 1 bông. Na có mấy bông hoa?', a:6, b:1, ans:7, add:1},
+  {say:'Có 2 cái bánh. Mẹ làm thêm 5 cái bánh. Tất cả mấy cái bánh?', a:2, b:5, ans:7, add:1},
+  {say:'Bo có 7 viên bi. Cho bạn 3 viên. Bo còn mấy viên bi?', a:7, b:3, ans:4, add:0},
+  {say:'Có 8 quả cam. Ăn mất 2 quả. Còn lại mấy quả cam?', a:8, b:2, ans:6, add:0},
+  {say:'Na có 6 cái kẹo. Cho em 4 cái. Na còn mấy cái kẹo?', a:6, b:4, ans:2, add:0},
+  {say:'Có 9 con cá. Bơi đi 5 con. Còn lại mấy con cá?', a:9, b:5, ans:4, add:0},
+  {say:'Bo có 5 quả táo. Ăn 1 quả. Bo còn mấy quả táo?', a:5, b:1, ans:4, add:0},
+  {say:'Trên cành có 4 con chim. Bay đến thêm 4 con. Trên cành có mấy con chim?', a:4, b:4, ans:8, add:1},
+  {say:'Na có 3 cái bút. Mẹ mua thêm 6 cái. Na có tất cả mấy cái bút?', a:3, b:6, ans:9, add:1},
+  {say:'Trong vườn có 5 cây cam. Bố trồng thêm 5 cây. Vườn có mấy cây cam?', a:5, b:5, ans:10, add:1},
+  {say:'Bo có 2 quả bóng. Bạn cho thêm 7 quả. Bo có mấy quả bóng?', a:2, b:7, ans:9, add:1},
+  {say:'Ao có 8 con vịt. Thêm 2 con vịt xuống ao. Ao có mấy con vịt?', a:8, b:2, ans:10, add:1},
+  {say:'Có 10 quả trứng. Vỡ mất 3 quả. Còn lại mấy quả trứng?', a:10, b:3, ans:7, add:0},
+  {say:'Na có 9 cái nhãn vở. Dán mất 6 cái. Na còn mấy cái nhãn vở?', a:9, b:6, ans:3, add:0},
+  {say:'Trên sân có 7 bạn. 2 bạn đi về. Trên sân còn mấy bạn?', a:7, b:2, ans:5, add:0},
+  {say:'Có 10 con ong. Bay đi 4 con. Còn lại mấy con ong?', a:10, b:4, ans:6, add:0},
+  {say:'Bo có 8 viên bi. Làm rơi 8 viên. Bo còn mấy viên bi?', a:8, b:8, ans:0, add:0},
+  {say:'Có 10 cái ghế. Mang thêm 5 cái ghế. Tất cả mấy cái ghế?', a:10, b:5, ans:15, add:1},
+  {say:'Na có 12 cái kẹo. Bạn cho thêm 3 cái. Na có mấy cái kẹo?', a:12, b:3, ans:15, add:1},
+  {say:'Lớp có 14 bạn nam. Thêm 4 bạn nữ. Lớp có tất cả mấy bạn?', a:14, b:4, ans:18, add:1},
+  {say:'Có 11 quả táo. Mẹ mua thêm 6 quả. Tất cả mấy quả táo?', a:11, b:6, ans:17, add:1},
+  {say:'Bo xếp 13 viên gạch. Xếp thêm 6 viên. Bo xếp được mấy viên gạch?', a:13, b:6, ans:19, add:1},
+  {say:'Có 15 con cá. Bơi đi 5 con. Còn lại mấy con cá?', a:15, b:5, ans:10, add:0},
+  {say:'Na có 18 cái nhãn vở. Cho em 4 cái. Na còn mấy cái nhãn vở?', a:18, b:4, ans:14, add:0},
+  {say:'Có 17 quả bóng. Bay mất 3 quả. Còn lại mấy quả bóng?', a:17, b:3, ans:14, add:0},
+  {say:'Vườn có 19 bông hoa. Hái 7 bông. Vườn còn mấy bông hoa?', a:19, b:7, ans:12, add:0},
+  {say:'Bo có 16 viên bi. Cho bạn 6 viên. Bo còn mấy viên bi?', a:16, b:6, ans:10, add:0}
+];
+/* phạm vi 100 KHÔNG NHỚ (SGK HK2): chục tròn ± chục tròn, số có 2 chữ số ± số có 1 chữ số (hàng đơn vị không tràn) */
+const MATH_100 = {
+  add: [[10,20],[20,30],[30,40],[40,50],[50,20],[60,30],[70,20],[80,10],[30,30],[40,40],[50,50],[20,70],
+        [23,4],[31,6],[42,5],[54,3],[65,2],[71,7],[82,6],[93,4],[25,3],[36,2],[47,1],[52,6],[63,5],[74,4],[85,3],[96,2]],
+  sub: [[30,10],[50,20],[60,30],[70,40],[80,50],[90,60],[40,20],[100,50],[70,30],[90,20],[60,10],[80,70],
+        [27,4],[38,6],[45,3],[56,5],[69,7],[74,2],[87,6],[98,5],[29,8],[35,4],[48,3],[57,6],[66,2],[79,9],[83,1],[95,4]]
+};
+const WEEKDAYS = ['thứ hai','thứ ba','thứ tư','thứ năm','thứ sáu','thứ bảy','chủ nhật'];
+
+/* 🔍 "Bé có biết?" — sự thật lạ, ngắn, gắn với con vật/thiên nhiên có trong app; cô kể sau lượt làm tốt (core.js showResult).
+   Thưởng bằng điều lạ để gợi tò mò, không chỉ bằng sao. Mỗi câu 1 mp3 — thêm câu = regen audio */
+const FACTS = [
+  {em:'🐝', t:'Để làm được một lọ mật, đàn ong phải bay xa bằng hai vòng quanh Trái Đất đấy!'},
+  {em:'🐘', t:'Voi là con vật to nhất trên cạn, nhưng voi lại không biết nhảy đâu!'},
+  {em:'🐙', t:'Bạch tuộc có tới ba trái tim, và máu của nó màu xanh!'},
+  {em:'🦒', t:'Lưỡi hươu cao cổ dài bằng cả cánh tay bé, và có màu tím đen để không bị cháy nắng!'},
+  {em:'🐌', t:'Ốc sên có thể ngủ một giấc dài suốt ba năm liền!'},
+  {em:'🦋', t:'Bướm nếm vị đồ ăn bằng bàn chân chứ không phải bằng miệng!'},
+  {em:'🐢', t:'Rùa có thể sống hơn một trăm tuổi, già hơn cả ông bà của bé!'},
+  {em:'🐧', t:'Chim cánh cụt không bay được, nhưng bơi nhanh như tên bắn dưới nước!'},
+  {em:'🌙', t:'Mặt Trăng không tự phát sáng, nó chỉ hắt lại ánh sáng của Mặt Trời thôi!'},
+  {em:'⭐', t:'Trên bầu trời có nhiều ngôi sao hơn cả số hạt cát trên mọi bãi biển cộng lại!'},
+  {em:'🌈', t:'Cầu vồng luôn có đúng bảy màu. Lần sau thấy cầu vồng, bé đếm thử xem!'},
+  {em:'🍌', t:'Cây chuối không phải là cây gỗ, nó là một loài cỏ khổng lồ!'},
+  {em:'🐱', t:'Mèo ngủ tới mười sáu tiếng mỗi ngày, gần hết cả ngày luôn!'},
+  {em:'🐶', t:'Mũi chó thính gấp mười nghìn lần mũi của người!'},
+  {em:'🐄', t:'Bò cũng có bạn thân, và sẽ buồn khi phải xa bạn đấy!'},
+  {em:'🐸', t:'Ếch uống nước bằng da chứ không uống bằng miệng!'},
+  {em:'🦁', t:'Sư tử ngủ tới hai mươi tiếng mỗi ngày, lười hơn cả mèo!'},
+  {em:'🐜', t:'Kiến bé xíu nhưng nhấc được vật nặng gấp năm mươi lần chính mình!'},
+  {em:'💧', t:'Giọt nước bé uống hôm nay có thể là giọt nước khủng long đã từng uống!'},
+  {em:'🦈', t:'Cá mập xuất hiện trên Trái Đất còn trước cả cây cối!'},
+  {em:'❄️', t:'Không có hai bông tuyết nào giống hệt nhau trên đời!'},
+  {em:'🍯', t:'Mật ong để cả nghìn năm vẫn không bị hỏng!'},
+  {em:'🌻', t:'Hoa hướng dương non quay mặt theo Mặt Trời từ sáng đến chiều!'},
+  {em:'🦜', t:'Vẹt có thể học nói, và bắt chước được cả tiếng chuông điện thoại!'},
+  {em:'🚀', t:'Tên lửa bay nhanh gấp ba mươi lần máy bay!'},
+  {em:'👂', t:'Tai và mũi của người cứ lớn dần lên suốt cả cuộc đời!'},
+  {em:'🦓', t:'Mỗi con ngựa vằn có bộ vằn khác nhau, giống như dấu vân tay của bé!'},
+  {em:'🐬', t:'Cá heo ngủ mà vẫn mở một mắt để canh chừng!'}
+];
+
 /* export cho node (scripts/list-phrases.cjs); browser bỏ qua */
 if (typeof module !== 'undefined') {
   module.exports = { PRAISE, CHEER, HELLO, JOKES, STICKERS, STICKER_COST,
     LETTER_NAMES, EXAMPLES, SYL_EX, WORD_EX, VN_LETTERS, WRITE_SETS, VOWELS, VAN_ITEMS,
-    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, EN_PHONICS_EXTRA, SONGS, PICS, PIC_META, DRAW_GUIDES, VAN2, DIGRAPHS, STORIES, spellTieng };
+    TONE_SETS, WORD_ITEMS, SENTENCES, EN_THEMES, EN_STARTERS, EN_PHONICS_EXTRA, SONGS, PICS, PIC_META, DRAW_GUIDES, VAN2, DIGRAPHS, STORIES,
+    MATH_STORY_BANK, MATH_100, WEEKDAYS, FACTS, ONSETS, splitTieng, onsetName, spellTieng };
 }

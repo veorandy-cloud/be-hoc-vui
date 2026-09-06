@@ -94,6 +94,8 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
   background:var(--card);border:3px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);
 }
 .pkey.lit{background:var(--sun)}
+.pkey.black{background:var(--ink);color:#fff}
+.pkey.black.lit{background:var(--sun);color:var(--ink)}
 .fly-art{
   position:fixed;left:50%;top:50%;width:40vmin;z-index:65;background:#fff;
   border:5px solid var(--ink);border-radius:20px;pointer-events:none;
@@ -301,6 +303,14 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
 .flash .vi{font-size:14px;color:#71717A}
 .flash.wiggle{animation:wiggle .5s}
 @keyframes wiggle{25%{transform:rotate(-6deg) scale(1.08)}75%{transform:rotate(6deg) scale(1.08)}}
+/* E4 đánh vần: ô chữ + thẻ chữ cái (5 thẻ → grid 5 cột) */
+.spell-slots{display:flex;gap:10px;justify-content:center;margin-top:8px}
+.spell-slot{min-width:56px;padding:4px 10px;border:3px dashed var(--ink);border-radius:14px;background:#fff;
+  font-family:"Baloo 2";font-size:min(9vw,44px);font-weight:800;line-height:1.1;text-transform:uppercase}
+.spell-slot.on{border-style:solid;background:var(--sun)}
+#en-choices:has(.spell-tile){grid-template-columns:repeat(5,1fr);gap:10px}
+.choice.spell-tile{text-transform:uppercase;min-height:80px;padding:10px 4px}
+.choice.spell-tile.used{opacity:.3;pointer-events:none}
 #en-phx-letters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 #en-phx-letters [data-letter]{min-width:44px;min-height:44px;padding:8px 10px;font-size:20px}
 #en-phx-letters [data-letter].on{background:var(--sun)}
@@ -344,6 +354,22 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
 #ov-emoji{font-size:80px}
 #ov-msg{font-family:"Baloo 2";font-size:28px;font-weight:800}
 #ov-stars{font-size:42px;letter-spacing:6px}
+/* 🔍 Bé có biết? — thẻ sự thật lạ trong bảng kết quả */
+#ov-fact{display:flex;gap:12px;align-items:center;text-align:left;max-width:30rem;margin:4px auto 0;
+  background:#FEF3C7;border:3px solid var(--ink);border-radius:16px;padding:10px 14px;font-size:17px;font-weight:700;line-height:1.35}
+#ov-fact .ov-fact-em{font-size:42px;flex:none;line-height:1}
+#ov-fact b{display:block;color:#B45309;font-family:"Baloo 2";font-size:18px}
+/* chạm là nghe: nút nhún; đếm bằng ngón tay: chấm/que đã đếm sáng viền vàng */
+.choice.wiggle{animation:wiggle .45s}
+.ten-frame .dot.cnt{box-shadow:0 0 0 4px var(--sun);transform:scale(1.12)}
+.tens .tbar.cnt,.tens .udot.cnt{box-shadow:0 0 0 4px var(--sun)}
+.choice .math-shape{width:min(120px,26vw);height:min(100px,22vw)}
+.choice .math-shape-wrap{margin:0 auto}
+/* thẻ HK2 khoá "bí ẩn": xám + 🔒, chạm thì nhún + cô giải thích */
+.menu-card.locked{filter:grayscale(.9) brightness(.92);position:relative}
+.menu-card.locked .em{opacity:.3}
+.menu-card.locked::after{content:'🔒';position:absolute;left:0;right:0;top:18px;text-align:center;font-size:44px}
+.menu-card.wiggle{animation:wiggle .5s}
 
 /* gallery modal */
 #gallery-modal{
@@ -512,6 +538,25 @@ main{flex:1;overflow:auto;padding:4px 16px 20px;-webkit-overflow-scrolling:touch
 .choice .ten-frame{width:min(140px,28vw);max-width:140px;gap:2px;padding:4px}
 .choice .math-frames{gap:4px;font-size:12px}
 .choice.word .ten-frame{font-size:0}
+/* ===== math HK2: bó que tính (đến 100), dãy số, đồng hồ, tuần, thước ===== */
+.tens{display:inline-flex;align-items:flex-end;gap:8px;padding:6px 8px;border:3px solid var(--ink);border-radius:14px;background:#fff;font-size:0;flex:none}
+.tens-t{display:flex;flex-wrap:wrap;gap:3px;max-width:150px}
+.tens-t .tbar{display:block;width:12px;height:56px;border-radius:5px;background:#0284C7;border:2px solid var(--ink)}
+.tens-u{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;align-self:center}
+.tens-u .udot{display:block;width:13px;height:13px;border-radius:50%;background:var(--coral);border:2px solid var(--ink)}
+.choice .tens{transform:scale(.8);transform-origin:top center}
+.math-seq{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.math-seq span{min-width:60px;padding:8px 10px;border:3px solid var(--ink);border-radius:14px;background:#fff;font-family:"Baloo 2";font-size:min(8vw,40px);font-weight:800;line-height:1.1}
+.math-seq span.q{background:var(--sun);color:var(--ink)}
+.math-seq span:empty{visibility:hidden}
+.math-clock,.math-ruler{max-width:100%;height:auto}
+.math-clock{width:min(220px,50vw)}
+.math-ruler{width:min(400px,86vw)}
+.week-strip{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.week-strip span{min-width:40px;padding:6px 8px;border:3px solid var(--ink);border-radius:12px;background:#fff;font-size:16px;font-weight:800}
+.week-strip span.on{background:var(--sun)}
+.len-bar{height:34px;margin:8px auto;border-radius:10px;background:#65A30D;border:3px solid var(--ink)}
+#math-prompt.big .math-seq,#math-prompt.big .week-strip{font-size:16px}
 .math-shape-wrap{display:flex;justify-content:center;margin:8px auto}
 .math-shape{width:min(180px,40vw);height:min(140px,30vw)}
 #math-prompt.big .math-shape-wrap{font-size:0}

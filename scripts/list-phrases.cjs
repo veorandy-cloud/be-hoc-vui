@@ -43,11 +43,12 @@ const en = t => add(t, 'en');
   'Bé tô trong đường nét nhé!',
   'Mình chơi lâu rồi, nghỉ mắt chút nhé!',
   'Bé bấm phím đang sáng nhé!',
-  'Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!',
-  'Bé gõ theo nhịp nhé!'
+  'Bé gõ theo nhịp nhé!',
+  'Bé ghép chữ cái thành từ nhé!'
 ].forEach(vi);
-// tập viết từng nét: nhắc số nét (tối đa 5 nét/chữ theo js/strokes.js)
+// tập viết từng nét: nhắc số nét — chữ đơn ≤5 nét (đọc chữ), tiếng/từ nhiều chữ + dấu thanh tới ~24 nét (writing.js NUMVI[i]||i+1 → chữ số)
 ['một','hai','ba','bốn','năm'].forEach(n => vi(`Bé vẽ nét số ${n} nhé!`));
+for (let n = 6; n <= 24; n++) vi(`Bé vẽ nét số ${n} nhé!`);
 
 // tập đọc — Đọc theo: đọc cả câu hoàn chỉnh (stripDeco PHẢI khớp 100% với app.js)
 const stripDeco = s => s.replace(/[^\p{L}\p{N}\s,!?.]/gu, '').replace(/\s+/g, ' ').trim();
@@ -70,13 +71,15 @@ for (const [ch, name] of Object.entries(D.LETTER_NAMES)) {
     vi(`Bé hãy viết chữ ${name} hoa nhé!`);
   }
 }
-(D.WRITE_SETS.syl||[]).forEach(s => vi(`Bé hãy viết tiếng ${s} nhé!`));
+(D.WRITE_SETS.syl||[]).forEach(s => { vi(`Bé hãy viết tiếng ${s} nhé!`); vi(s); }); // 🔊 đọc tiếng
 (D.WRITE_SETS.word||[]).forEach(s => vi(`Bé hãy viết từ ${s} nhé!`));
+Object.values(D.SYL_EX).forEach(ex => vi(ex.w));
+Object.values(D.WORD_EX).forEach(ex => vi(ex.w));
 D.VN_LETTERS.forEach(ch => vi(`Đâu là chữ ${D.LETTER_NAMES[ch]}?`));
 
-// vần có âm cuối + âm ghép (reading.js qVan2/qDigraph)
+// vần có âm cuối + âm ghép (reading.js qVan2/qDigraph); Ghép vần đọc tên âm ghép khi chạm thẻ ('Chữ chờ')
 D.VAN2.forEach(v => v.words.forEach(wd => vi(`Vần gì trong tiếng ${wd.tieng}?`)));
-D.DIGRAPHS.forEach(dg => dg.words.forEach(wd => vi(`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`)));
+D.DIGRAPHS.forEach(dg => { dg.words.forEach(wd => vi(`Tiếng ${wd.tieng} bắt đầu bằng chữ gì?`)); vi(`Chữ ${dg.name}`); });
 
 // vần + dấu thanh + từ + câu
 D.VAN_ITEMS.forEach(([c, v]) =>
@@ -120,22 +123,59 @@ vi('Bên nào có nhiều hơn?');
 for (let a = 1; a <= 9; a++) for (let b = 1; a + b <= 10; b++) vi(`${a} cộng ${b} bằng mấy?`);
 for (let a = 1; a <= 10; a++) for (let b = 1; b <= a; b++) vi(`${a} trừ ${b} bằng mấy?`);
 
-// toán lời văn 1 bước (math.js MATH_BUILDERS.story) — khớp 100% với say
-[
-  'Na có 3 quả táo. Mẹ cho thêm 2 quả. Na có tất cả mấy quả táo?',
-  'Bo có 4 viên kẹo. Bạn cho thêm 3 viên. Bo có tất cả mấy viên kẹo?',
-  'Có 5 con gà. Thêm 2 con gà. Tất cả mấy con gà?',
-  'Na hái được 6 bông hoa. Hái thêm 1 bông. Na có mấy bông hoa?',
-  'Có 2 cái bánh. Mẹ làm thêm 5 cái bánh. Tất cả mấy cái bánh?',
-  'Bo có 7 viên bi. Cho bạn 3 viên. Bo còn mấy viên bi?',
-  'Có 8 quả cam. Ăn mất 2 quả. Còn lại mấy quả cam?',
-  'Na có 6 cái kẹo. Cho em 4 cái. Na còn mấy cái kẹo?',
-  'Có 9 con cá. Bơi đi 5 con. Còn lại mấy con cá?',
-  'Bo có 5 quả táo. Ăn 1 quả. Bo còn mấy quả táo?'
-].forEach(vi);
+// toán lời văn 1 bước (math.js MATH_BUILDERS.story) — bank dùng chung trong data.js
+D.MATH_STORY_BANK.forEach(s => vi(s.say));
 for (let n = 2; n <= 10; n++) vi(`Số ${n} gồm mấy và mấy?`);
-vi('Đây là hình gì?');
-["It's a cat.","It's a dog.","It's an apple.","It's a bus.","I can run.","I can jump.","The sun is hot.","I see a bird."].forEach(en);
+// toán HK2 (math.js hundred/order/time/measure)
+vi('Có bao nhiêu que tính?');
+for (let n = 11; n <= 100; n++) vi(`Bé tìm số ${n} nhé!`);
+vi('Số nào lớn hơn?');
+D.MATH_100.add.forEach(([a, b]) => vi(`${a} cộng ${b} bằng mấy?`));
+D.MATH_100.sub.forEach(([a, b]) => vi(`${a} trừ ${b} bằng mấy?`));
+vi('Số liền sau của số này là mấy?');
+vi('Số liền trước của số này là mấy?');
+vi('Số nào còn thiếu trong dãy?');
+vi('Đồng hồ chỉ mấy giờ?');
+D.WEEKDAYS.forEach(d => { vi(`Hôm nay là ${d}. Ngày mai là thứ mấy?`); vi(`Hôm nay là ${d}. Hôm qua là thứ mấy?`); });
+vi('Bút chì dài mấy xăng ti mét?');
+vi('Cái nào dài hơn?');
+// câu tiếng Anh Starters (data.js EN_STARTERS — english.js startEnSentences)
+D.EN_STARTERS.forEach(s => en(s.say));
+
+// ===== CHẠM LÀ NGHE (core.js runQuiz: choice.say hoặc text thuần của đáp án) =====
+for (let n = 0; n <= 100; n++) vi(String(n));                                    // đáp án số, đếm bằng ngón tay
+for (let p = 1; p <= 10; p++) for (let q = p; q <= 10; q++) vi(`${p} cộng ${q}`); // thành phần số
+D.VAN_ITEMS.forEach(([c]) => {                                                    // qVan: mirror pool nguyên âm theo luật k/gh
+  const pool = (c === 'c' || c === 'g') ? D.VOWELS.filter(x => !['e', 'ê', 'i'].includes(x)) : c === 'k' ? ['e', 'ê', 'i'] : D.VOWELS;
+  pool.forEach(v => vi(c + v));
+});
+D.VAN2.forEach(v => vi(v.van));                                                   // vần cuối
+D.TONE_SETS.flat().forEach(t => vi(D.splitTieng(t)[1]));                          // Ghép vần: thẻ vần + dấu
+D.WORD_ITEMS.forEach(w => vi(w.w));                                               // từ ngữ
+D.SENTENCES.forEach(s => { vi(s.a); s.d.forEach(vi); });                          // điền câu
+D.STORIES.forEach(st => st.qs.forEach(q => q.c.forEach(vi)));                     // đáp án hiểu truyện
+for (let h = 1; h <= 12; h++) vi(`${h} giờ`);
+for (let n = 1; n <= 10; n++) vi(`${n} xăng ti mét`);
+D.WEEKDAYS.forEach(vi);
+['vuông', 'tròn', 'tam giác', 'chữ nhật'].forEach(n => { vi(`Đâu là hình ${n}?`); vi(`hình ${n}`); });
+['lập phương', 'hộp chữ nhật'].forEach(n => { vi(`Đâu là khối ${n}?`); vi(`khối ${n}`); });
+// tên bài / khu cô đọc khi chạm thẻ (cfg.title, data-say, big-card) — mirror index.html
+['Chữ cái', 'Vần và dấu', 'Vần cuối', 'Chữ ghép', 'Từ ngữ', 'Điền câu', 'Đọc theo', 'Ghép vần', 'Đọc truyện', 'Trộn tất cả',
+ 'Đếm số', 'Phép cộng', 'Phép trừ', 'Nhiều hơn', 'Phạm vi 20', 'Có nhớ', 'Lời văn', 'Thành phần', 'Hình và khối', 'Đến 100', 'Dãy số', 'Xem giờ', 'Đo xăng ti mét',
+ 'Tập đọc', 'Tiếng Anh', 'Toán', 'Thám hiểm', 'Ca hát',
+ 'Nghe chọn hình', 'Chọn từ đúng', 'Lật hình', 'Nghe câu', 'Âm chữ cái tiếng Anh', 'Đánh vần', 'Ôn từ yếu',
+ 'Vẽ tự do', 'Tô màu', 'Hát cùng nhạc', 'Bài khác', 'Bộ sưu tập sticker'].forEach(vi);
+// lời dẫn lần đầu (introOnce) + khoá HK2 + hỏi lại câu sai
+['Bé nghe cô hỏi, rồi chạm vào đáp án đúng nhé!', 'Bé chạm từng chấm để đếm, rồi chọn số đúng nhé!',
+ 'Bé chạm chữ cái, rồi chạm vần để ghép thành tiếng nhé!', 'Cô đọc trước, bé đọc theo thật to nhé!',
+ 'Bé nghe từ, rồi chạm vào hình đúng nhé!', 'Bé nghe tiếng Việt, rồi chạm vào từ tiếng Anh đúng nhé!',
+ 'Bé nghe câu, rồi chạm vào hình đúng nhé!', 'Bé chạm chữ cái để xem từ bắt đầu bằng chữ đó nhé!',
+ 'Bé chọn màu rồi vẽ thoả thích nhé!', 'Bé chọn tranh, chọn màu rồi tô nhé! Bấm cái xô để đổ màu.',
+ 'Bé chơi qua từng trạm để mở đường mới nhé!',
+ 'Bé chơi thật giỏi các bài toán khác để mở khoá nhé!', 'Bé mở được bài mới rồi! Chạm vào thẻ mới xem nhé!',
+ 'Bé sửa đúng rồi, giỏi quá!'].forEach(vi);
+// 🔍 Bé có biết? (core.js showResult)
+D.FACTS.forEach(f => vi(f.t));
 
 // toán phạm vi 20 (math.js qAdd20/qSub20 — KHÔNG NHỚ: mirror ĐÚNG logic sinh câu, thêm bao nhiêu liệt kê bấy nhiêu)
 for (let b = 1; b <= 10; b++) vi(`10 cộng ${b} bằng mấy?`);

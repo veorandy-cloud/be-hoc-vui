@@ -56,6 +56,20 @@ const QUEST_LANDS = [
       qSentence(),
       qDigraph()
     ])}
+  ]},
+  {nm:'🏫 Lớp Học Vui', color:'#0EA5E9', stations:[
+    {em:'🔤', nm:'Vần mới', t:'quiz', q:()=>Array.from({length:5}, qVan2)},
+    {em:'✏️', nm:'Viết tiếng bà', t:'write', set:'syl', ch:'bà'},
+    {em:'💯', nm:'Toán đến 100', t:'quiz', q:()=>MATH_BUILDERS.hundred().slice(0,5)},
+    {em:'🔡', nm:'Đánh vần tiếng Anh', t:'en', kind:'spell'},
+    {em:'👑', nm:'Trạm trùm', t:'quiz', boss:true, q:()=>shuffle([
+      MATH_BUILDERS.order()[0],
+      MATH_BUILDERS.time()[0],
+      MATH_BUILDERS.measure()[0],
+      qAdd100(),
+      qVan2(),
+      qSentence()
+    ])}
   ]}
 ];
 const STATIONS = QUEST_LANDS.flatMap(l=>l.stations);
@@ -143,6 +157,7 @@ function launchStation(idx){
       promptEl:$('#qp-prompt'), speakBtn:$('#qp-speak'),
       choicesEl:$('#qp-choices'), progressEl:$('#qp-progress'),
       questions:s.q(),
+      intro:'Bé nghe cô hỏi, rồi chạm vào đáp án đúng nhé!', // introKey mặc định 'quiz' — chỉ nói lần đầu trong đời
       firstDelay: s.boss ? 4500 : 300, // câu "Trạm trùm đây!..." dài 4.1s ĐO THẬT — 2500ms cũ cắt giữa câu 100%
       onDone(right,total){
         const pass = right>=Math.ceil(total/2);
@@ -163,6 +178,7 @@ function launchStation(idx){
     showScreen('scr-en');
     $$('#en-chips .chip').forEach(x=>x.classList.toggle('on', x.textContent===enTheme));
     if(s.kind==='sent' || s.kind==='sentence') startEnSentences();
+    else if(s.kind==='spell') startEnSpell();
     else startEnQuiz(s.kind);
   }else if(s.t==='memory'){
     enTheme = s.theme;
@@ -241,6 +257,7 @@ function showParentStats(){
     ['🎁 Sticker', `${unlockedCount()+goldCount()}/${STICKERS.length*2}`],
     ['🖼️ Tranh đã lưu', gal.length],
     ['📖 Tuần đọc', `Vần tuần ${learnWeek.v} · chữ ghép tuần ${learnWeek.d}`],
+    ['🔒 Bài toán HK2', hk2Unlocked() ? 'đã mở' : `khoá — bé làm tốt ${mathOk()}/6 lượt`],
     ['🎯 Mục tiêu', `Hôm nay: viết ${todayGoal().write||0}/2 chữ · toán ${todayGoal().math||0}/1 lượt`]
   ];
   // nhắc sao lưu định kỳ — iOS purge localStorage khi thiếu bộ nhớ nếu CHƯA Add to Home Screen;
@@ -253,6 +270,13 @@ function showParentStats(){
     + '<div style="text-align:center;font-size:13px;color:#71717A;padding:6px">Ảnh minh hoạ từ vựng: Wikipedia / Wikimedia Commons (giấy phép CC) · Giọng đọc: Microsoft Edge TTS</div>';
 }
 $('#btn-parent').addEventListener('click', ()=>showScreen('scr-parent'));
+/* phụ huynh mở tất cả bài (bỏ khoá HK2) — bật/tắt, không cần bé cày 6 lượt */
+function syncUnlockBtn(){ $('#ps-unlock').textContent = localStorage.getItem('bhv_unlockall') ? '🔓 Mở tất cả bài: BẬT' : '🔒 Mở tất cả bài: TẮT'; }
+syncUnlockBtn();
+$('#ps-unlock').addEventListener('click', ()=>{
+  if(localStorage.getItem('bhv_unlockall')) localStorage.removeItem('bhv_unlockall'); else localStorage.setItem('bhv_unlockall','1');
+  syncUnlockBtn(); showParentStats();
+});
 $('#ps-reset').addEventListener('click', function(){
   confirmTap(this, 'Bấm lần nữa để xoá nhé!', ()=>{ localStorage.clear(); location.reload(); });
 });

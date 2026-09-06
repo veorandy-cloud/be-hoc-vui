@@ -7,7 +7,7 @@ const browser = await chromium.launch({ channel: 'msedge', headless: true, args:
 const page = await browser.newPage();
 
 const t0 = Date.now();
-await page.goto('http://localhost:8080', { waitUntil: 'load', timeout: 20000 });
+await page.goto('http://127.0.0.1:8080', { waitUntil: 'load', timeout: 20000 }); // localhost = IPv6 trên máy này, server bind 127.0.0.1
 await page.waitForTimeout(1200); // cho fonts/audio-manifest fetch xong
 const wall = Date.now() - t0;
 

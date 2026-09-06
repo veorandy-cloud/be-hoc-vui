@@ -6,8 +6,19 @@
 
 let songTimers=[], singing=false, curSong=null, musicReady=false;
 let songGain=null, songOscs=[], songSession=0; // session token: chuỗi async của lượt cũ tự chết khi dừng/đổi bài
-const PIANO_KEYS = [60,62,64,65,67,69,71,72]; // C4–C5 white keys
-const PIANO_LABELS = ['Đô','Rê','Mi','Fa','Sol','La','Si','Đô'];
+const PIANO_KEYS = [60,62,64,65,67,69,71,72]; // C4–C5 white keys (bàn phím mặc định)
+const NOTE_NAMES = ['Đô','Đô#','Rê','Rê#','Mi','Fa','Fa#','Sol','Sol#','La','Si♭','Si'];
+const pianoLabel = m => NOTE_NAMES[m%12] + (m<60 ? '↓' : m>72 ? '↑' : '');
+/* bàn phím theo bài: 8 phím trắng C4–C5 + nốt nào bài cần ngoài khung (Sol↓ La↓ của Old MacDonald, Si♭ của Happy Birthday) */
+function buildPiano(midis){
+  const box=$('#piano-keys'); box.innerHTML='';
+  [...new Set([...PIANO_KEYS, ...midis])].sort((a,b)=>a-b).forEach(m=>{
+    const b=document.createElement('button');
+    b.className='pkey'+([1,3,6,8,10].includes(m%12)?' black':''); b.dataset.midi=m; b.textContent=pianoLabel(m);
+    b.onclick=()=>tapPiano(m);
+    box.appendChild(b);
+  });
+}
 let pianoNotes=[], pianoIdx=0, pianoExpect=null;
 let tapTimes=[], tapExpectIdx=0, tapHits=0;
 const TAP_WINDOW=0.18;
@@ -146,13 +157,7 @@ function initMusic(){
       setTimeout(()=>p.classList.remove('hit'), 90);
     };
     $('#song-back').onclick=()=>{ stopSong(); $('#song-view').style.display='none'; $('#song-list').style.display='grid'; };
-    const box=$('#piano-keys');
-    PIANO_KEYS.forEach((m,i)=>{
-      const b=document.createElement('button');
-      b.className='pkey'; b.dataset.midi=m; b.textContent=PIANO_LABELS[i];
-      b.onclick=()=>tapPiano(m);
-      box.appendChild(b);
-    });
+    buildPiano([]);
     musicReady=true;
   }
   loadPiano(); // tải sample sớm — bấm Hát là có piano thật ngay
@@ -164,10 +169,7 @@ function startPlayAlong(){
   if(!curSong) return;
   stopSong();
   pianoNotes = curSong.lines.flatMap(ln=>ln.n.map(([m])=>m));
-  if(pianoNotes.some(m=>!PIANO_KEYS.includes(m))){
-    speak('Bé chọn bài Ngôi sao nhỏ lấp lánh để đàn theo nhé!');
-    return;
-  }
+  buildPiano(pianoNotes); // mọi bài đều đàn được: phím dựng theo nốt của bài
   pianoIdx=0; pianoExpect=pianoNotes[0];
   $('#piano-keys').style.display='flex';
   $('#tap-pad').style.display='none';
